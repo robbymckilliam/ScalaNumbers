@@ -34,7 +34,7 @@ import org.junit.Assert._;
 
 class ComplexTest {
 
-    val tolerance = 0.000001
+    val tolerance = 1e-6
   
 	
     @Test
