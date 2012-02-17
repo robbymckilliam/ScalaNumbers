@@ -1,32 +1,23 @@
-/* Copyright (c) 2012 the authors listed at the following URL, and/or
-the authors of referenced articles or incorporated external code:
-http://en.literateprograms.org/Complex_numbers_(Scala)?action=history&offset=20100212205416
+/* 
+Complex.scala
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Implementation of the Field of complex numbers
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+Robby McKilliam 16/2/2012 
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Modified to include operations on Doubles 16/2/2012 Robby McKilliam
-
-Retrieved from: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
+Based on: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
 */
 
 package numbers
+
+/**
+ * Provides static definitions of the multiplicative 
+ * and additive identities
+ */
+object Complex {
+  val one = new RectComplex(1,0) 
+  val zero = new RectComplex(0,0)
+}
 
 abstract class Complex extends Field[Complex]{
     val real:      Double
@@ -45,10 +36,15 @@ abstract class Complex extends Field[Complex]{
     def /(that: Double) = new PolarComplex(magnitude / that, angle)
 
     def conjugate = new RectComplex(real, -imag)
+    
+    def one : Complex = Complex.one
+    def zero : Complex = Complex.zero
+    
+    override def toString : String  = real.toString + " + " + imag.toString + "i"
 
 }
 
-/** Create a complex number by specifying real and imaginary part */
+/** Create a complex number by specifying real and imaginary parts */
 class RectComplex(r: Double, i: Double) extends Complex {
   val real = r
   val imag = i

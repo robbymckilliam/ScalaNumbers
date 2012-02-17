@@ -116,6 +116,13 @@ class ComplexTest {
       assertEquals(1, z.real, tolerance)
       assertEquals(-2, z.imag, tolerance)
   }
+  
+  @Test
+  def ToStringTest() {
+      val z = new RectComplex(1, 2)
+      println(z)
+  }
+  
 
 }
 
