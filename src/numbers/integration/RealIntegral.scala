@@ -1,9 +1,7 @@
 package numbers.integration
 
-/** 
- * One dimensional integral of
- * a signal variable function mapping the real
- * numbers to the real numbers.
+/**
+ * Static methods for real numerical integration, just for convenience
  */
 object RealIntegral {
 
@@ -17,4 +15,17 @@ object RealIntegral {
     return del/2 * ( inner + f(a) + f(b) )
   }
   
+}
+
+/** 
+ * One dimensional integral of a single variable function mapping the real
+ * numbers to the real numbers.
+ */
+trait RealIntegral {
+  def integrate(a : Double, b : Double): Double
+}
+
+/** Trapezoidal integration of the function f with N steps */
+class Trapezoid(f : Double => Double, N : Int) extends RealIntegral {
+  def integrate(a: Double, b : Double) : Double = { RealIntegral.trapezoidal(f,a,b,N) }
 }

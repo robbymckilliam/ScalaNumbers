@@ -19,11 +19,12 @@ object Complex {
   val zero = new RectComplex(0,0)
 }
 
-abstract class Complex extends Field[Complex]{
-    val real:      Double
-    val imag:      Double
-    val magnitude: Double
-    val angle:     Double  
+abstract class Complex extends Field[Complex, Double]{
+    val real:      	Double
+    val imag:      	Double
+    val magnitude: 	Double
+    val angle:     	Double
+    protected val mag2:		Double //use norm
 
     def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
     def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
@@ -40,6 +41,8 @@ abstract class Complex extends Field[Complex]{
     def one : Complex = Complex.one
     def zero : Complex = Complex.zero
     
+    def norm : Double = mag2
+    
     override def toString : String  = real.toString + " + " + imag.toString + "i"
 
 }
@@ -48,6 +51,7 @@ abstract class Complex extends Field[Complex]{
 class RectComplex(r: Double, i: Double) extends Complex {
   val real = r
   val imag = i
+  protected val mag2 = r*r + i*i
   val magnitude = Math.sqrt(r*r + i*i)
   val angle = Math.atan2(i, r)
 }
@@ -57,6 +61,7 @@ class PolarComplex(m: Double, a: Double) extends Complex {
   val real = m * Math.cos(a)
   val imag = m * Math.sin(a)
   val magnitude = m
+  protected val mag2 = m*m
   val angle = a
 }
 
