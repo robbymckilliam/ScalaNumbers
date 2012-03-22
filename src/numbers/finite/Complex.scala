@@ -1,11 +1,12 @@
 /* 
  Complex.scala
 
- Implementation of the Field of complex numbers
-
- Robby McKilliam 16/2/2012 
-
+ Implementation of the Field of complex numbers with finite double precision.   
  Based on: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
+ 
+ @author Robby McKilliam
+
+
  */
 
 package numbers.finite
