@@ -28,21 +28,21 @@ abstract class Complex extends Field[Complex, Real]{
   val angle: Double
   val mag2: Double //use norm
 
-  def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
-  def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
-  def +(that: Double) = new RectComplex(real + that, imag)
-  def -(that: Double) = new RectComplex(real - that, imag)
+  final def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
+  final def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
+  final def +(that: Double) = new RectComplex(real + that, imag)
+  final def -(that: Double) = new RectComplex(real - that, imag)
 
-  def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
+  final def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
                                                               real*that.imag+ imag*that.real)
-  def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
-  def *(that: Double) = new RectComplex(real * that, imag * that)
-  def /(that: Double) = new RectComplex(real / that, imag / that)
+  final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
+  final def *(that: Double) = new RectComplex(real * that, imag * that)
+  final def /(that: Double) = new RectComplex(real / that, imag / that)
 
   def conjugate :Complex = new RectComplex(real, -imag)
     
-  def one : Complex = Complex.one
-  def zero : Complex = Complex.zero
+  final def one : Complex = Complex.one
+  final def zero : Complex = Complex.zero
     
   def norm : Real = new Real(mag2)
     
@@ -62,8 +62,8 @@ class RectComplex(r: Double, i: Double) extends Complex {
 
 /** Create a complex number by specifying magnitude and angle (in radians)*/
 class PolarComplex(m: Double, a: Double) extends Complex {
-  lazy val real = m * scala.math.cos(a)
-  lazy val imag = m * scala.math.sin(a)
+  val real = m * scala.math.cos(a)
+  val imag = m * scala.math.sin(a)
   val magnitude = m
   val mag2 = m*m
   val angle = a  
