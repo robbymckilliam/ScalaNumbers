@@ -1,5 +1,10 @@
 package numbers
 
+/** Base class for ScalaNumbers */
+trait ScalaNumbersObject {
+	//nothing to see here for now
+}
+
 /** 
  * A ring, a mathematical object closed under addition
  * subtraction and multiplication.  Also has an 
