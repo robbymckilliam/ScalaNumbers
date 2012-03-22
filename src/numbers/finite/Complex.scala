@@ -33,12 +33,13 @@ abstract class Complex extends Field[Complex, Real]{
   def +(that: Double) = new RectComplex(real + that, imag)
   def -(that: Double) = new RectComplex(real - that, imag)
 
-  def *(that: Complex) = new PolarComplex(magnitude * that.magnitude, angle + that.angle)
+  def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
+                                                              real*that.imag+ imag*that.real)
   def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
-  def *(that: Double) = new PolarComplex(magnitude * that, angle)
-  def /(that: Double) = new PolarComplex(magnitude / that, angle)
+  def *(that: Double) = new RectComplex(real * that, imag * that)
+  def /(that: Double) = new RectComplex(real / that, imag / that)
 
-  def conjugate = new RectComplex(real, -imag)
+  def conjugate :Complex = new RectComplex(real, -imag)
     
   def one : Complex = Complex.one
   def zero : Complex = Complex.zero
@@ -53,17 +54,18 @@ abstract class Complex extends Field[Complex, Real]{
 class RectComplex(r: Double, i: Double) extends Complex {
   val real = r
   val imag = i
-  val mag2 = r*r + i*i
-  val magnitude = scala.math.sqrt(r*r + i*i)
-  val angle = scala.math.atan2(i, r)
+  lazy val mag2 = r*r + i*i
+  lazy val magnitude = scala.math.sqrt(r*r + i*i)
+  lazy val angle = scala.math.atan2(i, r)
+  
 }
 
 /** Create a complex number by specifying magnitude and angle (in radians)*/
 class PolarComplex(m: Double, a: Double) extends Complex {
-  val real = m * scala.math.cos(a)
-  val imag = m * scala.math.sin(a)
+  lazy val real = m * scala.math.cos(a)
+  lazy val imag = m * scala.math.sin(a)
   val magnitude = m
   val mag2 = m*m
-  val angle = a
+  val angle = a  
 }
 
