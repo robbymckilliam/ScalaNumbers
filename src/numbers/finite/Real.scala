@@ -17,22 +17,24 @@ object Real {
 }
 
 class Real(d : Double) extends Field[Real, Real] {
-  def toDouble = d
+  final def toDouble = d
   
-  def +(that: Real) = new Real(d + that.toDouble)
-  def -(that: Real) = new Real(d - that.toDouble)
-  def +(that: Double) : Real = new Real(d + that)
-  def -(that: Double) : Real = new Real(d - that)
+  final def - = new Real(-d)
+  final def +(that: Real) = new Real(d + that.toDouble)
+  final def -(that: Real) = new Real(d - that.toDouble)
+  final def +(that: Double) : Real = new Real(d + that)
+  final def -(that: Double) : Real = new Real(d - that)
 
-  def *(that: Real) = new Real(d * that.toDouble)
-  def /(that: Real) = new Real(d / that.toDouble)
-  def *(that: Double) : Real = new Real(d * that)
-  def /(that: Double) : Real = new Real(d / that)
+  final def *(that: Real) = new Real(d * that.toDouble)
+  final def /(that: Real) = new Real(d / that.toDouble)
+  final def *(that: Double) : Real = new Real(d * that)
+  final def /(that: Double) : Real = new Real(d / that)
+  final def / : Real = new Real(1.0 / d)
   
-  def one : Real = Real.one
-  def zero : Real = Real.zero
+  final def one : Real = Real.one
+  final def zero : Real = Real.zero
     
-  def norm : Real = new Real(d.abs)
+  final def norm : Real = new Real(d.abs)
     
-  override def toString : String  = d.toString
+  final override def toString : String  = d.toString
 }

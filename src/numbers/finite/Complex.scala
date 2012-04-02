@@ -28,6 +28,7 @@ abstract class Complex extends Field[Complex, Real]{
   val angle: Double
   val mag2: Double //use norm
 
+  final def - = new RectComplex(-real, -imag)
   final def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
   final def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
   final def +(that: Double) = new RectComplex(real + that, imag)
@@ -38,6 +39,7 @@ abstract class Complex extends Field[Complex, Real]{
   final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
   final def *(that: Double) = new RectComplex(real * that, imag * that)
   final def /(that: Double) = new RectComplex(real / that, imag / that)
+  final def / = new PolarComplex(1.0 / magnitude, -angle)
 
   def conjugate :Complex = new RectComplex(real, -imag)
     

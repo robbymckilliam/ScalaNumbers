@@ -5,19 +5,28 @@ trait ScalaNumbersObject {
 	//nothing to see here for now
 }
 
+/**
+ * A group, mathematical object with an operation +, an 
+ * identity element zero, and in inverse -
+ */
+trait Group[G] extends ScalaNumbersObject {
+  /** The group operation */
+  def +(that : G) : G
+  /** The additive identity */
+  def zero : G
+  /** Get the inverse of this group element*/
+  def - : G
+  /** Operate with the inverse */
+  def -(that : G) : G
+}
+
 /** 
  * A ring, a mathematical object closed under addition
  * subtraction and multiplication.  Also has an 
  * additive identity.
  */
-trait Ring[R] extends ScalaNumbersObject {
-  
-  def +(that : R) : R
-  def -(that : R) : R
+trait Ring[R] extends Group[R] {
   def *(that : R) : R
-  
-  /** The additive identity */
-  def zero : R
   
 }
 
@@ -44,5 +53,7 @@ trait EuclideanDomain[R,N] extends RingWithUnity[R] {
  */
 trait Field[F,N] extends EuclideanDomain[F,N]{
   def /(that : F) : F
+  /** The mulitplicative inverse */
+  def / : F
 }
 
