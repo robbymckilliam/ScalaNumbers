@@ -1,11 +1,12 @@
 /* 
  Complex.scala
 
- Implementation of the Field of complex numbers
-
- Robby McKilliam 16/2/2012 
-
+ Implementation of the Field of complex numbers with finite double precision.   
  Based on: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
+ 
+ @author Robby McKilliam
+
+
  */
 
 package numbers.finite
@@ -38,9 +39,11 @@ abstract class Complex extends Field[Complex, Real]{
                                                               real*that.imag+ imag*that.real)
   final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
   final def *(that: Double) = new RectComplex(real * that, imag * that)
-  final def /(that: Double) = new RectComplex(real / that, imag / that)
+  final def /(that: Double) = new RectComplex(real / that, imag / that
   final def / = new PolarComplex(1.0 / magnitude, -angle)
 
+  final def pow(e : Double) = new PolarComplex(scala.math.pow(magnitude,e),angle*e)
+  
   def conjugate :Complex = new RectComplex(real, -imag)
     
   final def one : Complex = Complex.one
