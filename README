@@ -1,0 +1,5 @@
+ScalaNumbers.  A library of mathematical routines.
+
+ant build
+
+will build the library, the result is placed in the lib directory.
