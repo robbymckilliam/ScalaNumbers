@@ -39,7 +39,7 @@ abstract class Complex extends Field[Complex, Real]{
                                                               real*that.imag+ imag*that.real)
   final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
   final def *(that: Double) = new RectComplex(real * that, imag * that)
-  final def /(that: Double) = new RectComplex(real / that, imag / that
+  final def /(that: Double) = new RectComplex(real / that, imag / that)
   final def / = new PolarComplex(1.0 / magnitude, -angle)
 
   final def pow(e : Double) = new PolarComplex(scala.math.pow(magnitude,e),angle*e)
