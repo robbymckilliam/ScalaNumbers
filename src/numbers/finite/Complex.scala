@@ -6,7 +6,6 @@
  
  @author Robby McKilliam
 
-
  */
 
 package numbers.finite
