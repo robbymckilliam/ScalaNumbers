@@ -11,7 +11,7 @@ object RealIntegral {
    * */
   def trapezoidal(f : Double => Double, a : Double, b : Double, N : Int) : Double = {
     val del = (b - a)/N
-    val inner = (1 to N-1).map(n => f(a + n*del)).foldLeft(0.0)((s,v) => s+2*v)
+    val inner = (1 to N-1).foldLeft(0.0)((s,n) => s+2*f(a + n*del))
     return del/2 * ( inner + f(a) + f(b) )
   }
   
