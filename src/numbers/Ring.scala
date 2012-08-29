@@ -37,12 +37,21 @@ trait RingWithUnity[R] extends Ring[R] {
 }
 
 /** 
+ * Unique factorisation domain.  A ring such that every element can be
+ * expressed as the product of prime factors.
+ */
+trait UniqueFactorisationDomain[R] extends RingWithUnity[R] {
+  /** Norm */
+  def factors : Seq[R]
+}
+
+/** 
  * Euclidean domain.  A ring with a norm.  The type
  * of the norm can vary.  For example, for the integers
  * the norm is from the natural numbers, for the reals,
  * the norm is a positve real.
  */
-trait EuclideanDomain[R,N] extends RingWithUnity[R] {
+trait EuclideanDomain[R,N] extends UniqueFactorisationDomain[R] {
   /** Norm */
   def norm : N
 }

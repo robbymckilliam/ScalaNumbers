@@ -49,6 +49,9 @@ abstract class Complex extends Field[Complex, Real]{
   final def zero : Complex = Complex.zero
     
   def norm : Real = new Real(mag2)
+  
+  /// Don't factorise the complex numbers!
+  final def factors = null
     
   override def toString : String  = real.toString + " + " + imag.toString + "i"
 

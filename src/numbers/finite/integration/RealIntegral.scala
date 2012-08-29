@@ -1,5 +1,7 @@
 package numbers.finite.integration
 
+import numbers.finite.Real;
+
 /**
  * Static methods for real numerical integration, just for convenience
  */
@@ -15,17 +17,13 @@ object RealIntegral {
     return del/2 * ( inner + f(a) + f(b) )
   }
   
-}
-
-/** 
- * One dimensional integral of a single variable function mapping the real
- * numbers to the real numbers.
- */
-trait RealIntegral {
-  def integrate(a : Double, b : Double): Double
-}
-
-/** Trapezoidal integration of the function f with N steps */
-class Trapezoid(f : Double => Double, N : Int) extends RealIntegral {
-  def integrate(a: Double, b : Double) : Double = { RealIntegral.trapezoidal(f,a,b,N) }
+  /** 
+   * Approximates the integral of f from a to b using the trapezoidal 
+   * rule with N intervals
+   * */
+  def trapezoidal(f : Real => Real, a : Real, b : Real, N : Int) : Real = {
+    def fd(x : Double) = f(new Real(x)).toDouble
+    return new Real(trapezoidal(fd, a.toDouble, b.toDouble, N))
+  }
+  
 }
