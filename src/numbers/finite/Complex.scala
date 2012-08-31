@@ -21,7 +21,7 @@ object Complex {
   val zero = new RectComplex(0,0)
 }
 
-abstract class Complex extends Field[Complex, Real]{
+abstract class Complex extends Field[Complex, Double]{
   val real: Double
   val imag: Double
   val magnitude: Double
@@ -48,7 +48,7 @@ abstract class Complex extends Field[Complex, Real]{
   final def one : Complex = Complex.one
   final def zero : Complex = Complex.zero
     
-  def norm : Real = new Real(mag2)
+  def norm : Double = mag2
   
   /// Don't factorise the complex numbers!
   final def factors = null
