@@ -73,9 +73,7 @@ class JTransformsFFT(N : Int) extends DiscreteFourierTransform {
   
   //get a complex sequence containing from the internal memory
   private final def frommem : Seq[Complex] = {
-    val ret = new Array[Complex](N)
-    for(i <- 0 until N) ret(i) = new RectComplex(mem(2*i), mem(2*i+1))
-    return ret
+    (0 until N).map( i => new RectComplex(mem(2*i), mem(2*i+1)) )
   }
   
 }
