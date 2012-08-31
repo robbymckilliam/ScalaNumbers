@@ -37,8 +37,10 @@ object DiscreteFourierTransform {
 
 /** Wraps the JTransforms FFT library */
 class JTransformsFFT(N : Int) extends DiscreteFourierTransform {
-    
   private val jtFFT = new edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D(N)
+  //just use one thread for FFTs
+  edu.emory.mathcs.utils.ConcurrencyUtils.setNumberOfThreads(1)   
+
   private val mem = new Array[Double](2*N) 
   
   /** 
