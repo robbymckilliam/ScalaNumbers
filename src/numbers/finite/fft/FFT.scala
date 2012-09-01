@@ -32,6 +32,12 @@ object DiscreteFourierTransform {
     val c = conv(a,b)
     return c.slice(M-1,L-M+1)
   }
+  
+  /** Compute the discrete Fouier transform of x.  Uses the JTransforms library. */
+  def fft(x: Seq[Complex]) : Seq[Complex] = new JTransformsFFT(x.size).forward(x)
+  
+  /** Compute the inverse discrete Fourier transform of x. Uses the JTransforms library. */
+  def ifft(x: Seq[Complex]) : Seq[Complex] = new JTransformsFFT(x.size).inverse(x)
 
 }
 
