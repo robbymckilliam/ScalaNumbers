@@ -62,10 +62,10 @@ object SingleVariableOptimisation {
  */
 class Brent(f : Double => Double, ax : Double, bx : Double, cx: Double, tol : Double, ITRMAX : Int) {
 
-  val ZEPS = 1e-10 //close to machine precision
-  val C = (3.0 - sqrt(5.0))/2.0;
+  protected val ZEPS = 1e-10 //close to machine precision
+  protected val C = (3.0 - sqrt(5.0))/2.0;
   
-  val (fmin, xmin) = run //run the optimiser
+  protected val (fmin, xmin) = run //run the optimiser
   
   /** Return (f(x), x) where f(x) is the minimum */
   def min = (fmin, xmin)
