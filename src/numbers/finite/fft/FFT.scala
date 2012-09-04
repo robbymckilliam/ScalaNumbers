@@ -68,7 +68,7 @@ class JTransformsFFT(N : Int) extends DiscreteFourierTransform {
   
   //fill internal memory with x, zero pad if required
   private final def tomem(x : Seq[Complex]) = {
-    for(i <- 0 until x.size) {
+    for(i <- 0 until x.size) { //would probably need a while loop to make this fast?
       mem(2*i) = x(i).real
       mem(2*i+1) = x(i).imag
     }
