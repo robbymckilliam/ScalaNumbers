@@ -21,9 +21,9 @@ object RealIntegral {
    * Approximates the integral of f from a to b using the trapezoidal 
    * rule with N intervals
    * */
-  def trapezoidal(f : Real => Real, a : Real, b : Real, N : Int) : Real = {
+/*  def trapezoidal(f : Real => Real, a : Real, b : Real, N : Int) : Real = {
     def fd(x : Double) = f(new Real(x)).toDouble
     return new Real(trapezoidal(fd, a.toDouble, b.toDouble, N))
-  }
+  }*/
   
 }
