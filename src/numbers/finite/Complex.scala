@@ -58,21 +58,17 @@ abstract class Complex extends Field[Complex, Double]{
 }
 
 /** Create a complex number by specifying real and imaginary parts */
-class RectComplex(r: Double, i: Double) extends Complex {
-  val real = r
-  val imag = i
-  lazy val mag2 = r*r + i*i
-  lazy val magnitude = scala.math.sqrt(r*r + i*i)
-  lazy val angle = scala.math.atan2(i, r)
+class RectComplex(val real: Double, val imag: Double) extends Complex {
+  lazy val mag2 = real*real + imag*imag
+  lazy val magnitude = scala.math.sqrt(real*real + imag*imag)
+  lazy val angle = scala.math.atan2(imag, real)
   
 }
 
 /** Create a complex number by specifying magnitude and angle (in radians)*/
-class PolarComplex(m: Double, a: Double) extends Complex {
-  val real = m * scala.math.cos(a)
-  val imag = m * scala.math.sin(a)
-  val magnitude = m
-  val mag2 = m*m
-  val angle = a  
+class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
+  lazy val real = magnitude * scala.math.cos(angle)
+  lazy val imag = magnitude * scala.math.sin(angle)
+  lazy val mag2 = magnitude*magnitude 
 }
 
