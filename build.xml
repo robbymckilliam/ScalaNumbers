@@ -27,10 +27,16 @@
     <scalac srcdir="${sources.dir}"
             destdir="${build.dir}"
             classpathref="build.classpath"
-	    addparams="-optimise">
+	    addparams="-optimize">
       <include name="src/**/*.scala"   />
     </scalac>
     <jar destfile="${base.dir}/lib/ScalaNumbers.jar" basedir="${build.dir}" />
+  </target>
+
+  <target name="clean">
+    <delete>
+      <fileset dir="${build.dir}" includes="**/*.class" />
+    </delete>
   </target>
 
 
