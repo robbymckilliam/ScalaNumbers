@@ -16,7 +16,7 @@ object Real {
   val zero = new Real(0.0)
 }
 
-class Real(d : Double) extends Field[Real, Real] {
+class Real(val d : Double) extends Field[Real, Real] {
   final def toDouble = d
   
   final def - = new Real(-d)
@@ -42,6 +42,11 @@ class Real(d : Double) extends Field[Real, Real] {
     
   /// Don't factorise the real numbers!
   final def factors = null
+  
+  final def ==(that : Real) = this.d == that.d
+  final def ==(that : Double) = this.d == d
+  final def !=(that : Real) = !(this == that)
+  final def !=(that : Double) = !(this == that)
   
   final override def toString : String  = d.toString
 }

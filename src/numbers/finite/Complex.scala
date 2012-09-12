@@ -50,6 +50,9 @@ abstract class Complex extends Field[Complex, Double]{
     
   def norm : Double = mag2
   
+  final def ==(that : Complex) = this.real == that.real && this.imag == that.imag
+  final def !=(that : Complex) = !(this == that)
+  
   /// Don't factorise the complex numbers!
   final def factors = null
     

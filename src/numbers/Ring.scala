@@ -18,6 +18,10 @@ trait Group[G] extends ScalaNumbersObject {
   def - : G
   /** Operate with the inverse */
   def -(that : G) : G
+  /** Test for equality */
+  //def ==(that : G) : Boolean
+  /** Test for equality */
+  //def !=(that : G) : Boolean
 }
 
 /** 
@@ -54,6 +58,31 @@ trait UniqueFactorisationDomain[R] extends RingWithUnity[R] {
 trait EuclideanDomain[R,N] extends UniqueFactorisationDomain[R] {
   /** Norm */
   def norm : N
+  /** Euclidean division, ie. divide but throw away remainder */
+  def / (that : R) : R
+  /** Remainder after division */
+  def mod(that : R) : R
+}
+
+/** Static algorithms for Euclidean domains, mostly related to the Euclidean algorithm */
+object EuclideanDomain {
+  
+  /** Recursive gcd computation, this should potentially be interative */
+  def gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : R = if( b == b.zero ) a else gcd(b, a mod b)
+  
+  def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
+  
+  /** The Extended Euclidean algorithm */
+  def extended_gcd(a : Int, b : Int) : (Int, Int) = {
+    if( b == 0) return (1,0)
+    else {
+      val q = a/b
+      val r = a - b*q
+      val (s,t) = extended_gcd(b,r)
+      return (t, s - q*t)
+    }
+  }
+  
 }
 
 /** 
@@ -61,8 +90,10 @@ trait EuclideanDomain[R,N] extends UniqueFactorisationDomain[R] {
  * subtraction and multiplication and division. 
  */
 trait Field[F,N] extends EuclideanDomain[F,N]{
-  def /(that : F) : F
+  override def /(that : F) : F
   /** The mulitplicative inverse */
   def / : F
+  /** mod for a field is always zero */
+  override def mod(that : F) : F = this.zero
 }
 
