@@ -21,12 +21,12 @@ object Complex {
   val zero = new RectComplex(0,0)
 }
 
-abstract class Complex extends Field[Complex, Double]{
+abstract class Complex extends Field[Complex, Real]{
   val real: Double
   val imag: Double
   val magnitude: Double
   val angle: Double
-  val mag2: Double //use norm
+  val mag2: Double
 
   final def - = new RectComplex(-real, -imag)
   final def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
@@ -48,7 +48,7 @@ abstract class Complex extends Field[Complex, Double]{
   final def one : Complex = Complex.one
   final def zero : Complex = Complex.zero
     
-  def norm : Double = mag2
+  def norm : Real = new Real(mag2)
   
   final def ==(that : Complex) = this.real == that.real && this.imag == that.imag
   final def !=(that : Complex) = !(this == that)

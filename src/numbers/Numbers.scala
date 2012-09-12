@@ -5,15 +5,18 @@ trait ScalaNumbersObject {
 	//nothing to see here for now
 }
 
+trait Monoid[M] extends ScalaNumbersObject {
+  /** The operation */
+  def +(that : M) : M
+  /** The identity element*/
+  def zero : M
+}
+
 /**
  * A group, mathematical object with an operation +, an 
  * identity element zero, and in inverse -
  */
-trait Group[G] extends ScalaNumbersObject {
-  /** The group operation */
-  def +(that : G) : G
-  /** The additive identity */
-  def zero : G
+trait Group[G] extends Monoid[G] {
   /** Get the inverse of this group element*/
   def - : G
   /** Operate with the inverse */
@@ -55,7 +58,7 @@ trait UniqueFactorisationDomain[R] extends RingWithUnity[R] {
  * the norm is from the natural numbers, for the reals,
  * the norm is a positve real.
  */
-trait EuclideanDomain[R,N] extends UniqueFactorisationDomain[R] {
+trait EuclideanDomain[R,N <: Ordered[N]] extends UniqueFactorisationDomain[R] {
   /** Norm */
   def norm : N
   /** Euclidean division, ie. divide but throw away remainder */
@@ -67,14 +70,30 @@ trait EuclideanDomain[R,N] extends UniqueFactorisationDomain[R] {
 /** Static algorithms for Euclidean domains, mostly related to the Euclidean algorithm */
 object EuclideanDomain {
   
-  /** Recursive gcd computation, this should potentially be interative */
+  /** Greatest common divisor.
+   * Uses recursive algorithm, this should potentially be interative.
+   */
   def gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : R = if( b == b.zero ) a else gcd(b, a mod b)
   
+  /** Greatest common divisor of two scala Ints*/
   def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
   
-  /** The Extended Euclidean algorithm */
+  /** The Extended Euclidean algorithm applied to two scala Ints*/
   def extended_gcd(a : Int, b : Int) : (Int, Int) = {
     if( b == 0) return (1,0)
+    else {
+      val q = a/b
+      val r = a - b*q
+      val (s,t) = extended_gcd(b,r)
+      return (t, s - q*t)
+    }
+  }
+  
+  /** The Extended Euclidean algorithm.
+   * Uses recursive algorithm, this should potentially be interative.
+   */
+  def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = {
+    if( b == b.zero ) return (b.one,b.zero)
     else {
       val q = a/b
       val r = a - b*q
@@ -89,7 +108,7 @@ object EuclideanDomain {
  * A field, a mathematical object closed under addition
  * subtraction and multiplication and division. 
  */
-trait Field[F,N] extends EuclideanDomain[F,N]{
+trait Field[F,N <: Ordered[N]] extends EuclideanDomain[F,N]{
   override def /(that : F) : F
   /** The mulitplicative inverse */
   def / : F
