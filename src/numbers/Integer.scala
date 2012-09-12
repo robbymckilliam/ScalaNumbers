@@ -12,19 +12,23 @@ object Integer {
   val zero = new IntegerFromInt(0)
 }
 
-abstract class Integer extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
-  /** 
-   *Internally use a bignums.BigInteger.  This is much faster than java.BigInteger (and correspondingly)
+/** 
+ * Abstract class describing integers.
+ * Internally uses a bignums.BigInteger.  This is much faster than java.BigInteger (and correspondingly)
    *scalas BigInt for very larger integers.  If java.BigInteger ever gets fixed then this could be changed.
-   */
+ */
+abstract class Integer extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   val bigint : BigInteger 
   
   def +(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.add(that.bigint))
+  def +(that : Int) : Integer = this + new IntegerFromInt(that)
   def - : Integer = new IntegerFrombignumsBigInteger(bigint.negate)
   def -(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.subtract(that.bigint))
+  def -(that : Int) : Integer = this - new IntegerFromInt(that)
   def *(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.multiply(that.bigint))
+  def *(that : Int) : Integer = this * new IntegerFromInt(that)
   
-  /** Not yet implemented */
+  /** Not implemented */
   def factors : Seq[Integer] = throw new UnsupportedOperationException("Not implemented")
   
   def norm : Integer = new IntegerFrombignumsBigInteger(bigint.abs)
