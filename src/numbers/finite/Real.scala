@@ -41,7 +41,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final def norm : Real = new Real(d.abs)
     
   /// Don't factorise the real numbers!
-  final def factors = null
+  final def factors = throw new UnsupportedOperationException("Don't factorise the real numbers!")
   
   final def ==(that : Real) = this.d == that.d
   final def ==(that : Double) = this.d == d
