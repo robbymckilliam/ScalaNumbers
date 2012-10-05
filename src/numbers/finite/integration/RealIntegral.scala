@@ -1,6 +1,6 @@
 package numbers.finite.integration
 
-import numbers.finite.Real;
+import numbers.finite.Complex
 
 /**
  * Static methods for real numerical integration, just for convenience
@@ -19,11 +19,12 @@ object RealIntegral {
   
   /** 
    * Approximates the integral of f from a to b using the trapezoidal 
-   * rule with N intervals
+   * rule with N intervals.  For complex numbers.
    * */
-/*  def trapezoidal(f : Real => Real, a : Real, b : Real, N : Int) : Real = {
-    def fd(x : Double) = f(new Real(x)).toDouble
-    return new Real(trapezoidal(fd, a.toDouble, b.toDouble, N))
-  }*/
+//  def trapezoidal(f : Double => Complex, a : Double, b : Double, N : Int) : Complex = {
+//    val del = (b - a)/N
+//    val inner = (1 to N-1).foldLeft(Complex.zero)((s,n) => s+f(a + n*del)*2)
+//    return ( inner + f(a) + f(b) ) * del/2
+//  }
   
 }
