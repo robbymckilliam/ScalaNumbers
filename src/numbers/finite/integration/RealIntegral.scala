@@ -21,10 +21,10 @@ object RealIntegral {
    * Approximates the integral of f from a to b using the trapezoidal 
    * rule with N intervals.  For complex numbers.
    * */
-//  def trapezoidal(f : Double => Complex, a : Double, b : Double, N : Int) : Complex = {
-//    val del = (b - a)/N
-//    val inner = (1 to N-1).foldLeft(Complex.zero)((s,n) => s+f(a + n*del)*2)
-//    return ( inner + f(a) + f(b) ) * del/2
-//  }
+  def trapezoidal(f : Double => Complex, a : Double, b : Double, N : Int) : Complex = {
+    val del = (b - a)/N
+    val inner = (1 to N-1).foldLeft(Complex.zero)((s,n) => s+f(a + n*del)*2)
+    return ( inner + f(a) + f(b) ) * del/2
+  }
   
 }
