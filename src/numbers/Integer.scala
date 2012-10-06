@@ -15,7 +15,7 @@ object Integer {
 /** 
  * Abstract class describing integers.
  * Internally uses a bignums.BigInteger.  This is much faster than java.BigInteger (and correspondingly)
-   *scalas BigInt for very larger integers.  If java.BigInteger ever gets fixed then this could be changed.
+ * scala's BigInt for very larger integers.  If java.BigInteger ever gets fixed then this could be changed.
  */
 abstract class Integer extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   val bigint : BigInteger 
