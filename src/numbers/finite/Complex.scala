@@ -1,8 +1,9 @@
 /* 
  Complex.scala
 
- Implementation of the Field of complex numbers with finite double precision.   
- Based on: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
+ Implementation of the Field of complex numbers with finite double precision and a Matrix
+ containing complex numbers
+ Complex class based on: http://en.literateprograms.org/Complex_numbers_(Scala)?oldid=16655
  
  @author Robby McKilliam
 
@@ -11,6 +12,7 @@
 package numbers.finite
 
 import numbers.Field
+import numbers.matrix.MatrixWithElementsFromAField
 
 /**
  * Provides static definitions of the multiplicative 
@@ -73,5 +75,19 @@ class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
   lazy val real = magnitude * scala.math.cos(angle)
   lazy val imag = magnitude * scala.math.sin(angle)
   lazy val mag2 = magnitude*magnitude 
+}
+
+/** Matrix with complex elements */
+class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val N : Int) 
+  extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
+    
+  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
+  
+  def singularValueDecomposition = throw new UnsupportedOperationException("not implemented yet")
+  def qr = throw new UnsupportedOperationException("not implemented yet")
+  override def smithNormalForm = singularValueDecomposition
+  override def hermiteNormalForm = qr
+
 }
 

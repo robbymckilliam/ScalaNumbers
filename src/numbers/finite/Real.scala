@@ -6,6 +6,7 @@
 package numbers.finite
 
 import numbers.Field
+import numbers.matrix.MatrixWithElementsFromAField
 
 /**
  * Provides static definitions of the multiplicative 
@@ -52,4 +53,19 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final def compare(that : Real) : Int = this.d.compare(that.d)
   
   final override def toString : String  = d.toString
+}
+
+
+/** Matrix with real elements */
+class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : Int) 
+extends MatrixWithElementsFromAField[Real, RealMatrix] {
+    
+  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
+  
+  def singularValueDecomposition = throw new UnsupportedOperationException("not implemented yet")
+  def qr = throw new UnsupportedOperationException("not implemented yet")
+  override def smithNormalForm = singularValueDecomposition
+  override def hermiteNormalForm = qr
+
 }
