@@ -6,10 +6,17 @@
 package numbers
 
 import bignums.BigInteger
+import numbers.matrix.MatrixWithElementsFromAEuclideanDomain
 
 object Integer {
   val one = new IntegerFromInt(1)
   val zero = new IntegerFromInt(0)
+  
+  /** Contructors from various other values, Int, Long, BigInt, BigInteger */
+  def apply(x : Int) = new IntegerFromInt(x)
+  def apply(x : Long) = new IntegerFromLong(x)
+  def apply(x : BigInt) = new IntegerFromBigInt(x)
+  def apply(x : BigInteger) = new IntegerFrombignumsBigInteger(x)
 }
 
 /** 
@@ -62,3 +69,15 @@ class IntegerFromBigInt(val x : BigInt) extends Integer {
 class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer {
   override val bigint = x
 }
+
+/** A matrix containing integers */
+class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, override val N : Int)  
+  extends MatrixWithElementsFromAEuclideanDomain[Integer, IntegerMatrix] {
+    
+  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override def construct(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
+  
+  override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
+  override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")
+  
+  }
