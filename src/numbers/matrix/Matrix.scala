@@ -15,7 +15,7 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   val M : Int
   /// the number of columns
   val N : Int
-    /// construct a matrix from a function
+  /// construct a matrix from a function
   def construct(f : (Int,Int) => T, M : Int, N : Int) : B
   /// Returns true if mn = (m,n) are indices for this matrix
   override def isDefinedAt(mn : (Int,Int)) = mn._1 >= 0 && mn._1 < M && mn._2 >=0 && mn._2 < N
@@ -33,7 +33,9 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
     for( m <- 0 until M; n <- 0 until N ) A(m*N + n) = this(m,n)
     construct( (m,n) => A(m*N+n), M, N )
   }
-
+  override def toString : String  = (0 until M).foldLeft(""){ 
+    (sr, m) => sr + (1 until N).foldLeft(this(m,0).toString)( (sc, n) => sc + " " + this(m,n).toString) + "\n" 
+  }
 }
 
 trait MatrixWithElementsFromARing[R <: Ring[R],B <: Matrix[R,B]] extends Matrix[R,B] {

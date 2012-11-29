@@ -13,7 +13,6 @@ package numbers.finite
 
 import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
-
 /**
  * Provides static definitions of the multiplicative 
  * and additive identities
@@ -84,7 +83,10 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
   
-  def singularValueDecomposition = throw new UnsupportedOperationException("not implemented yet")
+  def singularValueDecomposition = {
+    
+    throw new UnsupportedOperationException("not implemented yet")
+  }
   def qr = throw new UnsupportedOperationException("not implemented yet")
   override def smithNormalForm = singularValueDecomposition
   override def hermiteNormalForm = qr
