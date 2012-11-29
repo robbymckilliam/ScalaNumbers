@@ -170,4 +170,27 @@ class MatrixTest {
     for( m <- 0 until M; n <- 0 until M) assertEquals(matlabU(m,n).d,u(m,n).d,tol)
   }
   
+  @Test
+  def svdComplexTest() {
+    val tol = 1e-6
+    val N = 3
+    val M = 2
+    def f(m : Int, n : Int) = new RectComplex(n,m)
+    val A = new ComplexMatrix(f,M,N)
+    val (u,s,v) = A.svd
+    val B = u*s*v.transpose
+    for( m <- 0 until M; n <- 0 until N) assertTrue(diff(B(m,n),A(m,n)) < tol)
+    
+    //test versus some output from Matlab
+    def fu(m : Int, n : Int) : Complex = {
+      if( (m,n)==(0,0) ) new RectComplex(-0.612724881345119, 0.0)
+      else if( (m,n)==(0,1) ) new RectComplex(0.79029628607289, 0.0)
+      else if( (m,n)==(1,0) ) new RectComplex(-0.677673474524404, -0.406604084714642)
+      else if( (m,n)==(1,1) ) new RectComplex(-0.525407251161498, -0.315244350696899)
+      else Complex.zero
+    }
+    val matlabU = new ComplexMatrix(fu,M,M)
+    for( m <- 0 until M; n <- 0 until M) assertTrue(diff(matlabU(m,n),u(m,n)) < tol)
+  }
+  
 }
