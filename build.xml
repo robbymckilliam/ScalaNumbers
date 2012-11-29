@@ -41,7 +41,7 @@
   </target>
 
   <target name="test" depends="init">
-    <junit printsummary="yes" showoutput="true">
+    <junit printsummary="yes">
       <classpath>
 	<fileset dir="${base.dir}/lib">
 	  <include name="*.jar" />
