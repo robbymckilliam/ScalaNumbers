@@ -1,11 +1,6 @@
 package numbers
 
-/** Base class for ScalaNumbers */
-trait ScalaNumbersObject {
-	//nothing to see here for now
-}
-
-trait Monoid[M] extends ScalaNumbersObject {
+trait Monoid[M] {
   /** The operation */
   def +(that : M) : M
   /** The identity element*/

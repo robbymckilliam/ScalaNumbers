@@ -76,6 +76,11 @@ class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
   lazy val mag2 = magnitude*magnitude 
 }
 
+object ComplexMatrix {
+  def asRow(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(n), 1, r.length)
+  def asColumn(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(m), r.length, 1)
+}
+
 /** Matrix with complex elements */
 class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val N : Int) 
   extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
