@@ -10,6 +10,7 @@ import numbers.IntegerMatrix
 import numbers.Integer
 import numbers.finite.ComplexMatrix
 import numbers.finite.RectComplex
+import numbers.finite.PolarComplex
 import numbers.finite.Real
 import numbers.finite.RealMatrix
 import org.junit.Test
@@ -202,13 +203,27 @@ class MatrixTest {
     val I = A.identity
     val C = A*B
     val D = B*A
-    println(A)
-    println(B)
-    println(I)
-    println(C)
-    println(D)
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(C(m,n),I(m,n)) < tol)
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(D(m,n),I(m,n)) < tol)
+  }
+  
+  @Test
+  def indicesTest() {
+    val N = 2
+    val M = 3
+    def f(m : Int, n : Int) = Integer(n*m)
+    val A = new IntegerMatrix(f,M,N)
+    val sum = A.indices.foldLeft(Integer.zero)( (v, i) => v + A(i) )
+    assertTrue(sum==Integer(3))  
+  }
+  
+  @Test
+  def complexFrobeniusNormTest() {
+    val tol = 1e-8
+    val N = 2
+    val M = 3
+    val A = new ComplexMatrix( (m,n) => new PolarComplex(1, 0.4), M,N)
+    assertEquals( M*N, A.frobeniusNorm, tol )
   }
   
 }

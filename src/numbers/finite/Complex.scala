@@ -87,6 +87,9 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   def conjugateTranspose = construct( (m,n) => this(n,m).conjugate, N, M)
   final def hermitianTranspose = conjugateTranspose
   
+  /** Sum of the squared magnitudes of all of the elements */
+  def frobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).mag2 )
+  
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)
     for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
@@ -99,8 +102,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   final def svd = singularValueDecomposition
   
   /** 
-   * Returns the inverse of this complex matrix.  Uses the singular value decomposition.  Could 
-   * probably do much better than this.
+   * Returns the pseudoinverse of this complex matrix.  Uses the singular value decomposition.
    */
   def inverse = {
     val (u,s,v) = this.svd

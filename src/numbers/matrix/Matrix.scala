@@ -21,6 +21,11 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   def construct(f : (Int,Int) => T, M : Int, N : Int) : B
   /// Returns true if mn = (m,n) are indices for this matrix
   override def isDefinedAt(mn : (Int,Int)) = mn._1 >= 0 && mn._1 < M && mn._2 >=0 && mn._2 < N
+  def isScalar = (N==1) && (M ==1)
+  def isRow = (M==1)
+  def isColumn = (N==1)
+  /// Returns a collection of tuple that index all of elements in this matrix (row wise)
+  def indices = for( m<-(0 until M).view; n<-(0 until N).view ) yield (m,n)
   /// Returns the transpose of this matrix
   def transpose : B = construct( (m,n) => this(n,m), N, M)
   /// returns the submatrix with rows indexed by ms and columns indexed by ns

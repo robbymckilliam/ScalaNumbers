@@ -9,14 +9,14 @@ import bignums.BigInteger
 import numbers.matrix.MatrixWithElementsFromAEuclideanDomain
 
 object Integer {
-  val one = new IntegerFromInt(1)
-  val zero = new IntegerFromInt(0)
+  val one : Integer = new IntegerFromInt(1)
+  val zero : Integer = new IntegerFromInt(0)
   
   /** Contructors from various other values, Int, Long, BigInt, BigInteger */
-  def apply(x : Int) = new IntegerFromInt(x)
-  def apply(x : Long) = new IntegerFromLong(x)
-  def apply(x : BigInt) = new IntegerFromBigInt(x)
-  def apply(x : BigInteger) = new IntegerFrombignumsBigInteger(x)
+  def apply(x : Int) : Integer = new IntegerFromInt(x)
+  def apply(x : Long) : Integer = new IntegerFromLong(x)
+  def apply(x : BigInt) : Integer = new IntegerFromBigInt(x)
+  def apply(x : BigInteger) : Integer = new IntegerFrombignumsBigInteger(x)
 }
 
 /** 
