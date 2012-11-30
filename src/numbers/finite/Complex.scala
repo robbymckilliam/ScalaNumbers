@@ -83,20 +83,34 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
   
+  /** Hermitian (conjugate) transpose of this matrix */
+  def conjugateTranspose = construct( (m,n) => this(n,m).conjugate, N, M)
+  final def hermitianTranspose = conjugateTranspose
+  
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)
     for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
     val USV = org.jblas.Singular.sparseSVD(A)
     val U = construct( (m,n) => new RectComplex(USV(0).get(m,n).real, USV(0).get(m,n).imag), USV(0).rows, USV(0).columns )
     val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
-    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, USV(2).get(m,n).imag), USV(2).rows, USV(2).columns )
+    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag), USV(2).rows, USV(2).columns ) //JBlas output is wrong here, conjugate required!
     return (U,S,V)
   }
   final def svd = singularValueDecomposition
   
+  /** 
+   * Returns the inverse of this complex matrix.  Uses the singular value decomposition.  Could 
+   * probably do much better than this.
+   */
+  def inverse = {
+    val (u,s,v) = this.svd
+    val sinv = construct( (m,n) => if(m==n) Complex.one/s(m,n) else Complex.zero, s.M, s.N)
+    println(sinv)
+    v*sinv*u.conjugateTranspose
+  }
+  
   def qr = throw new UnsupportedOperationException("not implemented yet")
   override def smithNormalForm = singularValueDecomposition
   override def hermiteNormalForm = qr
-
 }
 

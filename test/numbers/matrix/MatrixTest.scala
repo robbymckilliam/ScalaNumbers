@@ -178,7 +178,7 @@ class MatrixTest {
     def f(m : Int, n : Int) = new RectComplex(n,m)
     val A = new ComplexMatrix(f,M,N)
     val (u,s,v) = A.svd
-    val B = u*s*v.transpose
+    val B = u*s*v.conjugateTranspose
     for( m <- 0 until M; n <- 0 until N) assertTrue(diff(B(m,n),A(m,n)) < tol)
     
     //test versus some output from Matlab
@@ -191,6 +191,24 @@ class MatrixTest {
     }
     val matlabU = new ComplexMatrix(fu,M,M)
     for( m <- 0 until M; n <- 0 until M) assertTrue(diff(matlabU(m,n),u(m,n)) < tol)
+  }
+  
+  @Test
+  def complexInverseTest() {
+    val N = 4
+    def f(m : Int, n : Int) = new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
+    val A = new ComplexMatrix(f,N,N).backwitharray
+    val B = A.inverse
+    val I = A.identity
+    val C = A*B
+    val D = B*A
+    println(A)
+    println(B)
+    println(I)
+    println(C)
+    println(D)
+    for( m <- 0 until N; n <- 0 until N) assertTrue(diff(C(m,n),I(m,n)) < tol)
+    for( m <- 0 until N; n <- 0 until N) assertTrue(diff(D(m,n),I(m,n)) < tol)
   }
   
 }
