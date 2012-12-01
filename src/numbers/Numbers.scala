@@ -103,7 +103,7 @@ object EuclideanDomain {
  * A field, a mathematical object closed under addition
  * subtraction and multiplication and division. 
  */
-trait Field[F,N <: Ordered[N]] extends EuclideanDomain[F,N]{
+trait Field[F,N <: Ordered[N]] extends EuclideanDomain[F,N] {
   override def /(that : F) : F
   /** The mulitplicative inverse */
   def / : F

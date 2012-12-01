@@ -24,8 +24,7 @@ object Integer {
  * Internally uses a bignums.BigInteger.  This is much faster than java.BigInteger (and correspondingly)
  * scala's BigInt for very larger integers.  If java.BigInteger ever gets fixed then this could be changed.
  */
-abstract class Integer extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
-  val bigint : BigInteger 
+class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   
   def +(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.add(that.bigint))
   def +(that : Int) : Integer = this + new IntegerFromInt(that)
@@ -54,21 +53,10 @@ abstract class Integer extends EuclideanDomain[Integer, Integer] with Ordered[In
   
 }
 
-class IntegerFromInt(val x : Int) extends Integer {
-  override val bigint : BigInteger = new BigInteger(x.toString)
-}
-
-class IntegerFromLong(val x : Long) extends Integer {
-  override val bigint : BigInteger = new BigInteger(x.toString)
-}
-
-class IntegerFromBigInt(val x : BigInt) extends Integer {
-  override val bigint : BigInteger = new BigInteger(x.toString)
-}
-
-class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer {
-  override val bigint = x
-}
+class IntegerFromInt(val x : Int) extends Integer(new BigInteger(x.toString))
+class IntegerFromLong(val x : Long) extends Integer(new BigInteger(x.toString))
+class IntegerFromBigInt(val x : BigInt) extends Integer(new BigInteger(x.toString))
+class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigInteger(x.toString))
 
 /** A matrix containing integers */
 class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, override val N : Int)  
@@ -80,4 +68,4 @@ class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, overrid
   override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
   override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")
   
-  }
+}

@@ -112,7 +112,6 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   def inverse = {
     val (u,s,v) = this.svd
     val sinv = construct( (m,n) => if(m==n) Complex.one/s(m,n) else Complex.zero, s.M, s.N)
-    println(sinv)
     v*sinv*u.conjugateTranspose
   }
   

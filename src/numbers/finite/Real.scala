@@ -12,7 +12,6 @@ import scala.math.max
 
 /**
  * Provides static definitions of the multiplicative and additive identities.
- * This is a good candidate for scala 2.10's value classes.
  */
 object Real {
   val one = new Real(1.0) 
@@ -21,6 +20,9 @@ object Real {
   def apply(x : Double) = new Real(x)
 }
 
+/**
+ *  This is a potential candidate for scala 2.10's value classes.
+ */
 class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   //@inline final def toDouble = d
   
@@ -48,9 +50,11 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   /// Don't factorise the real numbers!
   final def factors = throw new UnsupportedOperationException("Don't factorise the real numbers!")
   
-  final def ==(that : Real) = this.d == that.d
-  final def ==(that : Double) = this.d == d
-  final def !=(that : Real) = !(this == that)
+  final def ==(that : Double) = this.d == that
+  final def <=(that : Double) = this.d <= that
+  final def <(that : Double) = this.d < that
+  final def >=(that : Double) = this.d >= that
+  final def >(that : Double) = this.d > that
   final def !=(that : Double) = !(this == that)
   
   /** Uses scala's internal Ordered, only need to override compare */
