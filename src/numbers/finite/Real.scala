@@ -9,7 +9,7 @@ import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
 import scala.math.min
 import scala.math.max
-
+import scala.math.sqrt
 /**
  * Provides static definitions of the multiplicative and additive identities.
  */
@@ -64,12 +64,25 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
 }
 
 
+object RealMatrix {
+  /// contruct identity matrix
+  def identity(M : Int, N : Int) : RealMatrix = new RealMatrix( (m,n) => if(m==n) Real.one else Real.zero, M,N)
+  def identity(N : Int): RealMatrix = identity(N,N)
+  def apply(f : (Int,Int) => Double, M : Int, N : Int) : RealMatrix = new RealMatrix((m,n) => Real(f(m,n)),M,N) 
+}
+
 /** Matrix with real elements */
 class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : Int) 
 extends MatrixWithElementsFromAField[Real, RealMatrix] {
     
   override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
+  
+  /** Sum of the squared magnitudes of all of the elements */
+  lazy val frobeniusNorm : Double = sqrt(indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d))
+  
+  def /(d: Double) : RealMatrix = construct( (m,n) => this(m,n) / d, M, N )
+  def *(d: Double) : RealMatrix= construct( (m,n) => this(m,n) * d, M, N )
   
   /** 
    * Returns (U, S, V) where U is MxM and V is NxN, both orthonormal and S the diagonal matrix such that
@@ -86,10 +99,29 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
     val V = construct( (m,n) => Real(USV(2).get(m,n)), USV(2).rows, USV(2).columns )
     return (U,S,V)
   }
-  final def svd = singularValueDecomposition
+  def svd = singularValueDecomposition
+  override def smithNormalForm = svd
   
-  def qr = throw new UnsupportedOperationException("not implemented yet")
-  override def smithNormalForm = singularValueDecomposition
+  /** 
+   *QR decomposition based on Householder reflections.  Probably not the most efficient
+   *implementation, but it looks nice!
+   */
+  def qr : (RealMatrix, RealMatrix) = {
+    val x = column(0)
+    val u = x - identity(M,1)*x.frobeniusNorm
+    val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
+    def householder(m : RealMatrix) : RealMatrix = m - v*(v.transpose*m)*2.0 //householder reflection about v
+    if(M==1) return (identity(1), this)
+    if(N==1) return (householder(identity(M)), householder(this))
+    val r1 = householder(this) 
+    val (q2, r2) = r1.submatrix(1 until M, 1 until N).qr //now apply qr to submatrix
+    val R = construct( (m,n) => if(m==0 || n==0) r1(m,n) else r2(m-1,n-1), M, N) //this is R
+    val Q = householder( construct( (m,n) => if(m==0 || n==0) identity(M)(m,n) else q2(m-1,n-1), M, N) )
+    return (Q,R)
+  }
   override def hermiteNormalForm = qr
+  
+  def lu = throw new UnsupportedOperationException("not implemented yet")
+  def inverse = throw new UnsupportedOperationException("not implemented yet")
 
 }

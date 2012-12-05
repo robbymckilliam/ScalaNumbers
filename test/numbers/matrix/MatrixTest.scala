@@ -200,7 +200,7 @@ class MatrixTest {
     def f(m : Int, n : Int) = new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
     val A = new ComplexMatrix(f,N,N).backwitharray
     val B = A.inverse
-    val I = A.identity
+    val I = A.identity(N)
     val C = A*B
     val D = B*A
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(C(m,n),I(m,n)) < tol)
@@ -223,7 +223,30 @@ class MatrixTest {
     val N = 2
     val M = 3
     val A = new ComplexMatrix( (m,n) => new PolarComplex(1, 0.4), M,N)
-    assertEquals( M*N, A.frobeniusNorm, tol )
+    assertEquals( scala.math.sqrt(1.0*M*N), A.frobeniusNorm, tol )
+  }
+  
+  @Test
+  def realQRIdentityTest() {
+    val tol = 1e-8
+    val N = 3
+    val M = 3
+    val I = RealMatrix.identity(N)
+    val (q,r) = I.qr
+    for( m <- 0 until M; n <- 0 until N) assertEquals(q(m,n).d,I(m,n).d,tol)
+    for( m <- 0 until M; n <- 0 until N) assertEquals(r(m,n).d,I(m,n).d,tol)
+  }
+  
+  @Test
+  def realQRColumnTest () {
+    val tol = 1e-8
+    val M = 9
+    val N = 1
+    val m = new RealMatrix( (m,n) => Real.one, M,N )
+    val (q,r) = m.qr
+    val rexp = RealMatrix( (m,n) => if(m==0) 3.0 else 0.0, M,N)
+    assertTrue((r - rexp).frobeniusNorm < tol)
+    assertTrue((q*r - m).frobeniusNorm < tol)
   }
   
 }

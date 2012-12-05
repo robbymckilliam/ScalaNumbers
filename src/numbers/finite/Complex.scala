@@ -13,6 +13,8 @@ package numbers.finite
 
 import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
+import scala.math.sqrt
+
 /**
  * Provides static definitions of the multiplicative 
  * and additive identities
@@ -88,12 +90,15 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
   
+  def /(d: Double) = construct( (m,n) => this(m,n)/d, M, N )
+  def *(d: Double) = construct( (m,n) => this(m,n)*d, M, N )
+  
   /** Hermitian (conjugate) transpose of this matrix */
   def conjugateTranspose = construct( (m,n) => this(n,m).conjugate, N, M)
   final def hermitianTranspose = conjugateTranspose
   
   /** Sum of the squared magnitudes of all of the elements */
-  def frobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).mag2 )
+  def frobeniusNorm : Double = sqrt( indices.foldLeft(0.0)( (v, i) => v + this(i).mag2 ) )
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)
@@ -104,7 +109,8 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
     val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag), USV(2).rows, USV(2).columns ) //JBlas output is wrong here, conjugate required!
     return (U,S,V)
   }
-  final def svd = singularValueDecomposition
+  def svd = singularValueDecomposition
+  override def smithNormalForm = svd
   
   /** 
    * Returns the pseudoinverse of this complex matrix.  Uses the singular value decomposition.
@@ -116,7 +122,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   
   def qr = throw new UnsupportedOperationException("not implemented yet")
-  override def smithNormalForm = singularValueDecomposition
   override def hermiteNormalForm = qr
+  def lu = throw new UnsupportedOperationException("not implemented yet")
 }
 
