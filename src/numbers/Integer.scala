@@ -62,7 +62,7 @@ class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigIn
 class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, override val N : Int)  
   extends MatrixWithElementsFromAEuclideanDomain[Integer, IntegerMatrix] {
     
-  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
   
   override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")

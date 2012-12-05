@@ -13,6 +13,7 @@ import numbers.finite.RectComplex
 import numbers.finite.PolarComplex
 import numbers.finite.Real
 import numbers.finite.RealMatrix
+import scala.collection.mutable.ArraySeq
 import org.junit.Test
 import org.junit.Assert._
 
@@ -244,9 +245,37 @@ class MatrixTest {
     val N = 1
     val m = new RealMatrix( (m,n) => Real.one, M,N )
     val (q,r) = m.qr
-    val rexp = RealMatrix( (m,n) => if(m==0) 3.0 else 0.0, M,N)
+    val rexp = RealMatrix( (m,n) => if(m==0) Real(3.0) else Real(0.0), M,N)
     assertTrue((r - rexp).frobeniusNorm < tol)
     assertTrue((q*r - m).frobeniusNorm < tol)
+  }
+  
+  @Test
+  def realQRTest () {
+    val tol = 1e-8
+    val M = 3
+    val N = 3
+    val marray = ArraySeq(ArraySeq(1.0, 1.0, 1.0),
+                            ArraySeq( 1.0, 2.0, 3.0),
+                            ArraySeq( 1.0, 4.0, 9.0))
+    val m = RealMatrix.fromDoubleArray(marray)
+    val (q,r) = m.qr
+    println(m)
+    println(r)
+    println(q)
+    println(q*r)
+    val rexparray = ArraySeq(ArraySeq(1.732050807568877, 4.041451884327381, 7.505553499465135), //output from matlab
+                            ArraySeq( 0.0, 2.160246899469286, 5.863527298559493),
+                            ArraySeq( 0.0, 0.0, 0.534522483824849))
+    val rexp = RealMatrix.fromDoubleArray(rexparray)
+    val qexparray = ArraySeq(ArraySeq( 0.577350269189626, -0.617213399848368, 0.534522483824849), //output from matlab
+                            ArraySeq(0.577350269189626, -0.154303349962092, -0.801783725737273),
+                            ArraySeq(0.577350269189626, 0.771516749810460, 0.267261241912424))
+    val qexp = RealMatrix.fromDoubleArray(qexparray)
+    assertTrue((r - rexp).frobeniusNorm < tol)
+    assertTrue((q - qexp).frobeniusNorm < tol)
+    assertTrue((q*r - m).frobeniusNorm < tol)
+    assertTrue((q*q.transpose - RealMatrix.identity(M)).frobeniusNorm < tol)
   }
   
 }

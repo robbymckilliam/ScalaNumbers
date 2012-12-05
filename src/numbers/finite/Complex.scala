@@ -34,9 +34,8 @@ abstract class Complex extends Field[Complex, Real]{
   final def - = new RectComplex(-real, -imag)
   final def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
   final def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
-  final def +(that: Double) = new RectComplex(real + that, imag)
-  final def -(that: Double) = new RectComplex(real - that, imag)
-
+  final def +(that: Double) = new RectComplex(real + that, imag )
+  final def -(that: Double) = new RectComplex(real - that, imag )
   final def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
                                                               real*that.imag+ imag*that.real)
   final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
@@ -81,13 +80,14 @@ class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
 object ComplexMatrix {
   def asRow(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(m), r.length, 1)
+  def apply(a : Seq[Seq[Complex]]) : ComplexMatrix = new ComplexMatrix((m,n) => a(m)(n),a.length,a(0).length) 
 }
 
 /** Matrix with complex elements */
 class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val N : Int) 
   extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
     
-  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
   
   def /(d: Double) = construct( (m,n) => this(m,n)/d, M, N )
@@ -98,7 +98,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   final def hermitianTranspose = conjugateTranspose
   
   /** Sum of the squared magnitudes of all of the elements */
-  def frobeniusNorm : Double = sqrt( indices.foldLeft(0.0)( (v, i) => v + this(i).mag2 ) )
+  def frobeniusNorm : Double = sqrt( indices.foldLeft(0.0)( (v, i) => v + this(i).mag2) )
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)

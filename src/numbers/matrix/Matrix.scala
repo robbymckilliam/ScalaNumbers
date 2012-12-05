@@ -24,6 +24,12 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   def isScalar = (N==1) && (M ==1)
   def isRow = (M==1)
   def isColumn = (N==1)
+    /// Get the element on the mth row and nth column of this matrix.  This must be overriden by the inheriting class
+  protected def get(m : Int, n : Int) : T
+  override def apply(mn : (Int,Int)) : T = {
+    if(!isDefinedAt(mn)) throw new ArrayIndexOutOfBoundsException("You attempted to index an " + M + " x " + N + " matrix at " + mn)
+    return get(mn._1,mn._2)
+  }
   /// Returns a collection of tuple that index all of elements in this matrix (row wise)
   def indices = for( m<-(0 until M).view; n<-(0 until N).view ) yield (m,n)
   /// Returns the transpose of this matrix

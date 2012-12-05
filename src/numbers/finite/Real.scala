@@ -18,6 +18,8 @@ object Real {
   val zero = new Real(0.0)
   
   def apply(x : Double) = new Real(x)
+  //implicit def Real2Double(r : Real) = r.d
+  //implicit def Double2Real(d : Double) = Real(d)
 }
 
 /**
@@ -68,14 +70,18 @@ object RealMatrix {
   /// contruct identity matrix
   def identity(M : Int, N : Int) : RealMatrix = new RealMatrix( (m,n) => if(m==n) Real.one else Real.zero, M,N)
   def identity(N : Int): RealMatrix = identity(N,N)
-  def apply(f : (Int,Int) => Double, M : Int, N : Int) : RealMatrix = new RealMatrix((m,n) => Real(f(m,n)),M,N) 
+  def apply(f : (Int,Int) => Real, M : Int, N : Int) : RealMatrix = new RealMatrix((m,n) => f(m,n),M,N) 
+  def apply(a : Seq[Seq[Real]]) : RealMatrix = new RealMatrix((m,n) => a(m)(n),a.length,a(0).length) 
+  def fromDoubleArray(a : Seq[Seq[Double]]) : RealMatrix = new RealMatrix((m,n) => Real(a(m)(n)),a.length,a(0).length) 
+  def asRow(r : Seq[Real]) = new RealMatrix( (m,n) => r(n), 1, r.length)
+  def asColumn(r : Seq[Real]) = new RealMatrix( (m,n) => r(m), r.length, 1)
 }
 
 /** Matrix with real elements */
 class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : Int) 
 extends MatrixWithElementsFromAField[Real, RealMatrix] {
     
-  override def apply(mn : (Int,Int)) = f(mn._1,mn._2)
+  override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
   
   /** Sum of the squared magnitudes of all of the elements */
@@ -109,8 +115,11 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   def qr : (RealMatrix, RealMatrix) = {
     val x = column(0)
     val u = x - identity(M,1)*x.frobeniusNorm
-    val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
-    def householder(m : RealMatrix) : RealMatrix = m - v*(v.transpose*m)*2.0 //householder reflection about v
+    val v = if(u.frobeniusNorm==0.0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
+    def householder(mat : RealMatrix) : RealMatrix = { //mat - v*(v.transpose*mat)*2.0  //householder reflection about v
+      val vtmat2 = v.transpose*(mat*2.0) //this inner product will be backed by an array
+      construct( (m,n) => mat(m,n) - v(m,0)*vtmat2(0,n), M,N )
+    }
     if(M==1) return (identity(1), this)
     if(N==1) return (householder(identity(M)), householder(this))
     val r1 = householder(this) 
