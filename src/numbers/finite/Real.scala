@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * @Robby McKilliam
  */
 
 package numbers.finite
@@ -104,13 +103,13 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   
   /** 
    *QR decomposition based on Householder reflections.  Probably not the most efficient
-   *implementation, but it looks nice!
+   *implementation and it's not tail recursive, so it will stack overflow for large matrices, but it looks nice!
    */
   def qr : (RealMatrix, RealMatrix) = {
     val x = column(0)
     val u = x - identity(M,1)*x.frobeniusNorm
     val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
-    def householder(m : RealMatrix) : RealMatrix = m - v*(v.transpose*m)*2.0 //householder reflection about v
+    def householder(m : RealMatrix) : RealMatrix = m - v*(v.transpose*m)*2.0 //householder reflection about v (this with allocate memory!)
     if(M==1) return (identity(1), this)
     if(N==1) return (householder(identity(M)), householder(this))
     val r1 = householder(this) 
