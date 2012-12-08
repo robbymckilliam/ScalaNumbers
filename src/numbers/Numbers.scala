@@ -1,19 +1,22 @@
 package numbers
 
-trait Monoid[M] {
+trait Monoid[M <: Monoid[M]] {
   /** The operation */
   def +(that : M) : M
   /** The identity element*/
   def zero : M
+  /** Test for equality */
+  def ==(that : M) : Boolean
+  def !=(that : M) = !(this==that)
 }
 
 /**
  * A group, mathematical object with an operation +, an 
  * identity element zero, and in inverse -
  */
-trait Group[G] extends Monoid[G] {
-  /** Get the inverse of this group element*/
-  def - : G
+trait Group[G <: Group[G]] extends Monoid[G] {
+  /** Get the inverse of this group element.  Scala unary_ allow - to be a prefix */
+  def unary_- : G
   /** Operate with the inverse */
   def -(that : G) : G
   /** Test for equality */
@@ -27,13 +30,13 @@ trait Group[G] extends Monoid[G] {
  * subtraction and multiplication.  Also has an 
  * additive identity.
  */
-trait Ring[R] extends Group[R] {
+trait Ring[R <: Ring[R]] extends Group[R] {
   def *(that : R) : R
   
 }
 
 /** Ring with multiplicative identity */
-trait RingWithUnity[R] extends Ring[R] {
+trait RingWithUnity[R <: RingWithUnity[R]] extends Ring[R] {
   /** The multiplicative identity */
   def one : R
 }
@@ -42,8 +45,8 @@ trait RingWithUnity[R] extends Ring[R] {
  * Unique factorisation domain.  A ring such that every element can be
  * expressed as the product of prime factors.
  */
-trait UniqueFactorisationDomain[R] extends RingWithUnity[R] {
-  /** Norm */
+trait UniqueFactorisationDomain[R <: UniqueFactorisationDomain[R]] extends RingWithUnity[R] {
+  /** Sequence of factors */
   def factors : Seq[R]
 }
 
@@ -53,7 +56,7 @@ trait UniqueFactorisationDomain[R] extends RingWithUnity[R] {
  * the norm is from the natural numbers, for the reals,
  * the norm is a positve real.
  */
-trait EuclideanDomain[R,N <: Ordered[N]] extends UniqueFactorisationDomain[R] {
+trait EuclideanDomain[R <: EuclideanDomain[R,N],N <: Ordered[N]] extends UniqueFactorisationDomain[R] {
   /** Norm */
   def norm : N
   /** Euclidean division, ie. divide but throw away remainder */
@@ -85,7 +88,7 @@ object EuclideanDomain {
   }
   
   /** The Extended Euclidean algorithm.
-   * Uses recursive algorithm, this should potentially be interative.
+   * Uses recursive algorithm, this should potentially be interative or tail recursive 
    */
   def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = {
     if( b == b.zero ) return (b.one,b.zero)
@@ -103,11 +106,11 @@ object EuclideanDomain {
  * A field, a mathematical object closed under addition
  * subtraction and multiplication and division. 
  */
-trait Field[F,N <: Ordered[N]] extends EuclideanDomain[F,N] {
+trait Field[F <: Field[F,N],N <: Ordered[N]] extends EuclideanDomain[F,N] {
   override def /(that : F) : F
-  /** The mulitplicative inverse */
-  def / : F
   /** mod for a field is always zero */
   override def mod(that : F) : F = this.zero
+  /** Sequence of factors */
+  override def factors : Seq[F] = List(this.one,this.asInstanceOf[F])
 }
 

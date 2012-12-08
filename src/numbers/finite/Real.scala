@@ -28,30 +28,27 @@ object Real {
 class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   //@inline final def toDouble = d
   
-  final def - = new Real(-d)
-  final def +(that: Real) = new Real(d + that.d)
-  final def -(that: Real) = new Real(d - that.d)
+  final def unary_- = new Real(-d)
+  final override def +(that: Real) = new Real(d + that.d)
+  final override def -(that: Real) = new Real(d - that.d)
   final def +(that: Double) : Real = new Real(d + that)
   final def -(that: Double) : Real = new Real(d - that)
   final def +(that: Int) : Real = new Real(d + that)
   final def -(that: Int) : Real = new Real(d - that)
 
-  final def *(that: Real) = new Real(d * that.d)
-  final def /(that: Real) = new Real(d / that.d)
+  final override def *(that: Real) = new Real(d * that.d)
+  final override def /(that: Real) = new Real(d / that.d)
   final def *(that: Double) : Real = new Real(d * that)
   final def /(that: Double) : Real = new Real(d / that)
-  final def / : Real = new Real(1.0 / d)
   final def *(that: Int) : Real = new Real(d * that)
   final def /(that: Int) : Real = new Real(d / that)
   
-  final def one : Real = Real.one
-  final def zero : Real = Real.zero
+  final override def one : Real = Real.one
+  final override def zero : Real = Real.zero
     
-  final def norm : Real = new Real(d.abs)
-    
-  /// Don't factorise the real numbers!
-  final def factors = throw new UnsupportedOperationException("Don't factorise the real numbers!")
+  final override def norm : Real = new Real(d.abs)
   
+  final override def ==(that : Real) = this.d == that.d
   final def ==(that : Double) = this.d == that
   final def <=(that : Double) = this.d <= that
   final def <(that : Double) = this.d < that
@@ -60,7 +57,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final def !=(that : Double) = !(this == that)
   
   /** Uses scala's internal Ordered, only need to override compare */
-  final def compare(that : Real) : Int = this.d.compare(that.d)
+  final override def compare(that : Real) : Int = this.d.compare(that.d)
   
   final override def toString : String  = d.toString
 }
@@ -116,10 +113,7 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
     val x = column(0)
     val u = x - identity(M,1)*x.frobeniusNorm
     val v = if(u.frobeniusNorm==0.0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
-    def householder(mat : RealMatrix) : RealMatrix = { //mat - v*(v.transpose*mat)*2.0  //householder reflection about v
-      val vtmat2 = v.transpose*(mat*2.0) //this inner product will be backed by an array
-      construct( (m,n) => mat(m,n) - v(m,0)*vtmat2(0,n), M,N )
-    }
+    def householder(mat : RealMatrix) : RealMatrix = mat - v*(v.transpose*mat)*2.0  //householder reflection about v
     if(M==1) return (identity(1), this)
     if(N==1) return (householder(identity(M)), householder(this))
     val r1 = householder(this) 

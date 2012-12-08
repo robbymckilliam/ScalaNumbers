@@ -24,39 +24,38 @@ object Integer {
  * Internally uses a bignums.BigInteger.  This is much faster than java.BigInteger (and correspondingly)
  * scala's BigInt for very larger integers.  If java.BigInteger ever gets fixed then this could be changed.
  */
-class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
+protected class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   
-  def +(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.add(that.bigint))
+  override def +(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.add(that.bigint))
   def +(that : Int) : Integer = this + new IntegerFromInt(that)
-  def - : Integer = new IntegerFrombignumsBigInteger(bigint.negate)
-  def -(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.subtract(that.bigint))
+  override def unary_- : Integer = new IntegerFrombignumsBigInteger(bigint.negate)
+  override def -(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.subtract(that.bigint))
   def -(that : Int) : Integer = this - new IntegerFromInt(that)
-  def *(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.multiply(that.bigint))
+  override def *(that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.multiply(that.bigint))
   def *(that : Int) : Integer = this * new IntegerFromInt(that)
   
   /** Not implemented */
-  def factors : Seq[Integer] = throw new UnsupportedOperationException("Not implemented")
+  override def factors : Seq[Integer] = throw new UnsupportedOperationException("Not implemented")
   
-  def norm : Integer = new IntegerFrombignumsBigInteger(bigint.abs)
-  def / (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.divide(that.bigint))
-  def mod (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.mod(that.bigint)) 
+  override def norm : Integer = new IntegerFrombignumsBigInteger(bigint.abs)
+  override def / (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.divide(that.bigint))
+  override def mod (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.mod(that.bigint)) 
   
-  final def zero : Integer = Integer.zero
-  final def one : Integer = Integer.one
+  final override def zero : Integer = Integer.zero
+  final override def one : Integer = Integer.one
   
-  def ==(that : Integer) : Boolean = bigint.equals(that.bigint)
-  def !=(that : Integer) : Boolean = !bigint.equals(that.bigint)
+  final override def ==(that : Integer) : Boolean = bigint.equals(that.bigint)
   
-  final def compare(that : Integer) : Int = bigint.compareTo(that.bigint)
+  final override def compare(that : Integer) : Int = bigint.compareTo(that.bigint)
   
   override def toString : String = bigint.toString
   
 }
 
-class IntegerFromInt(val x : Int) extends Integer(new BigInteger(x.toString))
-class IntegerFromLong(val x : Long) extends Integer(new BigInteger(x.toString))
-class IntegerFromBigInt(val x : BigInt) extends Integer(new BigInteger(x.toString))
-class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigInteger(x.toString))
+protected class IntegerFromInt(val x : Int) extends Integer(new BigInteger(x.toString))
+protected class IntegerFromLong(val x : Long) extends Integer(new BigInteger(x.toString))
+protected class IntegerFromBigInt(val x : BigInt) extends Integer(new BigInteger(x.toString))
+protected class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigInteger(x.toString))
 
 /** A matrix containing integers */
 class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, override val N : Int)  

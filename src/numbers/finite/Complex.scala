@@ -31,32 +31,27 @@ abstract class Complex extends Field[Complex, Real]{
   val angle: Double
   val mag2: Double
 
-  final def - = new RectComplex(-real, -imag)
-  final def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
-  final def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
+  final override def unary_- = new RectComplex(-real, -imag)
+  final override def +(that: Complex) = new RectComplex(real + that.real, imag + that.imag)
+  final override def -(that: Complex) = new RectComplex(real - that.real, imag - that.imag)
   final def +(that: Double) = new RectComplex(real + that, imag )
   final def -(that: Double) = new RectComplex(real - that, imag )
-  final def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
+  final override def *(that: Complex) = new RectComplex(real * that.real - imag*that.imag, 
                                                               real*that.imag+ imag*that.real)
-  final def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
+  final override def /(that: Complex) = new PolarComplex(magnitude / that.magnitude, angle - that.angle)
   final def *(that: Double) = new RectComplex(real * that, imag * that)
   final def /(that: Double) = new RectComplex(real / that, imag / that)
-  final def / = new PolarComplex(1.0 / magnitude, -angle)
 
   final def pow(e : Double) = new PolarComplex(scala.math.pow(magnitude,e),angle*e)
   
   def conjugate :Complex = new RectComplex(real, -imag)
     
-  final def one : Complex = Complex.one
-  final def zero : Complex = Complex.zero
+  final override def one : Complex = Complex.one
+  final override def zero : Complex = Complex.zero
     
   def norm : Real = new Real(mag2)
   
-  final def ==(that : Complex) = this.real == that.real && this.imag == that.imag
-  final def !=(that : Complex) = !(this == that)
-  
-  /// Don't factorise the complex numbers!
-  final def factors = null
+  final override def ==(that : Complex) = this.real == that.real && this.imag == that.imag
     
   override def toString : String  = real.toString + " + " + imag.toString + "i"
 
