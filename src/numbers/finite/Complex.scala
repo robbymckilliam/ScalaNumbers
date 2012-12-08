@@ -57,12 +57,20 @@ abstract class Complex extends Field[Complex, Real]{
 
 }
 
+object RectComplex {
+  def apply(r : Double, i : Double) = new RectComplex(r,i)
+}
+
 /** Create a complex number by specifying real and imaginary parts */
 class RectComplex(val real: Double, val imag: Double) extends Complex {
   lazy val mag2 = real*real + imag*imag
   lazy val magnitude = scala.math.sqrt(real*real + imag*imag)
   lazy val angle = scala.math.atan2(imag, real)
   
+}
+
+object PolarComplex {
+  def apply(m : Double, a : Double) = new PolarComplex(m,a)
 }
 
 /** Create a complex number by specifying magnitude and angle (in radians)*/
@@ -75,7 +83,12 @@ class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
 object ComplexMatrix {
   def asRow(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(m), r.length, 1)
+
   def apply(a : Seq[Seq[Complex]]) : ComplexMatrix = new ComplexMatrix((m,n) => a(m)(n),a.length,a(0).length) 
+  def apply(f : (Int,Int) => Complex, M : Int, N : Int) : ComplexMatrix = new ComplexMatrix((m,n) => f(m,n),M,N) 
+    /// contruct identity matrix
+  def identity(M : Int, N : Int) : ComplexMatrix = new ComplexMatrix( (m,n) => if(m==n) Complex.one else Complex.zero, M,N)
+  def identity(N : Int): ComplexMatrix = identity(N,N)
 }
 
 /** Matrix with complex elements */
@@ -107,6 +120,26 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   def svd = singularValueDecomposition
   override def smithNormalForm = svd
   
+   /** 
+   * QR decomposition based on Householder reflections.  Probably not the most efficient
+   * implementation and it's not tail recursive, so it will stack overflow for large matrices, but it looks nice!
+   */
+  def qr : (ComplexMatrix, ComplexMatrix) = {
+    val x = column(0)
+    val u = x - identity(M,1) * PolarComplex(x.frobeniusNorm,x(0,0).angle)
+    val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
+    val w = if(u.frobeniusNorm==0) Complex.zero else Complex.one +  (x.hermitianTranspose * v)(0,0) / (v.hermitianTranspose * x)(0,0)
+    def householder(m : ComplexMatrix) : ComplexMatrix = m - v*(v.hermitianTranspose*m)*w //householder reflection about v
+    if(M==1) return (identity(1), this)
+    if(N==1) return (householder(identity(M)), householder(this))
+    val r1 = householder(this) 
+    val (q2, r2) = r1.submatrix(1 until M, 1 until N).qr //now apply qr to submatrix
+    val R = construct( (m,n) => if(m==0 || n==0) r1(m,n) else r2(m-1,n-1), M, N) //this is R
+    val Q = householder( construct( (m,n) => if(m==0 || n==0) identity(M)(m,n) else q2(m-1,n-1), M, N) )
+    return (Q,R)
+  }
+  override def hermiteNormalForm = qr
+  
   /** 
    * Returns the pseudoinverse of this complex matrix.  Uses the singular value decomposition.
    */
@@ -116,8 +149,6 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
     v*sinv*u.conjugateTranspose
   }
   
-  def qr = throw new UnsupportedOperationException("not implemented yet")
-  override def hermiteNormalForm = qr
   def lu = throw new UnsupportedOperationException("not implemented yet")
 }
 

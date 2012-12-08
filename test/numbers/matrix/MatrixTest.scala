@@ -250,7 +250,6 @@ class MatrixTest {
     assertTrue((q*r - m).frobeniusNorm < tol)
   }
   
-  @Test
   def realQRTest () {
     val tol = 1e-8
     val M = 3
@@ -276,6 +275,56 @@ class MatrixTest {
     assertTrue((q - qexp).frobeniusNorm < tol)
     assertTrue((q*r - m).frobeniusNorm < tol)
     assertTrue((q*q.transpose - RealMatrix.identity(M)).frobeniusNorm < tol)
+  }
+
+  def complexQRIdentityTest() {
+    val tol = 1e-8
+    val N = 3
+    val M = 3
+    val I = ComplexMatrix.identity(N)
+    val (q,r) = I.qr
+    //println(q)
+    //println(r)
+    for( m <- 0 until M; n <- 0 until N) assertTrue((q(m,n)-I(m,n)).magnitude < tol)
+    for( m <- 0 until M; n <- 0 until N) assertTrue((r(m,n)-I(m,n)).magnitude < tol)
+  }
+  
+  @Test
+  def complexQRColumnTest () {
+    val tol = 1e-8
+    val M = 9
+    val N = 1
+    val m = new ComplexMatrix( (m,n) => Complex.one, M,N )
+    val (q,r) = m.qr
+    val rexp = ComplexMatrix( (m,n) => if(m==0) Complex.one*3.0 else Complex.zero, M,N)
+    assertTrue((r - rexp).frobeniusNorm < tol)
+    assertTrue((q*r - m).frobeniusNorm < tol)
+  }
+  
+  @Test
+  def largeQRTest () {
+    val tol = 1e-8
+    val M = 30
+    val N = 30
+    val m = new RealMatrix( (m,n) => Real(scala.util.Random.nextDouble), M,N ).backwitharray
+    val (q,r) = m.qr
+    //println(q)
+    //println(r)
+    assertTrue((q*r - m).frobeniusNorm < tol)
+  }
+  
+  @Test
+  def largeComplexQRTest () {
+    val tol = 1e-8
+    val M = 30
+    val N = 30
+    val m = new ComplexMatrix( (m,n) => RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble), M,N ).backwitharray
+    val (q,r) = m.qr
+    //println(q)
+    //println(r)
+    //println(q*r)
+    //println(m)
+    assertTrue((q*r - m).frobeniusNorm < tol)
   }
   
 }

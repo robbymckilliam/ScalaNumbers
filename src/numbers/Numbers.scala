@@ -1,5 +1,7 @@
 package numbers
 
+import scala.annotation.tailrec
+
 trait Monoid[M <: Monoid[M]] {
   /** The operation */
   def +(that : M) : M
@@ -68,16 +70,15 @@ trait EuclideanDomain[R <: EuclideanDomain[R,N],N <: Ordered[N]] extends UniqueF
 /** Static algorithms for Euclidean domains, mostly related to the Euclidean algorithm */
 object EuclideanDomain {
   
-  /** Greatest common divisor.
-   * Uses recursive algorithm, this should potentially be interative.
-   */
-  def gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : R = if( b == b.zero ) a else gcd(b, a mod b)
-  
+  /** Greatest common divisor.*/
+  @tailrec final def gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : R = if( b == b.zero ) a else gcd(b, a mod b)
+  /** Greatest common divisor. gcd for Integer is always positive. */
+  @tailrec final def gcd(a : Integer, b : Integer) : Integer = if( b == Integer.zero ) a.abs else gcd(b.abs, a.abs mod b.abs)
   /** Greatest common divisor of two scala Ints*/
-  def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
+  @tailrec final def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
   
   /** The Extended Euclidean algorithm applied to two scala Ints*/
-  def extended_gcd(a : Int, b : Int) : (Int, Int) = {
+  final def extended_gcd(a : Int, b : Int) : (Int, Int) = {
     if( b == 0) return (1,0)
     else {
       val q = a/b
@@ -90,7 +91,7 @@ object EuclideanDomain {
   /** The Extended Euclidean algorithm.
    * Uses recursive algorithm, this should potentially be interative or tail recursive 
    */
-  def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = {
+  final def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = {
     if( b == b.zero ) return (b.one,b.zero)
     else {
       val q = a/b

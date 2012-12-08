@@ -6,7 +6,6 @@ package numbers
 
 import org.junit.Test
 import org.junit.Assert._
-import numbers.Rational
 
 class RationalTest {
   
@@ -28,13 +27,15 @@ class RationalTest {
   }
   
   @Test
-  def sumTest() {
+  def sumAndSubtractTest() {
     assertTrue((Rational(1,2) + Rational(3,4)) == Rational(5,4))
+    assertTrue((Rational(1,2) - Rational(3,4)) == Rational(-1,4))
   }
   
   @Test
   def mulitplyAndDivideTest() {
     assertTrue((Rational(1,2) * Rational(3,4)) == Rational(3,8))
+    assertTrue((Rational(1,2) / Rational(4,3)) == Rational(3,8))
   }
 
 }
