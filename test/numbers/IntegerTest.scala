@@ -32,7 +32,9 @@ class IntegerTest {
     assertTrue((Integer(1) mod Integer(4)) == Integer(1))
     assertTrue((Integer(5) mod Integer(4)) == Integer(1))
     assertTrue((Integer(-5) mod Integer(4)) == Integer(3))
-    assertTrue((Integer(-5) mod Integer(4)) == Integer(3))
+    println(Integer(-5) mod Integer(-4))
+    assertTrue((Integer(-5) mod Integer(-4)) == -Integer(1))
+    assertTrue((Integer(-5) mod Integer(-10)) == -Integer(5))
   }
   
 }
