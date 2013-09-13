@@ -88,6 +88,17 @@ object EuclideanDomain {
     }
   }
   
+  /** The Extended Euclidean algorithm applied to two scala Ints*/
+  final def extended_gcd(a : Long, b : Long) : (Long, Long) = {
+    if( b == 0) return (1,0)
+    else {
+      val q = a/b
+      val r = a - b*q
+      val (s,t) = extended_gcd(b,r)
+      return (t, s - q*t)
+    }
+  }
+  
   /** The Extended Euclidean algorithm.
    * Uses recursive algorithm, this should potentially be interative or tail recursive 
    */
