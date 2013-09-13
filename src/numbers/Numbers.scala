@@ -76,6 +76,8 @@ object EuclideanDomain {
   @tailrec final def gcd(a : Integer, b : Integer) : Integer = if( b == Integer.zero ) a.abs else gcd(b.abs, a.abs mod b.abs)
   /** Greatest common divisor of two scala Ints*/
   @tailrec final def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
+  /** Greatest common divisor of two scala Longs*/
+  @tailrec final def gcd(a : Long, b : Long) : Long = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
   
   /** The Extended Euclidean algorithm applied to two scala Ints*/
   final def extended_gcd(a : Int, b : Int) : (Int, Int) = {

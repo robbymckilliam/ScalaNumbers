@@ -114,7 +114,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
     val USV = org.jblas.Singular.sparseSVD(A)
     val U = construct( (m,n) => new RectComplex(USV(0).get(m,n).real, USV(0).get(m,n).imag), USV(0).rows, USV(0).columns )
     val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
-    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag), USV(2).rows, USV(2).columns ) //JBlas output is wrong here, conjugate required!
+    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag), USV(2).rows, USV(2).columns ) 
     return (U,S,V)
   }
   def svd = singularValueDecomposition

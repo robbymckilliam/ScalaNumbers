@@ -23,6 +23,17 @@ class EuclideanDomainTest {
   }
 
   @Test
+  def LonggcdTest() {
+    assertTrue(gcd(2.toLong,2.toLong)==2.toLong)
+    assertTrue(gcd(7.toLong,311.toLong)==1.toLong)
+    assertTrue(gcd(311.toLong,7.toLong)==1.toLong)
+    assertTrue(gcd(10.toLong,255.toLong)==5.toLong)
+    assertTrue(gcd(255.toLong,10.toLong)==5.toLong)
+    assertTrue(gcd(2.toLong,-2.toLong)==2.toLong)
+    assertTrue(gcd(49.toLong,7.toLong)==7.toLong)
+  }
+  
+  @Test
   def IntextendedgcdTest() {
     val iters = 50
     val M = 1000
