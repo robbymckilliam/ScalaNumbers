@@ -201,11 +201,25 @@ class MatrixTest {
     def f(m : Int, n : Int) = new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
     val A = new ComplexMatrix(f,N,N).backwitharray
     val B = A.inverse
-    val I = A.identity(N)
+    val I = ComplexMatrix.identity(N)
     val C = A*B
     val D = B*A
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(C(m,n),I(m,n)) < tol)
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(D(m,n),I(m,n)) < tol)
+  }
+  
+  @Test
+  def complexInverseNotFullRankTest() {
+    val N = 4
+    val M = 3
+    def f(m : Int, n : Int) = new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
+    val A = new ComplexMatrix(f,M,N).backwitharray
+    val B = A.inverse
+    val I = ComplexMatrix.identity(M)
+    val C = A*B
+    val D = B*A
+    println(D)
+    for( m <- 0 until M; n <- 0 until M) assertTrue(diff(C(m,n),I(m,n)) < tol)
   }
   
   @Test
