@@ -83,6 +83,8 @@ class PolarComplex(val magnitude: Double, val angle: Double) extends Complex {
 object ComplexMatrix {
   def asRow(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Complex]) = new ComplexMatrix( (m,n) => r(m), r.length, 1)
+  //def asRow(r : Seq[Double]) = new ComplexMatrix( (m,n) => new RectComplex(r(n),0), 1, r.length)
+  //def asColumn(r : Seq[Double]) = new ComplexMatrix( (m,n) => new RectComplex(r(n),0), r.length, 1)
 
   def apply(a : Seq[Seq[Complex]]) : ComplexMatrix = new ComplexMatrix((m,n) => a(m)(n),a.length,a(0).length) 
   def apply(f : (Int,Int) => Complex, M : Int, N : Int) : ComplexMatrix = new ComplexMatrix((m,n) => f(m,n),M,N) 
@@ -104,6 +106,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   /** Hermitian (conjugate) transpose of this matrix */
   def conjugateTranspose = construct( (m,n) => this(n,m).conjugate, N, M)
   final def hermitianTranspose = conjugateTranspose
+  final def h = hermitianTranspose
   
   /** Sum of the squared magnitudes of all of the elements */
   def frobeniusNorm : Double = sqrt( indices.foldLeft(0.0)( (v, i) => v + this(i).mag2) )
@@ -111,10 +114,10 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)
     for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
-    val USV = org.jblas.Singular.sparseSVD(A)
+    val USV = org.jblas.Singular.fullSVD(A)
     val U = construct( (m,n) => new RectComplex(USV(0).get(m,n).real, USV(0).get(m,n).imag), USV(0).rows, USV(0).columns )
     val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
-    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag), USV(2).rows, USV(2).columns ) 
+    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag).conjugate, USV(2).rows, USV(2).columns ) //god knows why but Jblas returns conjugate again???
     return (U,S,V)
   }
   def svd = singularValueDecomposition
@@ -144,10 +147,23 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
    * Returns the pseudoinverse of this complex matrix.  Uses the singular value decomposition.
    */
   def inverse = {
+    if(N != M) throw new ArrayIndexOutOfBoundsException("Matrix is not square, it can't be inverted.  You might want to use psuedoinverse instead.")
     val (u,s,v) = this.svd
     val sinv = construct( (m,n) => if(m==n) Complex.one/s(m,n) else Complex.zero, s.M, s.N)
     v*sinv*u.conjugateTranspose
   }
+  def inv = inverse
+  
+  /**
+   * Returns the Moore-Penrose psuedo inverse of this matrix
+   */
+  def psuedoinverse = {
+    if(M < N) this.h*(this*this.h).inverse 
+    else if(M > N) (this.h*this).inverse*this.h
+    else inverse
+  }
+  def pinv = psuedoinverse
+  
   
   def lu = throw new UnsupportedOperationException("not implemented yet")
 }

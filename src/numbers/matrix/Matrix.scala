@@ -34,6 +34,8 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   def indices = for( m<-(0 until M).view; n<-(0 until N).view ) yield (m,n)
   /// Returns the transpose of this matrix
   def transpose : B = construct( (m,n) => this(n,m), N, M )
+  /// Returns the transpose of this matrix
+  def t = transpose 
   /// returns the submatrix with rows indexed by ms and columns indexed by ns
   def submatrix(ms : IndexedSeq[Int], ns : IndexedSeq[Int]): B = construct( (m,n) => this(ms(m),ns(n)), ms.size, ns.size)
   /// get the mth row
