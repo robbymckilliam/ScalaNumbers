@@ -180,7 +180,7 @@ class MatrixTest {
     def f(m : Int, n : Int) = new RectComplex(n,m)
     val A = new ComplexMatrix(f,M,N)
     val (u,s,v) = A.svd
-    val B = u*s*v.conjugateTranspose
+    val B = u*s*v.hermitianTranspose
     for( m <- 0 until M; n <- 0 until N) assertTrue(diff(B(m,n),A(m,n)) < tol)
     
     //test versus some output from Matlab
@@ -208,18 +208,15 @@ class MatrixTest {
     for( m <- 0 until N; n <- 0 until N) assertTrue(diff(D(m,n),I(m,n)) < tol)
   }
   
-  @Test
-  def complexInverseNotFullRankTest() {
-    val N = 4
-    val M = 3
-    def f(m : Int, n : Int) = new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
+  @Test def complexPsuedoInverseTest() {
+    val M = 3; val N = 4
+    def f(m : Int, n : Int) =  new RectComplex(scala.util.Random.nextDouble,scala.util.Random.nextDouble)
     val A = new ComplexMatrix(f,M,N).backwitharray
-    val B = A.inverse
-    val I = ComplexMatrix.identity(M)
-    val C = A*B
-    val D = B*A
-    println(D)
-    for( m <- 0 until M; n <- 0 until M) assertTrue(diff(C(m,n),I(m,n)) < tol)
+    val B = A.pinv
+    assertTrue(((A*B*A) - A).frobeniusNorm < tol)
+    assertTrue(((B*A*B) - B).frobeniusNorm < tol)
+    assertTrue(((A*B).h - (A*B)).frobeniusNorm < tol)
+    assertTrue(((B*A).h - (B*A)).frobeniusNorm < tol)
   }
   
   @Test

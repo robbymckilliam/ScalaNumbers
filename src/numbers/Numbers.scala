@@ -90,7 +90,7 @@ object EuclideanDomain {
     }
   }
   
-  /** The Extended Euclidean algorithm applied to two scala Ints*/
+  /** The Extended Euclidean algorithm applied to two scala longs*/
   final def extended_gcd(a : Long, b : Long) : (Long, Long) = {
     if( b == 0) return (1,0)
     else {
