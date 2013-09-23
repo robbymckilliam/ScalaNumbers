@@ -109,7 +109,9 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   final def h = hermitianTranspose
   
   /** Sum of the squared magnitudes of all of the elements */
-  def frobeniusNorm : Double = sqrt( indices.foldLeft(0.0)( (v, i) => v + this(i).mag2) )
+  lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).mag2)
+  /** The Frobenius norm, square root of sum of elements squared */
+  lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val A = new org.jblas.ComplexDoubleMatrix(M,N)

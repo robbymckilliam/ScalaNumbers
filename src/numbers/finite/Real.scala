@@ -81,7 +81,9 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
   
   /** Sum of the squared magnitudes of all of the elements */
-  lazy val frobeniusNorm : Double = sqrt(indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d))
+  lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)
+  /** The Frobenius norm, square root of sum of elements squared */
+  lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
   
   def /(d: Double) : RealMatrix = construct( (m,n) => this(m,n) / d, M, N )
   def *(d: Double) : RealMatrix= construct( (m,n) => this(m,n) * d, M, N )
