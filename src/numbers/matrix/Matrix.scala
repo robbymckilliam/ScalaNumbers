@@ -67,6 +67,8 @@ trait MatrixWithElementsFromAGroup[G <: Group[G],B <: Matrix[G,B]] extends Matri
   def -(that: B) : B = construct( (m,n) => this(m,n) - that(m,n), M, N )
   /// scalar subtraction
   def -(that : G) : B = construct( (m,n) => this(m,n) - that, M, N )
+  /// Negative of this matrix (additive inverse)
+  def unary_- : B = construct( (m,n) => -this(m,n), M, N )
   /// matrix of zeros
   def zeros(M : Int, N : Int) : B = construct( (m,n) => this(0,0).zero, M,N)
   def zeros(N : Int) : B = zeros(N,N)
