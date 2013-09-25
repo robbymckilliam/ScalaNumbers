@@ -83,13 +83,16 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = RealMatrix.construct(f,M,N)
   
+  /** + - * / also work with Double */
+  def +(d: Double) : RealMatrix = this + Real(d)
+  def -(d: Double) : RealMatrix = this - Real(d)
+  def *(d: Double) : RealMatrix = this * Real(d)
+  def /(d: Double) : RealMatrix = this / Real(d)
+  
   /** Sum of the squared magnitudes of all of the elements */
   lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)
   /** The Frobenius norm, square root of sum of elements squared */
   lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
-  
-  def /(d: Double) : RealMatrix = construct( (m,n) => this(m,n) / d, M, N )
-  def *(d: Double) : RealMatrix= construct( (m,n) => this(m,n) * d, M, N )
   
   /** 
    * Returns (U, S, V) where U is MxM and V is NxN, both orthonormal and S the diagonal matrix such that

@@ -3,11 +3,13 @@ package numbers.finite.optimisation
 import numbers.finite.optimisation.SingleVariableOptimisation.fmin
 import numbers.finite.optimisation.SingleVariableOptimisation.fmax
 import numbers.finite.optimisation.SingleVariableOptimisation.fzero
+import numbers.finite.RealMatrix
+import numbers.finite.Real
 
 import org.junit.Test;
 import org.junit.Assert._;
 
-class SingleVariableOptimisationTest {
+class OptimisationTest {
 
   val tol = 1e-7
 	
@@ -65,6 +67,31 @@ class SingleVariableOptimisationTest {
     //println(x2,f(x2))
     //assertEquals(0.0, f(x2), tol)
     //assertEquals(0.0, x2, tol)
+  }
+  
+  @Test
+  def gradientdescentTest() = {
+    val f : Double => Double = x => (x-2)*(x-2)
+    val df : Double => Double = x => 2*(x-2)
+    val xstart = 10.0
+    val xmin = new SingleVariableOptimisation.GradientDescent(xstart, df).xmin
+    assertEquals(2.0, xmin, 1e-5)
+    
+    val f2 : Double => Double = x => x*(x+1)*(x-2)
+    val df2 : Double => Double = x => x*(3*x-2)-2
+    val xstart2 = 0.0
+    val xmin2 = new SingleVariableOptimisation.GradientDescent(xstart2, df2).xmin
+    assertEquals(1.21525, xmin2, 1e-4)
+  }
+  
+  @Test
+  def multivariableGradientDescentTest() = {
+    val L = 5 //dimension
+    val f : RealMatrix => Double = x => x.squaredFrobeniusNorm
+    val df : RealMatrix => RealMatrix = x => x * 2.0 //elementwise multiplication by 2
+    val xstart = RealMatrix.constructRow( n => Real(2.0*n), L) //4 variable optimisation
+    val xmin = new MultiVariableOptimisation.GradientDescent(xstart, df).xmin
+    assertTrue( xmin.frobeniusNorm.abs < 1e-5 )
   }
   
 }
