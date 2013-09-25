@@ -30,6 +30,11 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
     if(!isDefinedAt(mn)) throw new ArrayIndexOutOfBoundsException("You attempted to index an " + M + " x " + N + " matrix at " + mn)
     return get(mn._1,mn._2)
   }
+  def apply(n : Int) : T = {
+    if(isRow) return this(0,n)
+    else if(isColumn) return this(n,0)
+    else throw new ArrayIndexOutOfBoundsException("You attempted to index an " + M + " x " + N + " as if it were a column or row vector")
+  }
   /// Returns a collection of tuple that index all of elements in this matrix (row wise)
   def indices = for( m<-(0 until M).view; n<-(0 until N).view ) yield (m,n)
   /// Returns the transpose of this matrix

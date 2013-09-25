@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * @author Robby McKilliam
  */
 
 package numbers.matrix.field
@@ -64,6 +63,7 @@ class MatrixTest {
     val m = 1
     val B = A.row(m)
     for( n <- 0 until N) assertTrue(B(0,n)==A(m,n))
+    for( n <- 0 until N) assertTrue(B(n)==A(m,n))
   }
   
   @Test
@@ -75,6 +75,7 @@ class MatrixTest {
     val n = 1
     val B = A.column(n)
     for( m <- 0 until M) assertTrue(B(m,0)==A(m,n))
+    for( m <- 0 until M) assertTrue(B(m)==A(m,n))
   }
   
   @Test
