@@ -19,6 +19,10 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   val N : Int
   /// construct a matrix from a function
   def construct(f : (Int,Int) => T, M : Int, N : Int) : B
+  /// construct a row vector from a function
+  def constructRow(f : (Int) => T, N : Int) = construct( (m,n) => f(n), 1, N)
+  /// construct a column vector from a function
+  def constructColumn(f : (Int) => T, M : Int) = construct( (m,n) => f(m), M, 1)
   /// Returns true if mn = (m,n) are indices for this matrix
   override def isDefinedAt(mn : (Int,Int)) = mn._1 >= 0 && mn._1 < M && mn._2 >=0 && mn._2 < N
   def isScalar = (N==1) && (M ==1)

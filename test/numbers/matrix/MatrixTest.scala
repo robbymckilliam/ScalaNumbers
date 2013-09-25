@@ -67,6 +67,24 @@ class MatrixTest {
   }
   
   @Test
+  def constructRowTest() {
+    val N = 5
+    def f(n : Int) = Integer(2*n)
+    val A = IntegerMatrix.constructRow(f, N)
+    assertTrue(A.isRow)
+    for( n <- 0 until N) assertTrue(f(n)==A(n))
+  }
+  
+  @Test
+  def constructColumnTest() {
+    val M = 5
+    def f(m : Int) = Integer(3*m)
+    val A = IntegerMatrix.constructColumn(f, M)
+    assertTrue(A.isColumn)
+    for( m <- 0 until M) assertTrue(f(m)==A(m))
+  }
+  
+  @Test
   def columnTest() {
     val N = 5
     val M = 4

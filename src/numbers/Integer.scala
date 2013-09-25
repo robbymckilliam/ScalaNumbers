@@ -63,12 +63,18 @@ protected class IntegerFromLong(val x : Long) extends Integer(new BigInteger(x.t
 protected class IntegerFromBigInt(val x : BigInt) extends Integer(new BigInteger(x.toString))
 protected class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigInteger(x.toString))
 
+object IntegerMatrix {
+  def construct(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
+  def constructRow(f : (Int) => Integer, N : Int) = construct( (m,n) => f(n), 1, N)
+  def constructColumn(f : (Int) => Integer, M : Int) = construct( (m,n) => f(m), M, 1)
+}
+
 /** A matrix containing integers */
 class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, override val N : Int)  
   extends MatrixWithElementsFromAEuclideanDomain[Integer, IntegerMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
-  override def construct(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
+  override def construct(f : (Int,Int) => Integer, M : Int, N : Int) = IntegerMatrix.construct(f,M,N)
   
   override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
   override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")

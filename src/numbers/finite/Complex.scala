@@ -91,6 +91,10 @@ object ComplexMatrix {
     /// contruct identity matrix
   def identity(M : Int, N : Int) : ComplexMatrix = new ComplexMatrix( (m,n) => if(m==n) Complex.one else Complex.zero, M,N)
   def identity(N : Int): ComplexMatrix = identity(N,N)
+  
+  def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
+  def constructRow(f : (Int) => Complex, N : Int) = construct( (m,n) => f(n), 1, N)
+  def constructColumn(f : (Int) => Complex, M : Int) = construct( (m,n) => f(m), M, 1)
 }
 
 /** Matrix with complex elements */
@@ -98,7 +102,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
-  override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
+  override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = ComplexMatrix.construct(f,M,N)
   
   def /(d: Double) = construct( (m,n) => this(m,n)/d, M, N )
   def *(d: Double) = construct( (m,n) => this(m,n)*d, M, N )

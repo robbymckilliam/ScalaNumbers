@@ -71,6 +71,9 @@ object RealMatrix {
   def fromDoubleArray(a : Seq[Seq[Double]]) : RealMatrix = new RealMatrix((m,n) => Real(a(m)(n)),a.length,a(0).length) 
   def asRow(r : Seq[Real]) = new RealMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Real]) = new RealMatrix( (m,n) => r(m), r.length, 1)
+  def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
+  def constructRow(f : (Int) => Real, N : Int) = construct( (m,n) => f(n), 1, N)
+  def constructColumn(f : (Int) => Real, M : Int) = construct( (m,n) => f(m), M, 1)
 }
 
 /** Matrix with real elements */
@@ -78,7 +81,7 @@ class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : I
 extends MatrixWithElementsFromAField[Real, RealMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
-  override def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
+  override def construct(f : (Int,Int) => Real, M : Int, N : Int) = RealMatrix.construct(f,M,N)
   
   /** Sum of the squared magnitudes of all of the elements */
   lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)
