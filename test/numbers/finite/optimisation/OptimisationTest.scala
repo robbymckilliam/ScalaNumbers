@@ -94,4 +94,21 @@ class OptimisationTest {
     assertTrue( xmin.frobeniusNorm.abs < 1e-5 )
   }
   
+  @Test
+  def NewtonRaphsonTest() = {
+    val f : Double => Double = x => (x-2)*(x-2)
+    val df : Double => Double = x => 2*(x-2)
+    val d2f : Double => Double = x => 2
+    val xstart = 10.0
+    val xmin = new SingleVariableOptimisation.NewtonRaphson(xstart, df, d2f).xmin
+    assertEquals(2.0, xmin, 1e-5)
+    
+    val f2 : Double => Double = x => x*(x+1)*(x-2)
+    val df2 : Double => Double = x => x*(3*x-2)-2
+    val d2f2 : Double => Double = x => (3*x-2) + 3*x
+    val xstart2 = 1.0
+    val xmin2 = new SingleVariableOptimisation.NewtonRaphson(xstart2, df2, d2f2).xmin
+    assertEquals(1.21525, xmin2, 1e-4)
+  }
+  
 }

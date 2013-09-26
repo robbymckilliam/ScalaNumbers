@@ -185,8 +185,8 @@ object SingleVariableOptimisation {
    * Standard gradient descent to find the minimum of a function.  You must provide the derivative
    * of the function as an argument.  
    * 
-   * @param xstart      starting point for gradient decent (a guess at the minimiser)
-   * @param df           the derivative of the function we are minimising
+   * @param xstart     starting point for gradient decent (a guess at the minimiser)
+   * @param df           the derivative of the function being minimising
    * @param gamma   step control for decent, larger is fast, small is more stable (default = 0.1)
    * @param tol          desired accuracy (default 1e-6)
    * @param ITRMAX    maximum number of iterations (default 1000)
@@ -203,6 +203,33 @@ object SingleVariableOptimisation {
       }
       if((x - xprev).abs < tol) return x
       val xnext = x - gamma*df(x)
+      return run(xnext,x,itrnum-1)
+    }
+    
+  }
+  
+  /** 
+   * The Newton-Raphson proceedure for finding a stationary point.  It could be either a minimum
+   * or a maximum.  Convergence is fast (quadratic).  Requires first and second derivatives.  
+   * 
+   * @param xstart     starting point (a guess at the minimiser/maximiser)
+   * @param df           the derivative of the function being minimised/maximised
+   * @param d2f         the second derivative of the function being minimised/maximised
+   * @param tol          desired accuracy (default 1e-6)
+   * @param ITRMAX    maximum number of iterations (default 100)
+   */
+  class NewtonRaphson(val xstart : Double, val df : Double => Double, val d2f : Double => Double, val tol : Double = 1e-6, val ITRMAX : Int = 100) {
+    
+    /** Return (f(x), x) where f(x) is the minimum */
+    lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
+    
+    @tailrec protected final def run(x : Double, xprev : Double, itrnum : Int) : Double = {
+      if(itrnum == 0) {
+        println("Warning: Newton-Raphson methodreached the maximum number of iterations " + ITRMAX)
+        return x
+      }
+      if((x - xprev).abs < tol) return x
+      val xnext = x - df(x)/d2f(x)
       return run(xnext,x,itrnum-1)
     }
     

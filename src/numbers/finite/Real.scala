@@ -113,6 +113,27 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override def smithNormalForm = svd
   
   /** 
+   * Returns the inverse of this matrix.  Uses the singular value decomposition (probably not that efficient)
+   */
+  def inverse = {
+    if(N != M) throw new ArrayIndexOutOfBoundsException("Matrix is not square, it can't be inverted.  You might want to use psuedoinverse instead.")
+    val (u,s,v) = this.svd
+    val sinv = construct( (m,n) => if(m==n) Real.one/s(m,n) else Real.zero, s.M, s.N)
+    v*sinv*u.t
+  }
+  def inv = inverse
+  
+  /**
+   * Returns the Moore-Penrose psuedo inverse of this matrix
+   */
+  def psuedoinverse = {
+    if(M < N) this.t*(this*this.t).inv 
+    else if(M > N) (this.t*this).inv*this.t
+    else inverse
+  }
+  def pinv = psuedoinverse
+  
+  /** 
    *QR decomposition based on Householder reflections.  Probably not the most efficient
    *implementation and it's not tail recursive, so it will stack overflow for large matrices, but it looks nice!
    */
@@ -132,6 +153,5 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override def hermiteNormalForm = qr
   
   def lu = throw new UnsupportedOperationException("not implemented yet")
-  def inverse = throw new UnsupportedOperationException("not implemented yet")
 
 }
