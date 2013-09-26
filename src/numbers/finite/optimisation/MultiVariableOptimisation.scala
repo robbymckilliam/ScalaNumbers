@@ -21,6 +21,8 @@ object MultiVariableOptimisation {
    * @param ITRMAX    maximum number of iterations (default 1000)
    */
   class GradientDescent(val xstart : RealMatrix, val df : RealMatrix => RealMatrix, val gamma : Double = 0.1, val tol : Double = 1e-6, val ITRMAX : Int = 1000) {
+    if( !xstart.isRow && !xstart.isColumn ) 
+      throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df need to have the same dimensions as xstart.")
     
     /** Return (f(x), x) where f(x) is the minimum */
     lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
@@ -49,13 +51,15 @@ object MultiVariableOptimisation {
    * @param ITRMAX    maximum number of iterations (default 100)
    */
   class NewtonRaphson(val xstart : RealMatrix, val df : RealMatrix => RealMatrix, val H : RealMatrix => RealMatrix, val tol : Double = 1e-6, val ITRMAX : Int = 100) {
+    if( !xstart.isRow && !xstart.isColumn ) 
+      throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df need to have the same dimensions as xstart and the Hessian H needs to be and L by L matrix")
     
     /** Return (f(x), x) where f(x) is the minimum */
     lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
     
     @tailrec protected final def run(x : RealMatrix, xprev : RealMatrix, itrnum : Int) : RealMatrix = {
       if(itrnum == 0) {
-        println("Warning: Newton-Raphson methodreached the maximum number of iterations " + ITRMAX)
+        println("Warning: Newton-Raphson method reached the maximum number of iterations " + ITRMAX)
         return x
       }
       if((x - xprev).frobeniusNorm < tol) return x
