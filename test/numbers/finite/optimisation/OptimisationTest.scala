@@ -116,7 +116,7 @@ class OptimisationTest {
     val L = 5 //dimension
     val f : RealMatrix => Double = x => x.squaredFrobeniusNorm
     val df : RealMatrix => RealMatrix = x => x * 2.0 //elementwise multiplication by 2
-    val H : RealMatrix => RealMatrix = x => RealMatrix.identity(L)*2 //elementwise multiplication by 2
+    val H : RealMatrix => RealMatrix = x => RealMatrix.identity(L)*2 
     val xstart = RealMatrix.constructRow( n => Real(2.0*n), L) //L variable optimisation
     val xmin = new MultiVariableOptimisation.NewtonRaphson(xstart, df, H).xmin
     assertTrue( xmin.frobeniusNorm.abs < 1e-5 )

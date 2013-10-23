@@ -8,7 +8,7 @@ package numbers.finite.optimisation
 import scala.math.signum
 import scala.math.abs
 import scala.math.sqrt
-import scala.annotation.tailrec
+import numbers.ConvergentIteration
 
 object SingleVariableOptimisation {
   
@@ -61,6 +61,7 @@ object SingleVariableOptimisation {
   def fzero(f : Double => Double, a : Double, b: Double, tol : Double = 1e-6, ITRMAX : Int = 100) : Double = {
     return new Bisection(f,a,b,tol,ITRMAX).zero
   }
+
   
   /** 
    *Search for a zero of the function f(x) in the interval [a, b].
@@ -181,6 +182,7 @@ object SingleVariableOptimisation {
   
   }
   
+  
   /** 
    * Standard gradient descent to find the minimum of a function.  You must provide the derivative
    * of the function as an argument.  
@@ -193,18 +195,8 @@ object SingleVariableOptimisation {
    */
   class GradientDescent(val xstart : Double, val df : Double => Double, val gamma : Double = 0.1, val tol : Double = 1e-6, val ITRMAX : Int = 1000) {
     
-    /** Return (f(x), x) where f(x) is the minimum */
-    lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
-    
-    @tailrec protected final def run(x : Double, xprev : Double, itrnum : Int) : Double = {
-      if(itrnum == 0) {
-        println("Warning: Gradient decent reached the maximum number of iterations " + ITRMAX)
-        return x
-      }
-      if((x - xprev).abs < tol) return x
-      val xnext = x - gamma*df(x)
-      return run(xnext,x,itrnum-1)
-    }
+    /** The Double x that minimises your function */
+    lazy val xmin = new ConvergentIteration[Double](xstart, x=>x-gamma*df(x), (x,y)=>(x-y).abs<tol, ITRMAX).limit
     
   }
   
@@ -220,20 +212,9 @@ object SingleVariableOptimisation {
    */
   class NewtonRaphson(val xstart : Double, val df : Double => Double, val d2f : Double => Double, val tol : Double = 1e-6, val ITRMAX : Int = 100) {
     
-    /** Return (f(x), x) where f(x) is the minimum */
-    lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
-    
-    @tailrec protected final def run(x : Double, xprev : Double, itrnum : Int) : Double = {
-      if(itrnum == 0) {
-        println("Warning: Newton-Raphson methodreached the maximum number of iterations " + ITRMAX)
-        return x
-      }
-      if((x - xprev).abs < tol) return x
-      val xnext = x - df(x)/d2f(x)
-      return run(xnext,x,itrnum-1)
-    }
+    /** The Double x that minimises your function */
+    lazy val xmin = new ConvergentIteration[Double](xstart, x=>x-df(x)/d2f(x), (x,y)=>(x-y).abs<tol, ITRMAX).limit
     
   }
-  
+
 }
-  

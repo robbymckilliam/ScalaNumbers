@@ -4,9 +4,9 @@
 
 package numbers.finite.optimisation
 
-import scala.annotation.tailrec
 import numbers.finite.RealMatrix
 import numbers.finite.Real
+import numbers.ConvergentIteration
 
 object MultiVariableOptimisation {
   
@@ -22,20 +22,10 @@ object MultiVariableOptimisation {
    */
   class GradientDescent(val xstart : RealMatrix, val df : RealMatrix => RealMatrix, val gamma : Double = 0.1, val tol : Double = 1e-6, val ITRMAX : Int = 1000) {
     if( !xstart.isRow && !xstart.isColumn ) 
-      throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df need to have the same dimensions as xstart.")
+      throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df needs to have the same dimensions as xstart.")
     
-    /** Return (f(x), x) where f(x) is the minimum */
-    lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
-    
-    @tailrec protected final def run(x : RealMatrix, xprev : RealMatrix, itrnum : Int) : RealMatrix = {
-      if(itrnum == 0) {
-        println("Warning: Gradient decent reached the maximum number of iterations " + ITRMAX)
-        return x
-      }
-      if((x - xprev).frobeniusNorm < tol) return x
-      val xnext = (x - df(x)*gamma).backwitharray
-      return run(xnext,x,itrnum-1)
-    }
+    /** The vector x that minimises your function */
+    lazy val xmin = new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*gamma).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit
     
   }
   
@@ -54,22 +44,12 @@ object MultiVariableOptimisation {
     if( !xstart.isRow && !xstart.isColumn ) 
       throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df need to have the same dimensions as xstart and the Hessian H needs to be and L by L matrix")
     
-    /** Return (f(x), x) where f(x) is the minimum */
-    lazy val xmin = run(xstart, xstart + 2*tol, ITRMAX)
-    
-    @tailrec protected final def run(x : RealMatrix, xprev : RealMatrix, itrnum : Int) : RealMatrix = {
-      if(itrnum == 0) {
-        println("Warning: Newton-Raphson method reached the maximum number of iterations " + ITRMAX)
-        return x
-      }
-      if((x - xprev).frobeniusNorm < tol) return x
-      val xnext = {
-        if(x.isRow) (x - df(x)*H(x).inv).backwitharray //get order of multiplication the right way regardless of whether input x is column of row vector
-        else (x - H(x).inv*df(x)).backwitharray
-      }
-      return run(xnext,x,itrnum-1)
+    /** The vector x that minimises your function */
+    lazy val xmin = {
+      //get order of multiplication the right way regardless of whether input x is column or row vector
+      if(xstart.isRow) new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*H(x).inv).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit 
+      else new ConvergentIteration[RealMatrix](xstart, x=>(x - H(x).inv*df(x)).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit
     }
-    
   }
-
+  
 }
