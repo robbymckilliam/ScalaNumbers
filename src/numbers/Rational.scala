@@ -28,7 +28,6 @@ protected class Rational(val n : Integer, val d: Integer) extends Field[Rational
   
   final def +(that : Rational) : Rational = Rational(that.d*n + that.n*d,that.d*d)
   final def unary_- : Rational = Rational(-n,d) //n- is the negative of n
-  final def -(that : Rational) : Rational = -that + this
   final def *(that : Rational) : Rational = Rational(that.n*n,that.d*d)
   final def /(that: Rational) : Rational = Rational(that.d*n,that.n*d)
   

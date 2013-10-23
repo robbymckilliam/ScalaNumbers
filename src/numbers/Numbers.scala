@@ -20,7 +20,7 @@ trait Group[G <: Group[G]] extends Monoid[G] {
   /** Get the inverse of this group element.  Scala unary_ allow - to be a prefix */
   def unary_- : G
   /** Operate with the inverse */
-  def -(that : G) : G
+  def -(that : G) : G = this + -that
   /** Test for equality */
   //def ==(that : G) : Boolean
   /** Test for equality */
