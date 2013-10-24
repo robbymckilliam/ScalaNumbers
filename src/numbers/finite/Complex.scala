@@ -170,7 +170,14 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def pinv = psuedoinverse
   
-  
   def lu = throw new UnsupportedOperationException("not implemented yet")
+  
+  /** Determinant of this matrix */
+  lazy val determinant = {
+    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
+    val (u,s,v) = svd
+    (0 until N).foldLeft(Complex.one)( (prod, n) => prod*s(n,n) )
+  }
+  lazy val det = determinant
 }
 

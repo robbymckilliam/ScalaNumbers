@@ -25,7 +25,10 @@ import scala.annotation.tailrec
     lazy val limit = run(start, ITRMAX)
     
     @tailrec protected final def run(x: T, itrnum : Int) : T = {
-      if(itrnum == 0) throw new RuntimeException("ConvergenIteration reached the maximum number of iterations " + ITRMAX)
+      if(itrnum == 0) {
+        println("Warning : ConvergenIteration reached the maximum number of iterations " + ITRMAX)
+        return x
+      }
       val nextx = step(x)
       if( stop(x,nextx) ) return nextx
       else return run(nextx,itrnum-1)

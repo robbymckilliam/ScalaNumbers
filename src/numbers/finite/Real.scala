@@ -153,5 +153,14 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override def hermiteNormalForm = qr
   
   def lu = throw new UnsupportedOperationException("not implemented yet")
+  
+  /** Determinant of this matrix */
+  lazy val determinant = {
+    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
+    val (u,s,v) = svd
+    (0 until N).foldLeft(Real.one)( (prod, n) => prod*s(n,n) )
+  }
+  lazy val det = determinant
+  
 
 }
