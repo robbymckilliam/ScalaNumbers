@@ -53,11 +53,11 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   def column(n: Int) : B = submatrix( 0 until M, ArraySeq(n) )
   /// Returns a copy of this matrix with elements backed by a scala.collections.mutatble.ArraySeq
   def backwitharray : B = {
-    val A = arraySeq
+    val A = toSeq
     construct( (m,n) => A(m*N+n), M, N )
   }
   /// Returns an ArraySeq with the elements of this array (m,n)th element in matrix corresponds with m*N+n th element in the array.
-  def arraySeq : ArraySeq[T] = {
+  def toSeq : ArraySeq[T] = {
     val A = new ArraySeq[T](N*M)
     for( m <- 0 until M; n <- 0 until N ) A(m*N + n) = this(m,n)
     A
