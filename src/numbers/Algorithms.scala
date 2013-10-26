@@ -25,13 +25,14 @@ import scala.annotation.tailrec
     lazy val limit = run(start, ITRMAX)
     
     @tailrec protected final def run(x: T, itrnum : Int) : T = {
-      if(itrnum == 0) {
-        println("Warning : ConvergenIteration reached the maximum number of iterations " + ITRMAX)
-        return x
-      }
+      if(itrnum == 0)
+        throw MaximumIterationsReachedException("Warning : ConvergenIteration reached the maximum number " + ITRMAX + " iterations.", x)
       val nextx = step(x)
       if( stop(x,nextx) ) return nextx
       else return run(nextx,itrnum-1)
     }
+    
+    case class MaximumIterationsReachedException(val message: String = null, val limit : T, val cause: Throwable = null) extends Exception(message, cause)
+  
   }
 

@@ -24,8 +24,10 @@ object MultiVariableOptimisation {
     if( !xstart.isRow && !xstart.isColumn ) 
       throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df needs to have the same dimensions as xstart.")
     
+    /** The convergent iterator used to run the decesent, you can obtain MaximumIterations exception through this */
+    val convergentiteration = new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*gamma).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX)
     /** The vector x that minimises your function */
-    lazy val xmin = new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*gamma).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit
+    lazy val xmin = convergentiteration.limit
     
   }
   
@@ -44,12 +46,14 @@ object MultiVariableOptimisation {
     if( !xstart.isRow && !xstart.isColumn ) 
       throw new ArrayIndexOutOfBoundsException("xstart needs to be a row or column matrix of length, say L. The gradient vector df need to have the same dimensions as xstart and the Hessian H needs to be and L by L matrix")
     
-    /** The vector x that minimises your function */
-    lazy val xmin = {
-      //get order of multiplication the right way regardless of whether input x is column or row vector
-      if(xstart.isRow) new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*H(x).inv).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit 
-      else new ConvergentIteration[RealMatrix](xstart, x=>(x - H(x).inv*df(x)).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX).limit
+    /** The convergent iterator used to run the decesent, you can obtain MaximumIterations exception through this */
+    val convergentiteration = {
+      if(xstart.isRow) new ConvergentIteration[RealMatrix](xstart, x=>(x - df(x)*H(x).inv).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX)
+      else new ConvergentIteration[RealMatrix](xstart, x=>(x - H(x).inv*df(x)).backwitharray, (x,y)=>(x-y).frobeniusNorm<tol, ITRMAX)
     }
+    /** The vector x that minimises your function */
+    lazy val xmin = convergentiteration.limit
+    
   }
   
 }

@@ -9,6 +9,7 @@ import scala.math.signum
 import scala.math.abs
 import scala.math.sqrt
 import numbers.ConvergentIteration
+import scala.math.signum
 
 object SingleVariableOptimisation {
   
@@ -69,12 +70,12 @@ object SingleVariableOptimisation {
    *Uses the bisection method, only guaranteed to converge if there is a unique zero 
    *between a and b and f is continuous and sign(f(a)) = - sign(f(b))
    *
-   *@param f           The function to zero 
+   *@param  f          The function to zero 
    *@param  a         Left endpoint of initial interval
    *@param  c         Right endpoint of initial interval
    *@param  b         bx must satisfy a < b < c and f(a) > f(b) < f(c)
    *@param  tol         Desired length of the interval in which the minimum will be determined to lie (default 1e-6)
-   *@params ITRMAX  maximum number of iterations before terminating (default 100)
+   *@param  ITRMAX  maximum number of iterations before terminating (default 100)
    */
   class Bisection(val f : Double => Double, val ax : Double, val bx : Double, val tol : Double, val ITRMAX : Int) {
   
@@ -87,12 +88,10 @@ object SingleVariableOptimisation {
         var c = (a + b)/2
         var fc = f(c)
         if( fc == 0 || (a-b).abs/2 < tol ) return c
-        if( sign(fc) == sign(f(a)) ) a = c else b = c
+        if( signum(fc) == signum(f(a)) ) a = c else b = c
       }
       throw new RuntimeException("Bisection failed.  Maximum number " + ITRMAX + " of iterations exceeded")
     }
-  
-    @inline protected final def sign(x : Double) : Double = scala.math.signum(x)
 
   }
 
@@ -195,8 +194,10 @@ object SingleVariableOptimisation {
    */
   class GradientDescent(val xstart : Double, val df : Double => Double, val gamma : Double = 0.1, val tol : Double = 1e-6, val ITRMAX : Int = 1000) {
     
+    /** The convergent iterator used to run the decesent, you can obtain MaximumIterations exception through this */
+    val convergentiteration = new ConvergentIteration[Double](xstart, x=>x-gamma*df(x), (x,y)=>(x-y).abs<tol, ITRMAX)
     /** The Double x that minimises your function */
-    lazy val xmin = new ConvergentIteration[Double](xstart, x=>x-gamma*df(x), (x,y)=>(x-y).abs<tol, ITRMAX).limit
+    lazy val xmin = convergentiteration.limit
     
   }
   
@@ -212,8 +213,10 @@ object SingleVariableOptimisation {
    */
   class NewtonRaphson(val xstart : Double, val df : Double => Double, val d2f : Double => Double, val tol : Double = 1e-6, val ITRMAX : Int = 100) {
     
+    /** The convergent iterator used to run the decesent, you can obtain MaximumIterations exception through this */
+    val convergentiteration = new ConvergentIteration[Double](xstart, x=>x-df(x)/d2f(x), (x,y)=>(x-y).abs<tol, ITRMAX)
     /** The Double x that minimises your function */
-    lazy val xmin = new ConvergentIteration[Double](xstart, x=>x-df(x)/d2f(x), (x,y)=>(x-y).abs<tol, ITRMAX).limit
+    lazy val xmin = convergentiteration.limit
     
   }
 

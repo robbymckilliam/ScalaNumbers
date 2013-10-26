@@ -183,6 +183,7 @@ class OptimisationTest {
     //the approximate Hessian always has det 400
     for( x <- -2.0 to 2.0 by 0.1 ) assertEquals(400.0, H(x).det.d, 1e-8)
   }
+ 
   
 //  ///Test a few manual iterations of the Gauss-Newton method on the Rosenbock function
 //  @Test def manualGaussNewtonRosenbock = {
