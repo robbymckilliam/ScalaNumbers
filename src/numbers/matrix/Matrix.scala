@@ -86,6 +86,7 @@ trait MatrixWithElementsFromAGroup[G <: Group[G],B <: Matrix[G,B]] extends Matri
 trait MatrixWithElementsFromARing[R <: Ring[R],B <: MatrixWithElementsFromAGroup[R,B]] extends MatrixWithElementsFromAGroup[R,B] {
   /// matrix mulitplication
   def *(that: B) : B = construct( (m,n) => (0 until N).foldLeft(this(0,0).zero)( (v, i) => v + this(m,i)*that(i,n)), M, that.N ).backwitharray
+  //def *(that: B) : B = construct( (m,n) => (0 until N).map(i=>(this(m,i),that(i,n))).map(Function.tupled(_*_)).reduceLeft(_+_), M, that.N).backwitharray //multiply that doesn't require this(0,0).zero
   /// scalar mulitplication
   def *(that: R) : B = construct( (m,n) => this(m,n) * that, M, N )
 }
