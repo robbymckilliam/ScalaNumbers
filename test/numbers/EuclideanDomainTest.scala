@@ -7,12 +7,13 @@ package numbers
 import org.junit.Test
 import org.junit.Assert._
 import numbers.EuclideanDomain.gcd
+import numbers.EuclideanDomain.lcm
 import numbers.EuclideanDomain.extended_gcd
 
 class EuclideanDomainTest {
   
   @Test
-  def IntgcdTest() {
+  def IntgcdandlcmTest() {
     assertTrue(gcd(2,2)==2)
     assertTrue(gcd(7,311)==1)
     assertTrue(gcd(311,7)==1)
@@ -22,11 +23,15 @@ class EuclideanDomainTest {
     assertTrue(gcd(49,7)==7)
     assertTrue(gcd(List(1,2,3,4))==1)
     assertTrue(gcd(List(3,12,15,21))==3)
+    assertTrue(lcm(2,4)==4)
+    assertTrue(lcm(3,4)==12)
+    assertTrue(lcm(List(2,3,4,6))==12)
+    assertTrue(lcm(List(3,4,5))==60)
   }
 
   
   @Test
-  def LonggcdTest() {
+  def LonggcdandlcmTest() {
     assertTrue(gcd(2.toLong,2.toLong)==2.toLong)
     assertTrue(gcd(7.toLong,311.toLong)==1.toLong)
     assertTrue(gcd(311.toLong,7.toLong)==1.toLong)
@@ -36,15 +41,23 @@ class EuclideanDomainTest {
     assertTrue(gcd(49.toLong,7.toLong)==7.toLong)
     assertTrue(gcd(List(1L,2L,3L,4L))==1L)
     assertTrue(gcd(List(3L,12L,15L,21L))==3L)
+    assertTrue(lcm(2L,4L)==4L)
+    assertTrue(lcm(3L,4L)==12L)
+    assertTrue(lcm(List(2L,3L,4L,6L))==12L)
+    assertTrue(lcm(List(3L,4L,5L))==60L)
   }
   
   @Test
-  def IntegergcdTest() {
+  def IntegergcdandlcmTest() {
     assertTrue(gcd(Integer(2),Integer(2))==Integer(2))
     assertTrue(gcd(Integer(7),Integer(311))==Integer(1))
     assertTrue(gcd(Integer(49),Integer(7))==Integer(7))
     assertTrue(gcd(List(Integer(1),Integer(2),Integer(3),Integer(4)))==Integer(1))
     assertTrue(gcd(List(Integer(3),Integer(12),Integer(15),Integer(21)))==Integer(3))
+    assertTrue(lcm(Integer(2),Integer(4))==Integer(4))
+    assertTrue(lcm(Integer(3),Integer(4))==Integer(12))
+    assertTrue(lcm(List(Integer(2),Integer(3),Integer(4),Integer(6)))==Integer(12))
+    assertTrue(lcm(List(Integer(3),Integer(4),Integer(5)))==Integer(60))
   }
   
   @Test

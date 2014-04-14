@@ -73,15 +73,27 @@ object EuclideanDomain {
   /** Greatest common divisor.*/
   @tailrec final def gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : R = if( b == b.zero ) a else gcd(b, a mod b)
   final def gcd[R <: EuclideanDomain[R,_]](s : Seq[R]) : R = s.reduceLeft { (g, v) => gcd[R](g,v) }
+  
   /** Greatest common divisor. gcd for Integer is always positive. */
   @tailrec final def gcd(a : Integer, b : Integer) : Integer = if( b == Integer.zero ) a.abs else gcd(b.abs, a.abs mod b.abs)
-  final def gcd(s : Seq[Integer]) : Integer = s.reduceLeft { (g, v) => gcd(g,v) }
+  final def gcd(s : Seq[Integer]) : Integer = s.reduceLeft { (g,v) => gcd(g,v) }
+  /** Least common multiple of Integers */
+  final def lcm(a : Integer, b : Integer) : Integer = (a*b).abs / gcd(a,b)
+  final def lcm(s : Seq[Integer]) : Integer = s.reduceLeft { (g,v) => lcm(g,v) }
+  
   /** Greatest common divisor of two scala Ints*/
   @tailrec final def gcd(a : Int, b : Int) : Int = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
-  final def gcd(s : Seq[Int]) : Int = s.reduceLeft { (g, v) => gcd(g,v) }
+  final def gcd(s : Seq[Int]) : Int = s.reduceLeft { (g,v) => gcd(g,v) }
+  /** Least common multiple of scala Int */
+  final def lcm(a : Int, b : Int) : Int = (a*b).abs / gcd(a,b)
+  final def lcm(s : Seq[Int]) : Int = s.reduceLeft { (g,v) => lcm(g,v) }
+  
   /** Greatest common divisor of two scala Longs*/
   @tailrec final def gcd(a : Long, b : Long) : Long = if( b == 0 ) a.abs else gcd(b.abs, a.abs % b.abs)
-  final def gcd(s : Seq[Long]) : Long = s.reduceLeft { (g, v) => gcd(g,v) }
+  final def gcd(s : Seq[Long]) : Long = s.reduceLeft { (g,v) => gcd(g,v) }
+  /** Least common multiple of scala Long */
+  final def lcm(a : Long, b : Long) : Long = (a*b).abs / gcd(a,b)
+  final def lcm(s : Seq[Long]) : Long = s.reduceLeft { (g,v) => lcm(g,v) }
   
   /** The Extended Euclidean algorithm applied to two scala Ints*/
   final def extended_gcd(a : Int, b : Int) : (Int, Int) = {
