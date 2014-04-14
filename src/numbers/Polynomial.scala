@@ -23,10 +23,10 @@ class PolynomialRing[R <: Ring[R]](val c : Seq[R]) extends Polynomial with Ring[
   /** Polynomial multiply (convolution) */
   override def *(that : PolynomialRing[R]) : PolynomialRing[R] = throw new UnsupportedOperationException("No * at the moment")
   /** Polynomial additive inverse */
-  override def unary_- : PolynomialRing[R] = throw new UnsupportedOperationException("No * at the moment")
+  override def unary_- : PolynomialRing[R] = throw new UnsupportedOperationException("No - at the moment")
   /** The identity element*/
-  override def zero : PolynomialRing[R] = throw new UnsupportedOperationException("No * at the moment")
+  override def zero : PolynomialRing[R] = throw new UnsupportedOperationException("No zero at the moment")
   /** Test for equality */
-  override def ==(that : PolynomialRing[R]) : Boolean = throw new UnsupportedOperationException("No zero at the moment")
+  override def ==(that : PolynomialRing[R]) : Boolean = throw new UnsupportedOperationException("No == at the moment")
   
 }
