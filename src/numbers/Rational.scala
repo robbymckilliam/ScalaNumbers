@@ -23,6 +23,8 @@ object Rational {
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */
 protected class Rational(val n : Integer, val d: Integer) extends Field[Rational,Rational] with Ordered[Rational] {
   
+  final def numerator = n
+  final def denominator = d
   final def zero = Rational.zero
   final def one = Rational.one
   
