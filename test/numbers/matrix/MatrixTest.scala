@@ -160,6 +160,15 @@ class MatrixTest {
   }
   
   @Test
+  def matrixIntegerDetTest() {
+    val N = 2
+    val M = 2
+    def f(m : Int, n : Int) = Integer(n*m+1)
+    val A = new IntegerMatrix(f,M,N)
+    assertTrue(A.det == A(0,0)*A(1,1) - A(0,1)*A(1,0))
+  }
+  
+  @Test
   def backwithArrayTest() {
     val N = 3
     val M = 2

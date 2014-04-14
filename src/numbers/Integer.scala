@@ -79,4 +79,16 @@ class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, overrid
   override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
   override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")
   
+  /** 
+   *Returns the determinant of this matrix.
+   *NOTE: Currently this just converts the matrix to RealMatrix to do this, but probably the Hermite normal
+   *form should be used instead.
+   * */
+  lazy val determinant = {
+    //if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
+    val doubleDet = new numbers.finite.RealMatrix( (m,n) => numbers.finite.Real(this(m,n).bigint.doubleValue), M,N).det.d
+    Integer(scala.math.round(doubleDet))
+  }
+  lazy val det = determinant
+  
 }
