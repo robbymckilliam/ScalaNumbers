@@ -37,6 +37,9 @@ protected class Rational(val n : Integer, val d: Integer) extends Field[Rational
   
   final override def ==(that : Rational) : Boolean = that.n==n && that.d==d
   
+  ///Return true if this rational number is a whole integer (i.e. the denominator is zero)
+  final def isInteger = d == Integer.one
+  
   /** Uses scala's internal Ordered, only need to override compare */
   final def compare(that : Rational) : Int = {
     val num = (this-that).n
