@@ -169,6 +169,21 @@ class MatrixTest {
   }
   
   @Test
+  def matrixIntegerDetTest2() {
+    val N = 6
+    def f(m : Int, n : Int) : Integer = {
+      if(n==0 && m==0) return Integer(18)
+      else if(n==1 && m==1) return Integer.zero
+      else if(n==1 && m==0) return Integer.one
+      else if(n==0 && m == 1) return Integer.one
+      else if(n==m) return Integer.one
+      else  return Integer.zero
+    }
+    val A = new IntegerMatrix(f,N,N)
+    assertTrue(A.det == -Integer.one)
+  }
+  
+  @Test
   def backwithArrayTest() {
     val N = 3
     val M = 2

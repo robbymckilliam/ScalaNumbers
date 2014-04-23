@@ -72,6 +72,8 @@ object RealMatrix {
   def asRow(r : Seq[Real]) = new RealMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Real]) = new RealMatrix( (m,n) => r(m), r.length, 1)
   def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
+  /// Construct RealMatrix from a jblas DoubleMatrix
+  def constructFromJblas(M : org.jblas.DoubleMatrix) = construct( (m,n) => Real(M.get(m,n)), M.rows, M.columns )
   def constructRow(f : (Int) => Real, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Real, M : Int) = construct( (m,n) => f(m), M, 1)
 }
@@ -101,13 +103,11 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
    * native code. Ultimately, it would be better to have a pure java or scala version of this.
    */
   def singularValueDecomposition : (RealMatrix, RealMatrix, RealMatrix) = {
-    val A = org.jblas.DoubleMatrix.zeros(M,N)
-    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,this(m,n).d)
-    val USV = org.jblas.Singular.sparseSVD(A)
-    val U = construct( (m,n) => Real(USV(0).get(m,n)), USV(0).rows, USV(0).columns )
+    val USV = org.jblas.Singular.sparseSVD(tojblas)
+    val U = RealMatrix.constructFromJblas(USV(0))
     val S = construct( (m,n) => if(m==n) Real(USV(1).get(m,0)) else Real.zero, USV(1).rows, USV(1).rows )
-    val V = construct( (m,n) => Real(USV(2).get(m,n)), USV(2).rows, USV(2).columns )
-    return (U,S,V)
+    val V = RealMatrix.constructFromJblas(USV(2))
+    return (U, S , V)
   }
   def svd = singularValueDecomposition
   override def smithNormalForm = svd
@@ -152,7 +152,19 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   }
   override def hermiteNormalForm = qr
   
-  def lu = throw new UnsupportedOperationException("not implemented yet")
+  /** 
+   * Return the PLU decomposition of this matrix.  The matrix must by square 
+   * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
+   * such that the product PLU is equal to this matrix
+   */
+  def lu : (RealMatrix, RealMatrix, RealMatrix) = {
+    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have LU decompositions!")
+    val PLU = org.jblas.Decompose.lu(tojblas)
+    val P = RealMatrix.constructFromJblas(PLU.p)
+    val L = RealMatrix.constructFromJblas(PLU.l)
+    val U = RealMatrix.constructFromJblas(PLU.u)
+    return (P, L , U)
+  }
   
   /** Determinant of this matrix */
   lazy val determinant = {
@@ -162,5 +174,11 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   }
   lazy val det = determinant
   
+  /// Return this matrix as a jblas DoubleMatrix
+  def tojblas = {
+    val A = org.jblas.DoubleMatrix.zeros(M,N)
+    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,this(m,n).d)
+    A
+  }
 
 }
