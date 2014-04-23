@@ -122,4 +122,12 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
 trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
+  
+  /** 
+   * Return the PLU decomposition of this matrix.  The matrix must by square 
+   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
+   * such that the product plu is equal to this matrix
+   */
+  def lu = throw new UnsupportedOperationException("not implemented yet")
+  
 }

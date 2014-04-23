@@ -170,8 +170,6 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def pinv = psuedoinverse
   
-  def lu = throw new UnsupportedOperationException("not implemented yet")
-  
   /** 
    *Determinant of this matrix.  
    *Pretty sure this has a bug in it meaning that the negative of the determinant will sometimes
