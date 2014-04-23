@@ -163,14 +163,21 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
     val P = RealMatrix.constructFromJblas(PLU.p)
     val L = RealMatrix.constructFromJblas(PLU.l)
     val U = RealMatrix.constructFromJblas(PLU.u)
-    return (P, L , U)
+    return (P,L,U)
   }
   
-  /** Determinant of this matrix */
+  /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val (u,s,v) = svd
-    (0 until N).foldLeft(Real.one)( (prod, n) => prod*s(n,n) )
+    val (p,l,u) = lu
+    val Ldet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*l(n,n) )
+    val Udet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*u(n,n) )
+    //now take a really silly approach to computing the determinant (i.e. the sign) of the permutation matrix p
+    val ind = RealMatrix.constructColumn(n=>Real(n), N) 
+    val perm = p * ind //perform permutation on (0,1,...,N-1)
+    val pcount = (0 until N).count { i => (perm(i) - ind(i)).norm > Real(1e-7) } / 2 //count the number of permuations
+    val pdet = if((pcount%2)==0) 1.0 else -1.0 //determinant is 1 if number of permutations is even, else it's -1
+    Ldet*Udet*pdet
   }
   lazy val det = determinant
   

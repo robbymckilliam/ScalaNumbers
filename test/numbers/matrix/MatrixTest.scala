@@ -217,6 +217,23 @@ class MatrixTest {
   }
   
   @Test
+  def luRealTest() {
+    val tol = 1e-6
+    val N = 4
+    def f(m : Int, n : Int) = Real(n*m+1) * Real((n%2).doubleValue - 0.5)
+    val A = new RealMatrix(f,N,N)
+    val (p,ell,u) = A.lu
+    val B = p*ell*u
+    for( m <- 0 until N; n <- 0 until N) assertEquals(B(m,n).d,A(m,n).d,tol) //assert product plu = A
+    //assert that u is upper triangular and ell is lower triangular
+    for( m <- 0 until N ) for( n <- 0 until m ) assertTrue( u(m,n).norm < tol && ell(n,m).norm < tol )
+    //assert that p contains only 1's and 0's
+    for( m <- 0 until N ) for( n <- 0 until N ) assertTrue( (p(m,n) - 1.0).norm < tol || p(m,n).norm < tol )
+    assertTrue((p.det.norm - 1.0).norm < tol) //assert that the determinant of p is 1 or -1.
+  }
+  
+  
+  @Test
   def svdComplexTest() {
     val tol = 1e-6
     val N = 3

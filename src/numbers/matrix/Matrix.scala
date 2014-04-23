@@ -67,7 +67,7 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   }
 }
 
-trait MatrixWithElementsFromAGroup[G <: Group[G],B <: Matrix[G,B]] extends Matrix[G,B] {
+trait MatrixWithElementsFromAGroup[G <: Group[G],B <: MatrixWithElementsFromAGroup[G,B]] extends Matrix[G,B] {
   /// matrix addition
   def +(that: B) : B = construct( (m,n) => this(m,n) + that(m,n), M, N )
   /// scalar addition
@@ -81,9 +81,19 @@ trait MatrixWithElementsFromAGroup[G <: Group[G],B <: Matrix[G,B]] extends Matri
   /// matrix of zeros
   def zeros(M : Int, N : Int) : B = construct( (m,n) => this(0,0).zero, M,N)
   def zeros(N : Int) : B = zeros(N,N)
+  /// return true if this matrix is upper triangular (i.e., has zeros on the lower triangular elements)
+  def isUpperTriangular : Boolean = {
+    var isupper = true
+    for( m <- 0 until M )
+      for( n <- 0 until m) isupper = isupper && this(m,n) == this(0,0).zero
+    return isupper
+  }
+  /// return true if this matrix is lower triangular (i.e., has zeros on the upper triangular elements)
+  def isLowerTriangular = this.transpose.isUpperTriangular
+  
 }
 
-trait MatrixWithElementsFromARing[R <: Ring[R],B <: MatrixWithElementsFromAGroup[R,B]] extends MatrixWithElementsFromAGroup[R,B] {
+trait MatrixWithElementsFromARing[R <: Ring[R],B <: MatrixWithElementsFromARing[R,B]] extends MatrixWithElementsFromAGroup[R,B] {
   /// matrix mulitplication
   def *(that: B) : B = construct( (m,n) => (0 until N).foldLeft(this(0,0).zero)( (v, i) => v + this(m,i)*that(i,n)), M, that.N ).backwitharray
   //def *(that: B) : B = construct( (m,n) => (0 until N).map(i=>(this(m,i),that(i,n))).map(Function.tupled(_*_)).reduceLeft(_+_), M, that.N).backwitharray //multiply that doesn't require this(0,0).zero
@@ -91,7 +101,7 @@ trait MatrixWithElementsFromARing[R <: Ring[R],B <: MatrixWithElementsFromAGroup
   def *(that: R) : B = construct( (m,n) => this(m,n) * that, M, N )
 }
 
-trait MatrixWithElementsFromARingWithUnity[R <: RingWithUnity[R],B <: MatrixWithElementsFromARing[R,B]] extends MatrixWithElementsFromARing[R,B] {
+trait MatrixWithElementsFromARingWithUnity[R <: RingWithUnity[R],B <: MatrixWithElementsFromARingWithUnity[R,B]] extends MatrixWithElementsFromARing[R,B] {
   /// contruct an identity matrix
   def identity(M : Int, N : Int) = construct( (m,n) => if(m==n) this(0,0).one else this(0,0).zero, M,N)
   def identity(N : Int) : B = identity(N,N)
@@ -100,7 +110,7 @@ trait MatrixWithElementsFromARingWithUnity[R <: RingWithUnity[R],B <: MatrixWith
   def ones(N : Int) : B = ones(N,N)
 }
 
-trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: MatrixWithElementsFromARingWithUnity[E,B]] extends MatrixWithElementsFromARingWithUnity[E,B] {
+trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: MatrixWithElementsFromAEuclideanDomain[E,B]] extends MatrixWithElementsFromARingWithUnity[E,B] {
   /// Compute the Hermite Normal Form
   def hermiteNormalForm : (B,B)
   def hnf = hermiteNormalForm
@@ -109,7 +119,7 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
   def snf = smithNormalForm
 }
 
-trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAEuclideanDomain[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
+trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
 }

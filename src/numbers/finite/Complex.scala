@@ -93,6 +93,8 @@ object ComplexMatrix {
   def identity(N : Int): ComplexMatrix = identity(N,N)
   
   def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
+  /// construct a ComplexMatrix from a jblas ComplexDoubleMatrix
+  def constructFromJblas(M : org.jblas.ComplexDoubleMatrix) =construct( (m,n) => new RectComplex(M.get(m,n).real, M.get(m,n).imag), M.rows, M.columns )
   def constructRow(f : (Int) => Complex, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Complex, M : Int) = construct( (m,n) => f(m), M, 1)
 }
@@ -118,10 +120,8 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
-    val A = new org.jblas.ComplexDoubleMatrix(M,N)
-    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
-    val USV = org.jblas.Singular.fullSVD(A)
-    val U = construct( (m,n) => new RectComplex(USV(0).get(m,n).real, USV(0).get(m,n).imag), USV(0).rows, USV(0).columns )
+    val USV = org.jblas.Singular.fullSVD(tojblas)
+    val U = ComplexMatrix.constructFromJblas(USV(0))
     val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
     val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag).conjugate, USV(2).rows, USV(2).columns ) //god knows why but Jblas returns conjugate again???
     return (U,S,V)
@@ -172,12 +172,24 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   
   def lu = throw new UnsupportedOperationException("not implemented yet")
   
-  /** Determinant of this matrix */
+  /** 
+   *Determinant of this matrix.  
+   *Pretty sure this has a bug in it meaning that the negative of the determinant will sometimes
+   *be returned
+   */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
     val (u,s,v) = svd
     (0 until N).foldLeft(Complex.one)( (prod, n) => prod*s(n,n) )
   }
   lazy val det = determinant
+  
+  /// Return this matrix as a jblas ComplexDoubleMatrix
+  def tojblas = {
+    val A = new org.jblas.ComplexDoubleMatrix(M,N)
+    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
+    A
+  }
+  
 }
 
