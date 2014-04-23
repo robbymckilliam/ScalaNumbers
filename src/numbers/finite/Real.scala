@@ -157,7 +157,7 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
    * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
    * such that the product PLU is equal to this matrix
    */
-  def lu : (RealMatrix, RealMatrix, RealMatrix) = {
+  override def lu : (RealMatrix, RealMatrix, RealMatrix) = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have LU decompositions!")
     val PLU = org.jblas.Decompose.lu(tojblas)
     val P = RealMatrix.constructFromJblas(PLU.p)

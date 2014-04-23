@@ -124,10 +124,10 @@ trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAF
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
   
   /** 
-   * Return the PLU decomposition of this matrix.  The matrix must by square 
-   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
-   * such that the product plu is equal to this matrix
+   * Return the PLU decomposition of this matrix.  The matrix must by square.
+   * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
+   * such that the product PLU is equal to this matrix
    */
-  def lu = throw new UnsupportedOperationException("not implemented yet")
+  def lu : (B, B, B) = throw new UnsupportedOperationException("not implemented yet")
   
 }
