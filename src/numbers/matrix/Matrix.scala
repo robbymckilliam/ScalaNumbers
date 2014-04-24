@@ -56,10 +56,19 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
     val A = toSeq
     construct( (m,n) => A(m*N+n), M, N )
   }
-  /// Returns an ArraySeq with the elements of this array (m,n)th element in matrix corresponds with m*N+n th element in the array.
+  /// Returns ArraySeq with the elements of this array (m,n)th element in matrix corresponds with m*N+n th element in the array.
   def toSeq : ArraySeq[T] = {
     val A = new ArraySeq[T](N*M)
     for( m <- 0 until M; n <- 0 until N ) A(m*N + n) = this(m,n)
+    A
+  }
+  /// Return ArraySeq[ArraySeq[T]] containing elements from this matrix
+  def toArray : ArraySeq[ArraySeq[T]] = {
+    val A = new ArraySeq[ArraySeq[T]](M)
+    for( m <- 0 until M ) {
+      A(m) = new ArraySeq[T](N)
+      for( n <- 0 until M ) A(m)(n) = this(m,n)
+    }
     A
   }
   override def toString : String  = (0 until M).foldLeft(""){ 
@@ -119,7 +128,7 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
   def snf = smithNormalForm
 }
 
-trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
+trait MatrixWithElementsFromAField[F <: Field[F,N],N <: Ordered[N],B <: MatrixWithElementsFromAField[F,N,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
   
@@ -128,6 +137,40 @@ trait MatrixWithElementsFromAField[F <: Field[F,_],B <: MatrixWithElementsFromAF
    * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
    * such that the product PLU is equal to this matrix
    */
-  def lu : (B, B, B) = throw new UnsupportedOperationException("not implemented yet")
+  def lu : (B, B, B) = {     
+      // Initialize.
+      val LU = this.toArray
+      val piv = (0 until M).toArray; //store the pivot vecotor
+      var pivsign = 1;
+      // Main loop.
+      for(k <- 0 until N) {
+         // Find pivot.
+         var p = k;
+         for (i <- k+1 until M) {
+            if( LU(i)(k).norm > LU(p)(k).norm ) p = i
+         }
+         // Exchange if necessary.
+         if (p != k) {
+            for (j <- 0 until N ) {
+               val t = LU(p)(j); LU(p)(j) = LU(k)(j); LU(k)(j) = t
+            }
+            val t = piv(p); piv(p) = piv(k); piv(k) = t;
+            pivsign = -pivsign;
+         }
+         // Compute multipliers and eliminate k-th column.
+         if ( LU(k)(k) != LU(k)(k).zero ) {
+            for(i <- k+1 until M) {
+               LU(i)(k) = LU(i)(k)/LU(k)(k);
+               for( j <- k+1 until N) LU(i)(j) = LU(i)(j) - LU(i)(k)*LU(k)(j)
+            }
+         }
+      }
+      //quite the compiler for now
+      val P = construct( (m,n) => this(m,n), M, N)
+      val L = construct( (m,n) => this(m,n), M, N)
+      val U = construct( (m,n) => this(m,n), M, N)
+      return (P, L, U)
+    
+   }
   
 }

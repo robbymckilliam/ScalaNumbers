@@ -101,7 +101,7 @@ object ComplexMatrix {
 
 /** Matrix with complex elements */
 class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val N : Int) 
-  extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
+  extends MatrixWithElementsFromAField[Complex, Real, ComplexMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = ComplexMatrix.construct(f,M,N)
