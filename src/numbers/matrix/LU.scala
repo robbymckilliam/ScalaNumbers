@@ -15,7 +15,7 @@ class LU[F <: Field[F,N], N <: Ordered[N],B <: MatrixWithElementsFromAField[F,B]
   
   val M = A.M
   val N = A.N
-  if(M < N) throw new ArrayIndexOutOfBoundsException("number of columns cannot exceed number of rows for LU. You might want to transponse your matrix first.")
+  if(M < N) throw new ArrayIndexOutOfBoundsException("Number of columns cannot exceed number of rows for LU. You might want to transponse your matrix first.")
   
   val one = A(0,0).one
   val zero = A(0,0).zero
@@ -23,7 +23,7 @@ class LU[F <: Field[F,N], N <: Ordered[N],B <: MatrixWithElementsFromAField[F,B]
   // This implementation is ported from the Jama Matrix library
   // Initialize.
   private val LU = A.toArray
-  private val piv = (0 until M).toArray; //store the pivot vecotor
+  private val piv = (0 until M).toArray; //store the pivot vector
   private var pivsign = 1;
   // Main loop.
   for(k <- 0 until N) {
@@ -44,7 +44,7 @@ class LU[F <: Field[F,N], N <: Ordered[N],B <: MatrixWithElementsFromAField[F,B]
     if ( LU(k)(k) != zero ) {
       for(i <- k+1 until M) {
         LU(i)(k) = LU(i)(k)/LU(k)(k);
-        for( j <- k+1 until A.N) LU(i)(j) = LU(i)(j) - LU(i)(k)*LU(k)(j)
+        for( j <- k+1 until N) LU(i)(j) = LU(i)(j) - LU(i)(k)*LU(k)(j)
       }
     }
   }
