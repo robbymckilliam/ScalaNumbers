@@ -101,7 +101,7 @@ object ComplexMatrix {
 
 /** Matrix with complex elements */
 class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val N : Int) 
-  extends MatrixWithElementsFromAField[Complex, Real, ComplexMatrix] {
+  extends MatrixWithElementsFromAField[Complex, ComplexMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Complex, M : Int, N : Int) = ComplexMatrix.construct(f,M,N)
@@ -160,6 +160,16 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def inv = inverse
   
+  /** 
+   * Return the LU decomposition of this matrix as tuple (l,u,p).
+   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
+   * such that the product pA = lu
+   */
+  def lu : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
+    val PLU = new numbers.matrix.LU[Complex,Real,ComplexMatrix](this)
+    return (PLU.L, PLU.U, PLU.P)
+  }
+  
   /**
    * Returns the Moore-Penrose psuedo inverse of this matrix
    */
@@ -170,15 +180,13 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def pinv = psuedoinverse
   
-  /** 
-   *Determinant of this matrix.  
-   *Pretty sure this has a bug in it meaning that the negative of the determinant will sometimes
-   *be returned
-   */
+
+  /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val (u,s,v) = svd
-    (0 until N).foldLeft(Complex.one)( (prod, n) => prod*s(n,n) )
+    val PLU = new numbers.matrix.LU[Complex,Real,ComplexMatrix](this)
+    val Udet = (0 until N).foldLeft(Complex.one)( (prod, n) => prod*PLU.U(n,n) )
+    Udet*PLU.pivot_sign
   }
   lazy val det = determinant
   
