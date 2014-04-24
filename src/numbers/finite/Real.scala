@@ -157,7 +157,7 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
    * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
    * such that the product pA = lu
    */
-  def lu : (RealMatrix, RealMatrix, RealMatrix) = {
+  override def lu : (RealMatrix, RealMatrix, RealMatrix) = {
     val PLU = new numbers.matrix.LU[Real,Real,RealMatrix](this)
     return (PLU.L, PLU.U, PLU.P)
   }

@@ -165,7 +165,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
    * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
    * such that the product pA = lu
    */
-  def lu : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
+  override def lu : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     val PLU = new numbers.matrix.LU[Complex,Real,ComplexMatrix](this)
     return (PLU.L, PLU.U, PLU.P)
   }
