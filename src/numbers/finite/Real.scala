@@ -80,7 +80,7 @@ object RealMatrix {
 
 /** Matrix with real elements */
 class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : Int) 
-extends MatrixWithElementsFromAField[Real, Real, RealMatrix] {
+extends MatrixWithElementsFromAField[Real, RealMatrix] {
     
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = RealMatrix.construct(f,M,N)
@@ -152,29 +152,22 @@ extends MatrixWithElementsFromAField[Real, Real, RealMatrix] {
   }
   override def hermiteNormalForm = qr
   
-  /** 
-   * Return the PLU decomposition of this matrix.  The matrix must by square 
-   * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
-   * such that the product PLU is equal to this matrix
+ /** 
+   * Return the LU decomposition of this matrix as tuple (l,u,p).
+   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
+   * such that the product pA = lu
    */
   override def lu : (RealMatrix, RealMatrix, RealMatrix) = {
-    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have LU decompositions!")
-    val PLU = org.jblas.Decompose.lu(tojblas)
-    val P = construct( (m,n) => if( PLU.p.get(m,n) < 0.5 ) Real.zero else Real.one, M,N)
-    val L = RealMatrix.constructFromJblas(PLU.l)
-    val U = RealMatrix.constructFromJblas(PLU.u)
-    return (P,L,U)
+    val PLU = new numbers.matrix.LU[Real,Real,RealMatrix](this)
+    return (PLU.L, PLU.U, PLU.P)
   }
   
   /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val (p,l,u) = lu
-    val Ldet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*l(n,n) )
-    val Udet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*u(n,n) )
-    val pcount = (0 until N).count { i => p(i,i) != Real.one } / 2 //count the number of permuations
-    val pdet = if((pcount%2)==0) 1.0 else -1.0 //determinant of p is 1 if number of permutations is even, else it's -1
-    Ldet*Udet*pdet
+    val PLU = new numbers.matrix.LU[Real,Real,RealMatrix](this)
+    val Udet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*PLU.U(n,n) )
+    Udet*PLU.pivot_sign
   }
   lazy val det = determinant
   

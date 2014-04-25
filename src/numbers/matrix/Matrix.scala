@@ -67,7 +67,7 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
     val A = new ArraySeq[ArraySeq[T]](M)
     for( m <- 0 until M ) {
       A(m) = new ArraySeq[T](N)
-      for( n <- 0 until M ) A(m)(n) = this(m,n)
+      for( n <- 0 until N ) A(m)(n) = this(m,n)
     }
     A
   }
@@ -128,49 +128,9 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
   def snf = smithNormalForm
 }
 
-trait MatrixWithElementsFromAField[F <: Field[F,N],N <: Ordered[N],B <: MatrixWithElementsFromAField[F,N,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
+trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
-  
-  /** 
-   * Return the PLU decomposition of this matrix.  The matrix must by square.
-   * Returns permutation matrix P, lower triangular matrix L and upper triangular matrix U
-   * such that the product PLU is equal to this matrix
-   */
-  def lu : (B, B, B) = {     
-      // Initialize.
-      val LU = this.toArray
-      val piv = (0 until M).toArray; //store the pivot vecotor
-      var pivsign = 1;
-      // Main loop.
-      for(k <- 0 until N) {
-         // Find pivot.
-         var p = k;
-         for (i <- k+1 until M) {
-            if( LU(i)(k).norm > LU(p)(k).norm ) p = i
-         }
-         // Exchange if necessary.
-         if (p != k) {
-            for (j <- 0 until N ) {
-               val t = LU(p)(j); LU(p)(j) = LU(k)(j); LU(k)(j) = t
-            }
-            val t = piv(p); piv(p) = piv(k); piv(k) = t;
-            pivsign = -pivsign;
-         }
-         // Compute multipliers and eliminate k-th column.
-         if ( LU(k)(k) != LU(k)(k).zero ) {
-            for(i <- k+1 until M) {
-               LU(i)(k) = LU(i)(k)/LU(k)(k);
-               for( j <- k+1 until N) LU(i)(j) = LU(i)(j) - LU(i)(k)*LU(k)(j)
-            }
-         }
-      }
-      //quite the compiler for now
-      val P = construct( (m,n) => this(m,n), M, N)
-      val L = construct( (m,n) => this(m,n), M, N)
-      val U = construct( (m,n) => this(m,n), M, N)
-      return (P, L, U)
-    
-   }
-  
+  /// the LU decomposition
+  def lu : (B,B,B)
 }
