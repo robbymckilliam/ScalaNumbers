@@ -7,6 +7,8 @@ package numbers
 
 import bignums.BigInteger
 import numbers.matrix.MatrixWithElementsFromAEuclideanDomain
+import numbers.Rational
+import numbers.RationalMatrix
 
 object Integer {
   val one : Integer = new IntegerFromInt(1)
@@ -90,8 +92,8 @@ class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, overrid
    * */
   lazy val determinant = {
     //if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val doubleDet = new numbers.finite.RealMatrix( (m,n) => numbers.finite.Real(this(m,n).bigint.doubleValue), M,N).det.d
-    Integer(scala.math.round(doubleDet))
+    val rationaldet = RationalMatrix( (m,n) => Rational(this(m,n),Integer.one), M,N).det
+    rationaldet.n
   }
   lazy val det = determinant
   

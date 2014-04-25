@@ -12,7 +12,7 @@ class RationalTest {
   @Test
   def catchDemominatorZeroTest() {
     try{ val r = Rational(1,0) } catch {
-      case e : RuntimeException => println(e.getMessage)
+      case e : RuntimeException => println("Denominator equal zero caught correctly")
       case _ : Throwable => fail("exception not correctly caught")
     }
   }
@@ -30,12 +30,16 @@ class RationalTest {
   def sumAndSubtractTest() {
     assertTrue((Rational(1,2) + Rational(3,4)) == Rational(5,4))
     assertTrue((Rational(1,2) - Rational(3,4)) == Rational(-1,4))
+    assertTrue((Rational(1,2) + Integer(2)) == Rational(5,2))
+    assertTrue((Rational(3,2) - Integer(2)) == -Rational(1,2))
   }
   
   @Test
   def mulitplyAndDivideTest() {
     assertTrue((Rational(1,2) * Rational(3,4)) == Rational(3,8))
     assertTrue((Rational(1,2) / Rational(4,3)) == Rational(3,8))
+    assertTrue((Rational(1,3) * Integer(2)) == Rational(2,3))
+    assertTrue((Rational(1,3) / Integer(2)) == Rational(1,6))
   }
 
 }

@@ -30,9 +30,15 @@ protected class Rational(val n : Integer, val d: Integer) extends Field[Rational
   final def one = Rational.one
   
   final def +(that : Rational) : Rational = Rational(that.d*n + that.n*d,that.d*d)
-  final def unary_- : Rational = Rational(-n,d) //n- is the negative of n
   final def *(that : Rational) : Rational = Rational(that.n*n,that.d*d)
   final def /(that: Rational) : Rational = Rational(that.d*n,that.n*d)
+  
+  final def +(that : Integer) : Rational = Rational(that*d + n,d)
+  final def -(that : Integer) : Rational = this + (-that)
+  final def *(that : Integer) : Rational = Rational(that*n,d)
+  final def /(that: Integer) : Rational = Rational(n,that*d)
+  
+  final def unary_- : Rational = Rational(-n,d) //n- is the negative of n
   
   final def norm : Rational = Rational(n.norm,d) //same as absolute value
   
@@ -68,9 +74,31 @@ object RationalMatrix {
 
 /** Matrix with rational elements */
 class RationalMatrix(f : (Int,Int) => Rational, override val M : Int, override val N : Int) 
-  extends MatrixWithElementsFromAField[Rational, Rational, RationalMatrix] {
+  extends MatrixWithElementsFromAField[Rational, RationalMatrix] {
 
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Rational, M : Int, N : Int) = RationalMatrix(f,M,N)
+  
+   /** 
+   * Return the LU decomposition of this matrix as tuple (l,u,p).
+   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
+   * such that the product pA = lu
+   */
+  override def lu : (RationalMatrix, RationalMatrix, RationalMatrix) = {
+    val PLU = new numbers.matrix.LU[Rational,Rational,RationalMatrix](this)
+    return (PLU.L, PLU.U, PLU.P)
+  }
+  
+  /** Determinant of this matrix.  Computed using the LU decomposition. */
+  lazy val determinant = {
+    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
+    val PLU = new numbers.matrix.LU[Rational,Rational,RationalMatrix](this)
+    val Udet = (0 until N).foldLeft(Rational.one)( (prod, n) => prod*PLU.U(n,n) )
+    Udet*Integer(PLU.pivot_sign)
+  }
+  lazy val det = determinant
+  
+  override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
+  override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")
   
 }
