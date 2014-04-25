@@ -5,6 +5,7 @@
 package numbers
 
 import numbers.EuclideanDomain.gcd
+import numbers.matrix.MatrixWithElementsFromAField
 
 object Rational {
   val one = Rational(1,1)
@@ -49,5 +50,27 @@ protected class Rational(val n : Integer, val d: Integer) extends Field[Rational
   }
   
   final override def toString : String  = n.toString + "/" + d.toString
+  
+}
+
+object RationalMatrix {
+    /// contruct identity matrix
+  def identity(M : Int, N : Int) : RationalMatrix = new RationalMatrix( (m,n) => if(m==n) Rational.one else Rational.zero, M,N)
+  def identity(N : Int): RationalMatrix = identity(N,N)
+  def apply(f : (Int,Int) => Rational, M : Int, N : Int) : RationalMatrix = new RationalMatrix((m,n) => f(m,n),M,N) 
+  def apply(a : Seq[Seq[Rational]]) : RationalMatrix = new RationalMatrix((m,n) => a(m)(n),a.length,a(0).length) 
+  def asRow(r : Seq[Rational]) = new RationalMatrix( (m,n) => r(n), 1, r.length)
+  def asColumn(r : Seq[Rational]) = new RationalMatrix( (m,n) => r(m), r.length, 1)
+  def construct(f : (Int,Int) => Rational, M : Int, N : Int) = new RationalMatrix(f,M,N)
+  def constructRow(f : (Int) => Rational, N : Int) = construct( (m,n) => f(n), 1, N)
+  def constructColumn(f : (Int) => Rational, M : Int) = construct( (m,n) => f(m), M, 1)
+}
+
+/** Matrix with rational elements */
+class RationalMatrix(f : (Int,Int) => Rational, override val M : Int, override val N : Int) 
+  extends MatrixWithElementsFromAField[Rational, Rational, RationalMatrix] {
+
+  override protected def get(m : Int, n : Int) = f(m,n)
+  override def construct(f : (Int,Int) => Rational, M : Int, N : Int) = RationalMatrix(f,M,N)
   
 }

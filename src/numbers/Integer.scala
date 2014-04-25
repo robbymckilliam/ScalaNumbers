@@ -64,6 +64,10 @@ protected class IntegerFromBigInt(val x : BigInt) extends Integer(new BigInteger
 protected class IntegerFrombignumsBigInteger(val x : BigInteger) extends Integer(new BigInteger(x.toString))
 
 object IntegerMatrix {
+  /// contruct identity matrix
+  def identity(M : Int, N : Int) : IntegerMatrix = new IntegerMatrix ( (m,n) => if(m==n) Integer.one else Integer.zero, M,N)
+  def identity(N : Int): IntegerMatrix = identity(N,N)
+  def apply(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
   def construct(f : (Int,Int) => Integer, M : Int, N : Int) = new IntegerMatrix(f,M,N)
   def constructRow(f : (Int) => Integer, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Integer, M : Int) = construct( (m,n) => f(m), M, 1)
