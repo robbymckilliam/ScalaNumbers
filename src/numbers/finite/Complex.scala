@@ -87,7 +87,7 @@ object ComplexMatrix {
   //def asColumn(r : Seq[Double]) = new ComplexMatrix( (m,n) => new RectComplex(r(n),0), r.length, 1)
 
   def apply(a : Seq[Seq[Complex]]) : ComplexMatrix = new ComplexMatrix((m,n) => a(m)(n),a.length,a(0).length) 
-  def apply(f : (Int,Int) => Complex, M : Int, N : Int) : ComplexMatrix = new ComplexMatrix((m,n) => f(m,n),M,N) 
+  def apply(f : (Int,Int) => Complex, M : Int, N : Int) = construct(f,M,N)
     /// contruct identity matrix
   def identity(M : Int, N : Int) : ComplexMatrix = new ComplexMatrix( (m,n) => if(m==n) Complex.one else Complex.zero, M,N)
   def identity(N : Int): ComplexMatrix = identity(N,N)

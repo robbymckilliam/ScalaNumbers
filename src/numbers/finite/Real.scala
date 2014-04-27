@@ -66,7 +66,7 @@ object RealMatrix {
   /// contruct identity matrix
   def identity(M : Int, N : Int) : RealMatrix = new RealMatrix( (m,n) => if(m==n) Real.one else Real.zero, M,N)
   def identity(N : Int): RealMatrix = identity(N,N)
-  def apply(f : (Int,Int) => Real, M : Int, N : Int) : RealMatrix = new RealMatrix((m,n) => f(m,n),M,N) 
+  def apply(f : (Int,Int) => Real, M : Int, N : Int) = construct(f,M,N)
   def apply(a : Seq[Seq[Real]]) : RealMatrix = new RealMatrix((m,n) => a(m)(n),a.length,a(0).length) 
   def fromDoubleArray(a : Seq[Seq[Double]]) : RealMatrix = new RealMatrix((m,n) => Real(a(m)(n)),a.length,a(0).length) 
   def asRow(r : Seq[Real]) = new RealMatrix( (m,n) => r(n), 1, r.length)

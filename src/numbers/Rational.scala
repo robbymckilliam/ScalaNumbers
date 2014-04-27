@@ -11,18 +11,21 @@ object Rational {
   val one = Rational(1,1)
   val zero =  Rational(0,1)
   
-  def apply(n : Integer, d : Integer) : Rational = {
-    if(d==Integer.zero) throw new RuntimeException("Demoninator in rational is zero!")
-    val g = gcd(n,d)
-    if(d < Integer.zero) return new Rational(-n/g,-d/g) //denominator is always positive
-    else return new Rational(n/g,d/g)
-  }
+  def apply(n : Integer, d : Integer) = new Rational(n,d)
   def apply(n : Int, d : Int) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Long, d : Long) : Rational = Rational(Integer(n),Integer(d))
 }
 
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */
-protected class Rational(val n : Integer, val d: Integer) extends Field[Rational,Rational] with Ordered[Rational] {
+class Rational(protected val num : Integer, protected val den: Integer) extends Field[Rational,Rational] with Ordered[Rational] {
+  
+  //find relatively prime simple fraction n/d = num/den
+  val (n, d) = {    
+    if(den==Integer.zero) throw new RuntimeException("Denominator in rational is zero!")
+    val g = gcd(num,den)
+    if(den < Integer.zero) (-num/g,-den/g) //denominator is always positive
+    else (num/g,den/g)
+  }
   
   final def numerator = n
   final def denominator = d
@@ -63,7 +66,7 @@ object RationalMatrix {
     /// contruct identity matrix
   def identity(M : Int, N : Int) : RationalMatrix = new RationalMatrix( (m,n) => if(m==n) Rational.one else Rational.zero, M,N)
   def identity(N : Int): RationalMatrix = identity(N,N)
-  def apply(f : (Int,Int) => Rational, M : Int, N : Int) : RationalMatrix = new RationalMatrix((m,n) => f(m,n),M,N) 
+  def apply(f : (Int,Int) => Rational, M : Int, N : Int) = construct(f,M,N)
   def apply(a : Seq[Seq[Rational]]) : RationalMatrix = new RationalMatrix((m,n) => a(m)(n),a.length,a(0).length) 
   def asRow(r : Seq[Rational]) = new RationalMatrix( (m,n) => r(n), 1, r.length)
   def asColumn(r : Seq[Rational]) = new RationalMatrix( (m,n) => r(m), r.length, 1)

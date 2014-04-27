@@ -22,7 +22,7 @@ class LUTest {
     val sizes = List( (5,5), (5,4) )
     for( (m_, n_) <- sizes ){
       def f(m : Int, n : Int) = Real(scala.util.Random.nextGaussian)
-      val A = new RealMatrix(f,m_,n_).backwitharray
+      val A = RealMatrix(f,m_,n_).backwitharray
       val (l, u, p) = A.lu
       assertTrue( (p*A - l*u).frobeniusNorm < 1e-7 )
     }
@@ -33,7 +33,7 @@ class LUTest {
     val sizes = List( (5,5), (5,4) )
     for( (m_, n_) <- sizes ){
       def f(m : Int, n : Int) = Rational(scala.util.Random.nextInt(100), scala.util.Random.nextInt(100)+1)
-      val A = new RationalMatrix(f,m_,n_).backwitharray
+      val A = RationalMatrix(f,m_,n_).backwitharray
       val (l, u, p) = A.lu
       val pA = p*A
       val LU = l*u
@@ -46,7 +46,7 @@ class LUTest {
     val sizes = List( (5,5), (5,4) )
     for( (m_, n_) <- sizes ){
       def f(m : Int, n : Int) = RectComplex(scala.util.Random.nextGaussian, scala.util.Random.nextGaussian)
-      val A = new ComplexMatrix(f,m_,n_).backwitharray
+      val A = ComplexMatrix(f,m_,n_).backwitharray
       val (l, u, p) = A.lu
       assertTrue( (p*A - l*u).frobeniusNorm < 1e-7 )
     }
@@ -58,14 +58,14 @@ class LUTest {
       val M = 30
       val N = 30
       def f(m : Int, n : Int) = Real(scala.util.Random.nextGaussian) //unlikely this will ever be singular!
-      val A = new RealMatrix(f,M,N).backwitharray
+      val A = RealMatrix(f,M,N).backwitharray
       assertFalse( new numbers.matrix.LU[Real,Real,RealMatrix](A).isSingular )
     }
     {
       val M = 5
       val N = 5
       def f(m : Int, n : Int) = Real.one
-      val A = new RealMatrix(f,M,N)
+      val A = RealMatrix(f,M,N)
       assertTrue( new numbers.matrix.LU[Real,Real,RealMatrix](A).isSingular )
     }
   }
