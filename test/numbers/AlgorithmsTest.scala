@@ -18,5 +18,5 @@ class AlgorithmsTest {
        case _ : Throwable => fail("exception not correctly caught")
      }
   }
-
+  
 }
