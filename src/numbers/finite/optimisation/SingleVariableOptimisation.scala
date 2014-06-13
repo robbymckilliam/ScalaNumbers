@@ -54,8 +54,7 @@ object SingleVariableOptimisation {
    *
    *@param f           The function to zero 
    *@param  a         Left endpoint of initial interval
-   *@param  c         Right endpoint of initial interval
-   *@param  b         bx must satisfy a < b < c and f(a) > f(b) < f(c)
+   *@param  b         Right endpoint of initial interval
    *@param  tol         Desired length of the interval in which the minimum will be determined to lie (default 1e-6)
    *@params ITRMAX  maximum number of iterations before terminating (default 100)
    */
@@ -72,23 +71,22 @@ object SingleVariableOptimisation {
    *
    *@param  f          The function to zero 
    *@param  a         Left endpoint of initial interval
-   *@param  c         Right endpoint of initial interval
-   *@param  b         bx must satisfy a < b < c and f(a) > f(b) < f(c)
+   *@param  b         Right endpoint of initial interval
    *@param  tol         Desired length of the interval in which the minimum will be determined to lie (default 1e-6)
    *@param  ITRMAX  maximum number of iterations before terminating (default 100)
    */
-  class Bisection(val f : Double => Double, val ax : Double, val bx : Double, val tol : Double, val ITRMAX : Int) {
+  class Bisection(val f : Double => Double, val a : Double, val b : Double, val tol : Double, val ITRMAX : Int) {
   
     /** Return (f(x), x) where f(x) = 0 */
     lazy val zero = run
   
     protected def run : Double = {
-      var a = ax; var b = bx
+      var ax = a; var bx = b
       for( i <- 1 to ITRMAX ){
-        var c = (a + b)/2
+        var c = (ax + bx)/2
         var fc = f(c)
-        if( fc == 0 || (a-b).abs/2 < tol ) return c
-        if( signum(fc) == signum(f(a)) ) a = c else b = c
+        if( fc == 0 || (ax-bx).abs/2 < tol ) return c
+        if( signum(fc) == signum(f(ax)) ) ax = c else bx = c
       }
       throw new RuntimeException("Bisection failed.  Maximum number " + ITRMAX + " of iterations exceeded")
     }
