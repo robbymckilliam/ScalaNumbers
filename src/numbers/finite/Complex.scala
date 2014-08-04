@@ -49,7 +49,8 @@ abstract class Complex extends Field[Complex, Real]{
   final override def one : Complex = Complex.one
   final override def zero : Complex = Complex.zero
     
-  def norm : Real = new Real(mag2)
+  override def norm : Real = new Real(mag2)
+  override def normlarger(that: Complex) = this.norm > that.norm
   
   final override def ==(that : Complex) = this.real == that.real && this.imag == that.imag
     
@@ -160,16 +161,6 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def inv = inverse
   
-  /** 
-   * Return the LU decomposition of this matrix as tuple (l,u,p).
-   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
-   * such that the product pA = lu
-   */
-  override def lu : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
-    val PLU = new numbers.matrix.LU[Complex,Real,ComplexMatrix](this)
-    return (PLU.L, PLU.U, PLU.P)
-  }
-  
   /**
    * Returns the Moore-Penrose psuedo inverse of this matrix
    */
@@ -184,7 +175,7 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Complex,Real,ComplexMatrix](this)
+    val PLU = new numbers.matrix.LU[Complex,ComplexMatrix](this)
     val Udet = (0 until N).foldLeft(Complex.one)( (prod, n) => prod*PLU.U(n,n) )
     Udet*PLU.pivot_sign
   }

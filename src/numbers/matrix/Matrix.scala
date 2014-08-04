@@ -15,8 +15,10 @@ import scala.collection.mutable.ArraySeq
 trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   /// the number of rows
   val M : Int
+  def numRows = M
   /// the number of columns
   val N : Int
+  def numCols = N
   /// construct a matrix from a function
   def construct(f : (Int,Int) => T, M : Int, N : Int) : B
   /// construct a row vector from a function
@@ -131,6 +133,13 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
 trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
-  /// the LU decomposition
-  def lu : (B,B,B)
+  /** 
+   * Return the LU decomposition of this matrix as tuple (l,u,p).
+   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
+   * such that the product pA = lu
+   */
+   def lu : (B,B,B) = {
+    val PLU = new numbers.matrix.LU[F,B](this)
+    return (PLU.L, PLU.U, PLU.P)
+  }
 }

@@ -46,6 +46,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def zero : Real = Real.zero
     
   final override def norm : Real = new Real(d.abs)
+  final override def normlarger(that: Real) = this.norm > that.norm
   
   final override def ==(that : Real) = this.d == that.d
   final def ==(that : Double) = this.d == that
@@ -152,20 +153,10 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   }
   override def hermiteNormalForm = qr
   
- /** 
-   * Return the LU decomposition of this matrix as tuple (l,u,p).
-   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
-   * such that the product pA = lu
-   */
-  override def lu : (RealMatrix, RealMatrix, RealMatrix) = {
-    val PLU = new numbers.matrix.LU[Real,Real,RealMatrix](this)
-    return (PLU.L, PLU.U, PLU.P)
-  }
-  
   /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Real,Real,RealMatrix](this)
+    val PLU = new numbers.matrix.LU[Real,RealMatrix](this)
     val Udet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*PLU.U(n,n) )
     Udet*PLU.pivot_sign
   }

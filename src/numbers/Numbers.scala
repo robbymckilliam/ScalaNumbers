@@ -65,6 +65,8 @@ trait EuclideanDomain[R <: EuclideanDomain[R,N],N <: Ordered[N]] extends UniqueF
   def / (that : R) : R
   /** Remainder after division */
   def mod(that : R) : R
+  /** Returns true if the norm of this is larger than the norm of that */
+  def normlarger(that : R) : Boolean
 }
 
 /** Static algorithms for Euclidean domains, mostly related to the Euclidean algorithm */

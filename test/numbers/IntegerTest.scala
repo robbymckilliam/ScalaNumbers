@@ -36,4 +36,12 @@ class IntegerTest {
     assertTrue((Integer(-5) mod Integer(-10)) == -Integer(5))
   }
   
+  @Test
+  def normlargerTest() {
+    assertFalse(Integer(1) normlarger Integer(4))
+    assertTrue(Integer(4) normlarger Integer(1))
+    assertTrue(Integer(-5) normlarger Integer(4))
+    assertFalse(Integer(-5) normlarger Integer(-5))
+  }
+  
 }

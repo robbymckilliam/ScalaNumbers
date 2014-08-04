@@ -46,6 +46,7 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
     else throw new RuntimeException("You tried to compute " + this + " mod 0.  That is not well defined silly!")
   }
 //  override def mod (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.mod(that.bigint))
+  override def normlarger(that : Integer) = this.norm > that.norm
   
   final override def zero : Integer = Integer.zero
   final override def one : Integer = Integer.one

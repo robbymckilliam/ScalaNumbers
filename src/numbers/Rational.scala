@@ -45,6 +45,8 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   
   final def norm : Rational = Rational(n.norm,d) //same as absolute value
   
+  final override def normlarger(that : Rational) = this.norm > that.norm
+  
   final override def ==(that : Rational) : Boolean = that.n==n && that.d==d
   
   ///Return true if this rational number is a whole integer (i.e. the denominator is zero)
@@ -82,20 +84,10 @@ class RationalMatrix(f : (Int,Int) => Rational, override val M : Int, override v
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Rational, M : Int, N : Int) = RationalMatrix(f,M,N)
   
-   /** 
-   * Return the LU decomposition of this matrix as tuple (l,u,p).
-   * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
-   * such that the product pA = lu
-   */
-  override def lu : (RationalMatrix, RationalMatrix, RationalMatrix) = {
-    val PLU = new numbers.matrix.LU[Rational,Rational,RationalMatrix](this)
-    return (PLU.L, PLU.U, PLU.P)
-  }
-  
   /** Determinant of this matrix.  Computed using the LU decomposition. */
   lazy val determinant = {
     if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Rational,Rational,RationalMatrix](this)
+    val PLU = new numbers.matrix.LU[Rational,RationalMatrix](this)
     val Udet = (0 until N).foldLeft(Rational.one)( (prod, n) => prod*PLU.U(n,n) )
     Udet*Integer(PLU.pivot_sign)
   }
