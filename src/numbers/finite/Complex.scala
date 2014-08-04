@@ -50,7 +50,6 @@ abstract class Complex extends Field[Complex, Real]{
   final override def zero : Complex = Complex.zero
     
   override def norm : Real = new Real(mag2)
-  override def normlarger(that: Complex) = this.norm > that.norm
   
   final override def ==(that : Complex) = this.real == that.real && this.imag == that.imag
     
@@ -95,7 +94,7 @@ object ComplexMatrix {
   
   def construct(f : (Int,Int) => Complex, M : Int, N : Int) = new ComplexMatrix(f,M,N)
   /// construct a ComplexMatrix from a jblas ComplexDoubleMatrix
-  def constructFromJblas(M : org.jblas.ComplexDoubleMatrix) =construct( (m,n) => new RectComplex(M.get(m,n).real, M.get(m,n).imag), M.rows, M.columns )
+  //def constructFromJblas(M : org.jblas.ComplexDoubleMatrix) =construct( (m,n) => new RectComplex(M.get(m,n).real, M.get(m,n).imag), M.rows, M.columns )
   def constructRow(f : (Int) => Complex, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Complex, M : Int) = construct( (m,n) => f(m), M, 1)
 }
@@ -121,11 +120,12 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
-    val USV = org.jblas.Singular.fullSVD(tojblas)
-    val U = ComplexMatrix.constructFromJblas(USV(0))
-    val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
-    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag).conjugate, USV(2).rows, USV(2).columns ) //god knows why but Jblas returns conjugate again???
-    return (U,S,V)
+    throw new UnsupportedOperationException("Not supported")
+//    val USV = org.jblas.Singular.fullSVD(tojblas)
+//    val U = ComplexMatrix.constructFromJblas(USV(0))
+//    val S = construct( (m,n) => if(m==n) new RectComplex(USV(1).get(m,0).real, USV(1).get(m,0).imag) else Complex.zero, USV(1).rows, USV(1).rows )
+//    val V = construct( (m,n) => new RectComplex(USV(2).get(m,n).real, -USV(2).get(m,n).imag).conjugate, USV(2).rows, USV(2).columns ) //god knows why but Jblas returns conjugate again???
+//    return (U,S,V)
   }
   def svd = singularValueDecomposition
   override def smithNormalForm = svd
@@ -150,17 +150,6 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   override def hermiteNormalForm = qr
   
-  /** 
-   * Returns the pseudoinverse of this complex matrix.  Uses the singular value decomposition.
-   */
-  def inverse = {
-    if(N != M) throw new ArrayIndexOutOfBoundsException("Matrix is not square, it can't be inverted.  You might want to use psuedoinverse instead.")
-    val (u,s,v) = this.svd
-    val sinv = construct( (m,n) => if(m==n) Complex.one/s(m,n) else Complex.zero, s.M, s.N)
-    v*sinv*u.conjugateTranspose
-  }
-  def inv = inverse
-  
   /**
    * Returns the Moore-Penrose psuedo inverse of this matrix
    */
@@ -171,22 +160,12 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   }
   def pinv = psuedoinverse
   
-
-  /** Determinant of this matrix.  Computed using the LU decomposition. */
-  lazy val determinant = {
-    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Complex,ComplexMatrix](this)
-    val Udet = (0 until N).foldLeft(Complex.one)( (prod, n) => prod*PLU.U(n,n) )
-    Udet*PLU.pivot_sign
-  }
-  lazy val det = determinant
-  
-  /// Return this matrix as a jblas ComplexDoubleMatrix
-  def tojblas = {
-    val A = new org.jblas.ComplexDoubleMatrix(M,N)
-    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
-    A
-  }
+//  /// Return this matrix as a jblas ComplexDoubleMatrix
+//  def tojblas = {
+//    val A = new org.jblas.ComplexDoubleMatrix(M,N)
+//    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,new org.jblas.ComplexDouble(this(m,n).real, this(m,n).imag) )
+//    A
+//  }
   
 }
 

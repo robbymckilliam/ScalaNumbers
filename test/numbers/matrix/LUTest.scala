@@ -14,6 +14,8 @@ import numbers.finite.RectComplex
 import numbers.finite.ComplexMatrix
 import numbers.Rational
 import numbers.RationalMatrix
+import scala.util.Random.nextGaussian
+import scala.util.Random.nextInt
 
 class LUTest {
 
@@ -72,13 +74,29 @@ class LUTest {
   
   @Test
   def solveTest() {
-    val sizes = List( (5,5) )
+    val sizes = List( (5,5), (5,4), (5,6) )
+    //with Real
     for( (m_, n_) <- sizes ){
-      def f(m : Int, n : Int) = Real(scala.util.Random.nextGaussian)
-      val A = RealMatrix(f,m_,n_).backwitharray
+      def f(m : Int, n : Int) = Real(nextGaussian)
+      val A = RealMatrix(f,m_,m_).backwitharray
       val C = RealMatrix(f,m_,n_).backwitharray
       val X = new numbers.matrix.LU[Real,RealMatrix](A).solve(C)
       assertTrue( (A*X - C).frobeniusNorm < 1e-7 )
+    }
+//  //with Complex
+    for( (m_, n_) <- sizes ){
+      def f(m : Int, n : Int) = RectComplex(nextGaussian, nextGaussian)
+      val A = ComplexMatrix(f,m_,m_).backwitharray
+      val C = ComplexMatrix(f,m_,n_).backwitharray
+      val X = new numbers.matrix.LU[Complex,ComplexMatrix](A).solve(C)
+      assertTrue( (A*X - C).frobeniusNorm < 1e-7 )
+    }
+    for( (m_, n_) <- sizes ){
+      def f(m : Int, n : Int) = Rational(nextInt, nextInt)
+      val A = RationalMatrix(f,m_,m_).backwitharray
+      val C = RationalMatrix(f,m_,n_).backwitharray
+      val X = new numbers.matrix.LU[Rational,RationalMatrix](A).solve(C)
+      assertTrue( (A*X - C).squaredFrobeniusNorm < Rational(1,100000) )
     }
   }
 

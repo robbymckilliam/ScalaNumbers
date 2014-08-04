@@ -45,8 +45,6 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   
   final def norm : Rational = Rational(n.norm,d) //same as absolute value
   
-  final override def normlarger(that : Rational) = this.norm > that.norm
-  
   final override def ==(that : Rational) : Boolean = that.n==n && that.d==d
   
   ///Return true if this rational number is a whole integer (i.e. the denominator is zero)
@@ -84,16 +82,10 @@ class RationalMatrix(f : (Int,Int) => Rational, override val M : Int, override v
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Rational, M : Int, N : Int) = RationalMatrix(f,M,N)
   
-  /** Determinant of this matrix.  Computed using the LU decomposition. */
-  lazy val determinant = {
-    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Rational,RationalMatrix](this)
-    val Udet = (0 until N).foldLeft(Rational.one)( (prod, n) => prod*PLU.U(n,n) )
-    Udet*Integer(PLU.pivot_sign)
-  }
-  lazy val det = determinant
-  
   override def smithNormalForm = throw new UnsupportedOperationException("not implemented yet")
   override def hermiteNormalForm = throw new UnsupportedOperationException("not implemented yet")
+  
+  /** Sum of the squared magnitudes of all of the elements */
+  lazy val squaredFrobeniusNorm : Rational = indices.foldLeft(Rational.zero)( (v, i) => v + this(i)*this(i))
   
 }

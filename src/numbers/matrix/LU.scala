@@ -24,7 +24,7 @@ class LU[F <: Field[F,_],B <: MatrixWithElementsFromAField[F,B]](val A : MatrixW
   // Initialize.
   private val LU = A.toArray
   private val piv = (0 until M).toArray; //store the pivot vector
-  private var pivsign = 1;
+  private var pivsign = one;
   // Main loop.
   for(k <- 0 until N) {
     // Find pivot.
@@ -76,28 +76,24 @@ class LU[F <: Field[F,_],B <: MatrixWithElementsFromAField[F,B]](val A : MatrixW
       if (isSingular) throw new RuntimeException("Matrix is singular.");
 
       // Copy right hand side with pivoting into a mutable structure
-      //val nx = C.N;
       val X = C.submatrix(piv, 0 until C.N).toArray; 
 
       // Solve L*Y = B(piv,:)
-      for (k <- 0 until N) {
-         for ( i <- k+1 until N) {
-            for ( j <- 0 until C.N ) {
+      for (k <- 0 until N) 
+         for ( i <- k+1 until N) 
+            for ( j <- 0 until C.N ) 
                X(i)(j) -= X(k)(j)*LU(i)(k);
-            }
-         }
-      }
+               
       // Solve U*X = Y;
       for (k <- N-1 to 0 by -1) {
          for (j <- 0 until C.N) {
             X(k)(j) /= LU(k)(k);
          }
-         for (i <- 0 until k) {
-            for (j <- 0 until C.N) {
+         for (i <- 0 until k) 
+            for (j <- 0 until C.N) 
                X(i)(j) -= X(k)(j)*LU(i)(k);
-            }
-         }
       }
+      
       return A.construct((m,n) => X(m)(n), piv.length, C.N);
    }
   

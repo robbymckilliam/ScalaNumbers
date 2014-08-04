@@ -193,51 +193,51 @@ class MatrixTest {
     for( m <- 0 until M; n <- 0 until N) assertTrue(B(m,n)==A(m,n))
   }
   
-  @Test
-  def svdRealTest() {
-    val tol = 1e-6
-    val N = 3
-    val M = 2
-    def f(m : Int, n : Int) = Real(n*m+1)
-    val A = RealMatrix(f,M,N)
-    val (u,s,v) = A.svd
-    val B = u*s*v.transpose
-    for( m <- 0 until M; n <- 0 until N) assertEquals(B(m,n).d,A(m,n).d,tol)
-    
-    //test versus some output from Matlab
-    def fu(m : Int, n : Int) : Real = {
-      if( (m,n)==(0,0) ) Real(-0.402663241110145)
-      else if( (m,n)==(0,1) ) Real(-0.915348192907307)
-      else if( (m,n)==(1,0) ) Real(-0.915348192907307)
-      else if( (m,n)==(1,1) ) Real(0.402663241110145)
-      else Real.zero
-    }
-    val matlabU = RealMatrix(fu,M,M)
-    for( m <- 0 until M; n <- 0 until M) assertEquals(matlabU(m,n).d,u(m,n).d,tol)
-  }
-    
-  @Test
-  def svdComplexTest() {
-    val tol = 1e-6
-    val N = 3
-    val M = 2
-    def f(m : Int, n : Int) = RectComplex(n,m)
-    val A = ComplexMatrix(f,M,N)
-    val (u,s,v) = A.svd
-    val B = u*s*v.hermitianTranspose
-    for( m <- 0 until M; n <- 0 until N) assertTrue(diff(B(m,n),A(m,n)) < tol)
-    
-    //test versus some output from Matlab
-    def fu(m : Int, n : Int) : Complex = {
-      if( (m,n)==(0,0) ) RectComplex(-0.612724881345119, 0.0)
-      else if( (m,n)==(0,1) ) RectComplex(0.79029628607289, 0.0)
-      else if( (m,n)==(1,0) ) RectComplex(-0.677673474524404, -0.406604084714642)
-      else if( (m,n)==(1,1) ) RectComplex(-0.525407251161498, -0.315244350696899)
-      else Complex.zero
-    }
-    val matlabU = ComplexMatrix(fu,M,M)
-    for( m <- 0 until M; n <- 0 until M) assertTrue(diff(matlabU(m,n),u(m,n)) < tol)
-  }
+//  @Test
+//  def svdRealTest() {
+//    val tol = 1e-6
+//    val N = 3
+//    val M = 2
+//    def f(m : Int, n : Int) = Real(n*m+1)
+//    val A = RealMatrix(f,M,N)
+//    val (u,s,v) = A.svd
+//    val B = u*s*v.transpose
+//    for( m <- 0 until M; n <- 0 until N) assertEquals(B(m,n).d,A(m,n).d,tol)
+//    
+//    //test versus some output from Matlab
+//    def fu(m : Int, n : Int) : Real = {
+//      if( (m,n)==(0,0) ) Real(-0.402663241110145)
+//      else if( (m,n)==(0,1) ) Real(-0.915348192907307)
+//      else if( (m,n)==(1,0) ) Real(-0.915348192907307)
+//      else if( (m,n)==(1,1) ) Real(0.402663241110145)
+//      else Real.zero
+//    }
+//    val matlabU = RealMatrix(fu,M,M)
+//    for( m <- 0 until M; n <- 0 until M) assertEquals(matlabU(m,n).d,u(m,n).d,tol)
+//  }
+//    
+//  @Test
+//  def svdComplexTest() {
+//    val tol = 1e-6
+//    val N = 3
+//    val M = 2
+//    def f(m : Int, n : Int) = RectComplex(n,m)
+//    val A = ComplexMatrix(f,M,N)
+//    val (u,s,v) = A.svd
+//    val B = u*s*v.hermitianTranspose
+//    for( m <- 0 until M; n <- 0 until N) assertTrue(diff(B(m,n),A(m,n)) < tol)
+//    
+//    //test versus some output from Matlab
+//    def fu(m : Int, n : Int) : Complex = {
+//      if( (m,n)==(0,0) ) RectComplex(-0.612724881345119, 0.0)
+//      else if( (m,n)==(0,1) ) RectComplex(0.79029628607289, 0.0)
+//      else if( (m,n)==(1,0) ) RectComplex(-0.677673474524404, -0.406604084714642)
+//      else if( (m,n)==(1,1) ) RectComplex(-0.525407251161498, -0.315244350696899)
+//      else Complex.zero
+//    }
+//    val matlabU = ComplexMatrix(fu,M,M)
+//    for( m <- 0 until M; n <- 0 until M) assertTrue(diff(matlabU(m,n),u(m,n)) < tol)
+//  }
   
   @Test
   def complexInverseTest() {

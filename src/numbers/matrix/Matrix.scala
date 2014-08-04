@@ -142,4 +142,23 @@ trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromA
     val PLU = new numbers.matrix.LU[F,B](this)
     return (PLU.L, PLU.U, PLU.P)
   }
+  /** 
+   * Return the inverse of this matrix.  Will throw an error if the matrix is singular, or not square. 
+   * Use LU.solve applied the the identity matrix
+   */
+  def inverse : B = {
+    if(N != M) throw new ArrayIndexOutOfBoundsException("Matrix is not square!")
+    return new numbers.matrix.LU[F,B](this).solve(this.identity(N))
+  }
+  def inv = inverse
+  
+  /** Determinant of this matrix.  Computed using the LU decomposition. */
+  lazy val determinant : F = {
+    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
+    val PLU = new numbers.matrix.LU[F,B](this)
+    val Udet = (0 until N).foldLeft(this(0,0).one)( (prod, n) => prod*PLU.U(n,n) )
+    Udet*PLU.pivot_sign
+  }
+  lazy val det = determinant
+  
 }

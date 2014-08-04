@@ -46,7 +46,6 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
     else throw new RuntimeException("You tried to compute " + this + " mod 0.  That is not well defined silly!")
   }
 //  override def mod (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.mod(that.bigint))
-  override def normlarger(that : Integer) = this.norm > that.norm
   
   final override def zero : Integer = Integer.zero
   final override def one : Integer = Integer.one
@@ -83,7 +82,7 @@ class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, overrid
    *Returns the determinant of this matrix.
    *NOTE: Currently this just converts the matrix to RealMatrix to do this, but probably the Hermite normal
    *form should be used instead.
-   * */
+   */
   lazy val determinant = {
     //if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
     val rationaldet = RationalMatrix( (m,n) => Rational(this(m,n),Integer.one), M,N).det

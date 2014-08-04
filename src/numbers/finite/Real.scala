@@ -46,7 +46,6 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def zero : Real = Real.zero
     
   final override def norm : Real = new Real(d.abs)
-  final override def normlarger(that: Real) = this.norm > that.norm
   
   final override def ==(that : Real) = this.d == that.d
   final def ==(that : Double) = this.d == that
@@ -74,7 +73,7 @@ object RealMatrix {
   def asColumn(r : Seq[Real]) = new RealMatrix( (m,n) => r(m), r.length, 1)
   def construct(f : (Int,Int) => Real, M : Int, N : Int) = new RealMatrix(f,M,N)
   /// Construct RealMatrix from a jblas DoubleMatrix
-  def constructFromJblas(M : org.jblas.DoubleMatrix) = construct( (m,n) => Real(M.get(m,n)), M.rows, M.columns )
+  //def constructFromJblas(M : org.jblas.DoubleMatrix) = construct( (m,n) => Real(M.get(m,n)), M.rows, M.columns )
   def constructRow(f : (Int) => Real, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Real, M : Int) = construct( (m,n) => f(m), M, 1)
 }
@@ -104,25 +103,15 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
    * native code. Ultimately, it would be better to have a pure java or scala version of this.
    */
   def singularValueDecomposition : (RealMatrix, RealMatrix, RealMatrix) = {
-    val USV = org.jblas.Singular.sparseSVD(tojblas)
-    val U = RealMatrix.constructFromJblas(USV(0))
-    val S = construct( (m,n) => if(m==n) Real(USV(1).get(m,0)) else Real.zero, USV(1).rows, USV(1).rows )
-    val V = RealMatrix.constructFromJblas(USV(2))
-    return (U, S , V)
+    throw new UnsupportedOperationException("Not supported")
+//    val USV = org.jblas.Singular.sparseSVD(tojblas)
+//    val U = RealMatrix.constructFromJblas(USV(0))
+//    val S = construct( (m,n) => if(m==n) Real(USV(1).get(m,0)) else Real.zero, USV(1).rows, USV(1).rows )
+//    val V = RealMatrix.constructFromJblas(USV(2))
+//    return (U, S , V)
   }
   def svd = singularValueDecomposition
   override def smithNormalForm = svd
-  
-  /** 
-   * Returns the inverse of this matrix.  Uses the singular value decomposition (probably not that efficient)
-   */
-  def inverse = {
-    if(N != M) throw new ArrayIndexOutOfBoundsException("Matrix is not square, it can't be inverted.  You might want to use psuedoinverse instead.")
-    val (u,s,v) = this.svd
-    val sinv = construct( (m,n) => if(m==n) Real.one/s(m,n) else Real.zero, s.M, s.N)
-    v*sinv*u.t
-  }
-  def inv = inverse
   
   /**
    * Returns the Moore-Penrose psuedo inverse of this matrix
@@ -153,20 +142,11 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   }
   override def hermiteNormalForm = qr
   
-  /** Determinant of this matrix.  Computed using the LU decomposition. */
-  lazy val determinant = {
-    if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
-    val PLU = new numbers.matrix.LU[Real,RealMatrix](this)
-    val Udet = (0 until N).foldLeft(Real.one)( (prod, n) => prod*PLU.U(n,n) )
-    Udet*PLU.pivot_sign
-  }
-  lazy val det = determinant
-  
-  /// Return this matrix as a jblas DoubleMatrix
-  def tojblas = {
-    val A = org.jblas.DoubleMatrix.zeros(M,N)
-    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,this(m,n).d)
-    A
-  }
+//  /// Return this matrix as a jblas DoubleMatrix
+//  def tojblas = {
+//    val A = org.jblas.DoubleMatrix.zeros(M,N)
+//    for( m <- 0 until M; n <- 0 until N ) A.put(m,n,this(m,n).d)
+//    A
+//  }
 
 }
