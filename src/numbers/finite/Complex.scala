@@ -22,6 +22,7 @@ import scala.math.sqrt
 object Complex {
   val one = new RectComplex(1,0) 
   val zero = new RectComplex(0,0)
+  ///Returns x taken modulo into the interval [-pi,pi]
 }
 
 abstract class Complex extends Field[Complex, Real]{
