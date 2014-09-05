@@ -7,6 +7,7 @@ package numbers
 
 import bignums.BigInteger
 import numbers.matrix.MatrixWithElementsFromAEuclideanDomain
+import scala.language.implicitConversions
 
 object Integer {
   val one : Integer = Integer(1)
@@ -29,8 +30,8 @@ object Integer {
  */
 class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   
-  override def +(that : Integer) : Integer = Integer(bigint.add(that.bigint))
   override def unary_- : Integer = Integer(bigint.negate)
+  override def +(that : Integer) : Integer = Integer(bigint.add(that.bigint))
   override def -(that : Integer) : Integer = Integer(bigint.subtract(that.bigint))
   override def *(that : Integer) : Integer = Integer(bigint.multiply(that.bigint))
   

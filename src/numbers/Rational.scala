@@ -6,6 +6,7 @@ package numbers
 
 import numbers.EuclideanDomain.gcd
 import numbers.matrix.MatrixWithElementsFromAField
+import scala.language.implicitConversions
 
 object Rational {
   val one = Rational(1,1)

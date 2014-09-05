@@ -15,6 +15,7 @@ import numbers.Element
 import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
 import scala.math.sqrt
+import scala.language.implicitConversions
 
 /**
  * Provides static definitions of the multiplicative 

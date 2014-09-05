@@ -10,6 +10,7 @@ import numbers.matrix.MatrixWithElementsFromAField
 import scala.math.min
 import scala.math.max
 import scala.math.sqrt
+import scala.language.implicitConversions
 /**
  * Provides static definitions of the multiplicative and additive identities.
  */

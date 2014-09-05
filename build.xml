@@ -8,7 +8,7 @@
   <target name="init">
     <property name="scala-library.jar" value="${scala.home}/lib/scala-library.jar" />
     <path id="build.classpath">
-      <pathelement location="${scala-library.jar}"   />
+      <pathelement location="${scala-library.jar}" />
       <fileset dir="${base.dir}/lib">
 	<include name="*.jar" />
 	<exclude name="ScalaNumbers.jar" />
@@ -28,7 +28,7 @@
     <scalac srcdir="${sources.dir}"
             destdir="${build.dir}"
             classpathref="build.classpath"
-	    addparams="-optimize">
+	    addparams="-optimize -feature">
       <include name="src/**/*.scala"   />
       <include name="test/**/*.scala"   />
     </scalac>
