@@ -17,6 +17,9 @@ object Integer {
   def apply(x : Int) : Integer = Integer(new BigInteger(x.toString))
   def apply(x : Long) : Integer = Integer(new BigInteger(x.toString))
   def apply(x : BigInt) : Integer = Integer(new BigInteger(x.toString))
+  implicit def toInteger(i : Int) = Integer(i)
+  implicit def toInteger(i : Long) = Integer(i)
+  implicit def toInteger(i : BigInt) = Integer(i)
 }
 
 /** 
@@ -51,6 +54,9 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
   final override def one : Integer = Integer.one
   
   final override def ==(that : Integer) : Boolean = bigint.equals(that.bigint)
+  final def ==(that : Int) : Boolean = this == Integer(that)
+  final def ==(that : Long) : Boolean = this == Integer(that)
+  final def ==(that : BigInt) : Boolean = this == Integer(that)
   
   final override def compare(that : Integer) : Int = bigint.compareTo(that.bigint)
   

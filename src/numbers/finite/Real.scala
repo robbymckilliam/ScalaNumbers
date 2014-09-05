@@ -17,8 +17,8 @@ object Real {
   val zero = new Real(0.0)
   
   def apply(x : Double) = new Real(x)
-  //implicit def Real2Double(r : Real) = r.d
-  //implicit def Double2Real(d : Double) = Real(d)
+  implicit def toReal(d : Double) = Real(d)
+  implicit def toReal(i : Int) = Real(i.toDouble)
 }
 
 /**
@@ -30,17 +30,17 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final def unary_- = new Real(-d)
   final override def +(that: Real) = new Real(d + that.d)
   final override def -(that: Real) = new Real(d - that.d)
-  final def +(that: Double) : Real = new Real(d + that)
-  final def -(that: Double) : Real = new Real(d - that)
-  final def +(that: Int) : Real = new Real(d + that)
-  final def -(that: Int) : Real = new Real(d - that)
+  final def +(that: Double) = new Real(d + that)
+  final def -(that: Double) = new Real(d - that)
+  final def +(that: Int) = new Real(d + that)
+  final def -(that: Int) = new Real(d - that)
 
   final override def *(that: Real) = new Real(d * that.d)
   final override def /(that: Real) = new Real(d / that.d)
-  final def *(that: Double) : Real = new Real(d * that)
-  final def /(that: Double) : Real = new Real(d / that)
-  final def *(that: Int) : Real = new Real(d * that)
-  final def /(that: Int) : Real = new Real(d / that)
+  final def *(that: Double) = new Real(d * that)
+  final def /(that: Double) = new Real(d / that)
+  final def *(that: Int) = new Real(d * that)
+  final def /(that: Int) = new Real(d / that)
   
   final override def one : Real = Real.one
   final override def zero : Real = Real.zero
