@@ -44,4 +44,21 @@ class IntegerTest {
     assertFalse(Integer(-5) normlarger Integer(-5))
   }
   
+    @Test def IntImplicits() {
+    val tol = 1e-7
+    assertTrue( 1 + Integer.zero == Integer.one )
+    assertTrue( Integer.zero + 1 == Integer.one )
+    assertTrue( 1 + Integer.zero == 1 )
+    assertTrue( Integer.zero + 1 == 1 )
+    assertTrue( Integer.one*2 - 2 == 0)
+    assertTrue( Integer.one*2 - 2 == Integer.zero)
+    assertTrue( 2 - 2*Integer.one == 0)
+    assertTrue( 2 - 2*Integer.one == Integer.zero)
+    assertTrue( 2 - 3*Integer.one == 1)
+    assertTrue( 0 == Integer.zero )
+    assertTrue( 1 == Integer.one )
+    assertTrue( Integer.zero == 0 )
+    assertTrue( Integer.one == 1 )
+  }
+  
 }
