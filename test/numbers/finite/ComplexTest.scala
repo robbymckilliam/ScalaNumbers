@@ -116,11 +116,17 @@ class ComplexTest {
     assertEquals(-2, z.imag, tolerance)
   }
   
-  /*  @Test
-   def ToStringTest() {
-   val z = new RectComplex(1, 2)
-   println(z)
-   }*/
+  @Test
+  def ComplexImplicits() {
+    val tol = 1e-7
+    def assertEq(a : Complex, b : Complex) { assertTrue((a-b).norm < tol) }
+    assertEq(RectComplex(1,0) + 1,RectComplex(2,0))
+    assertEq( 1 + Complex.zero, Complex.one )
+    assertEq( 1.0 + Complex.zero, Complex.one )
+    assertEq( 1.0 + 2*Complex.zero, Complex.one)
+    assertEq( 1.0 + 2*Complex.one, RectComplex(3,0))
+    assertEq( 1.0 + 2*RectComplex(1,2), RectComplex(3,4))
+  }
   
 
 }

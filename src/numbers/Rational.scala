@@ -14,6 +14,9 @@ object Rational {
   def apply(n : Integer, d : Integer) = new Rational(n,d)
   def apply(n : Int, d : Int) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Long, d : Long) : Rational = Rational(Integer(n),Integer(d))
+  implicit def toRational(i : Integer) = Rational(i,1)
+  implicit def toRational(i : Long) = Rational(i,1)
+  implicit def toRational(i : Int) = Rational(i,1)
 }
 
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */

@@ -2,14 +2,20 @@ package numbers
 
 import scala.annotation.tailrec
 
-trait Monoid[M <: Monoid[M]] {
+trait Element[E <: Element[E]] {
+  /** Test for equality */
+  def ==(that : E) : Boolean
+  /** Test for inequality */
+  def !=(that : E) = !(this == that)
+  /** Compatibility with Scala's equals method */
+  final override def equals(that : Any) = throw new UnsupportedOperationException("Scala's equals method is not used in the numbers library.  Override =='s instead.  I'm aware that this is frowned upon!")
+}
+
+trait Monoid[M <: Monoid[M]] extends Element[M] {
   /** The operation */
   def +(that : M) : M
   /** The identity element*/
   def zero : M
-  /** Test for equality */
-  def ==(that : M) : Boolean
-  def !=(that : M) = !(this==that)
 }
 
 /**
@@ -21,10 +27,6 @@ trait Group[G <: Group[G]] extends Monoid[G] {
   def unary_- : G
   /** Operate with the inverse */
   def -(that : G) : G = this + -that
-  /** Test for equality */
-  //def ==(that : G) : Boolean
-  /** Test for equality */
-  //def !=(that : G) : Boolean
 }
 
 /** 

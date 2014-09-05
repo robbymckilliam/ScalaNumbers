@@ -9,6 +9,7 @@ import numbers.Ring
 import numbers.RingWithUnity
 import numbers.EuclideanDomain
 import numbers.Field
+import numbers.Element
 import scala.collection.mutable.ArraySeq
 
 /** Base trait for matrices */

@@ -41,5 +41,17 @@ class RationalTest {
     assertTrue((Rational(1,3) * Integer(2)) == Rational(2,3))
     assertTrue((Rational(1,3) / Integer(2)) == Rational(1,6))
   }
+  
+    @Test def testImplicits() {
+    val tol = 1e-7
+    assertTrue( 1 + Rational.zero == Rational.one )
+    assertTrue( Rational.zero + 1 == Rational.one )
+    assertTrue( Rational.one*2 - 2 == Rational.zero )
+    assertTrue( Rational.one*2 - 2 == Rational.zero)
+    assertTrue( 2 - 2*Rational.one == Rational.zero)
+    assertTrue( 2 - 2*Rational.one == Rational.zero)
+    assertTrue( 2 - 3*Rational.one == -Rational.one)
+    assertTrue( 2 - 3*Rational(3,4) == Rational(8-9,4))
+  }
 
 }

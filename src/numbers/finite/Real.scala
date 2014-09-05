@@ -4,6 +4,7 @@
 
 package numbers.finite
 
+import numbers.Element
 import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
 import scala.math.min
@@ -30,17 +31,8 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final def unary_- = new Real(-d)
   final override def +(that: Real) = new Real(d + that.d)
   final override def -(that: Real) = new Real(d - that.d)
-  final def +(that: Double) = new Real(d + that)
-  final def -(that: Double) = new Real(d - that)
-  final def +(that: Int) = new Real(d + that)
-  final def -(that: Int) = new Real(d - that)
-
   final override def *(that: Real) = new Real(d * that.d)
   final override def /(that: Real) = new Real(d / that.d)
-  final def *(that: Double) = new Real(d * that)
-  final def /(that: Double) = new Real(d / that)
-  final def *(that: Int) = new Real(d * that)
-  final def /(that: Int) = new Real(d / that)
   
   final override def one : Real = Real.one
   final override def zero : Real = Real.zero
@@ -48,12 +40,6 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def norm : Real = new Real(d.abs)
   
   final override def ==(that : Real) = this.d == that.d
-  final def ==(that : Double) = this.d == that
-  final def <=(that : Double) = this.d <= that
-  final def <(that : Double) = this.d < that
-  final def >=(that : Double) = this.d >= that
-  final def >(that : Double) = this.d > that
-  final def !=(that : Double) = !(this == that)
   
   /** Uses scala's internal Ordered, only need to override compare */
   final override def compare(that : Real) : Int = this.d.compare(that.d)
@@ -81,15 +67,9 @@ object RealMatrix {
 /** Matrix with real elements */
 class RealMatrix(f : (Int,Int) => Real, override val M : Int, override val N : Int) 
 extends MatrixWithElementsFromAField[Real, RealMatrix] {
-    
+  
   override protected def get(m : Int, n : Int) = f(m,n)
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = RealMatrix.construct(f,M,N)
-  
-  /** + - * / also work with Double */
-  def +(d: Double) : RealMatrix = this + Real(d)
-  def -(d: Double) : RealMatrix = this - Real(d)
-  def *(d: Double) : RealMatrix = this * Real(d)
-  def /(d: Double) : RealMatrix = this / Real(d)
   
   /** Sum of the squared magnitudes of all of the elements */
   lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)

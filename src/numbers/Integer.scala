@@ -30,12 +30,9 @@ object Integer {
 class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer] with Ordered[Integer] {
   
   override def +(that : Integer) : Integer = Integer(bigint.add(that.bigint))
-  def +(that : Int) : Integer = this + Integer(that)
   override def unary_- : Integer = Integer(bigint.negate)
   override def -(that : Integer) : Integer = Integer(bigint.subtract(that.bigint))
-  def -(that : Int) : Integer = this - Integer(that)
   override def *(that : Integer) : Integer = Integer(bigint.multiply(that.bigint))
-  def *(that : Int) : Integer = this * Integer(that)
   
   /** Not implemented */
   override def factors : Seq[Integer] = throw new UnsupportedOperationException("Not implemented")
@@ -54,9 +51,6 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
   final override def one : Integer = Integer.one
   
   final override def ==(that : Integer) : Boolean = bigint.equals(that.bigint)
-  final def ==(that : Int) : Boolean = this == Integer(that)
-  final def ==(that : Long) : Boolean = this == Integer(that)
-  final def ==(that : BigInt) : Boolean = this == Integer(that)
   
   final override def compare(that : Integer) : Int = bigint.compareTo(that.bigint)
   

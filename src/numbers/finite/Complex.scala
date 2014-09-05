@@ -11,6 +11,7 @@
 
 package numbers.finite
 
+import numbers.Element
 import numbers.Field
 import numbers.matrix.MatrixWithElementsFromAField
 import scala.math.sqrt
@@ -23,6 +24,9 @@ object Complex {
   val one = new RectComplex(1,0) 
   val zero = new RectComplex(0,0)
   ///Returns x taken modulo into the interval [-pi,pi]
+  implicit def toComplex(i : Int) = RectComplex(i,0)
+  implicit def toComplex(d : Double) = RectComplex(d,0.0)
+  implicit def toComplex(r : Real) = RectComplex(r,Real.zero)
 }
 
 abstract class Complex extends Field[Complex, Real]{
@@ -53,13 +57,14 @@ abstract class Complex extends Field[Complex, Real]{
   override def norm : Real = new Real(mag2)
   
   final override def ==(that : Complex) = this.real == that.real && this.imag == that.imag
-    
+      
   override def toString : String  = real.toString + " + " + imag.toString + "i"
 
 }
 
 object RectComplex {
   def apply(r : Double, i : Double) = new RectComplex(r,i)
+  def apply(r : Real, i : Real) = new RectComplex(r.d,i.d)
 }
 
 /** Create a complex number by specifying real and imaginary parts */
@@ -72,6 +77,7 @@ class RectComplex(val real: Double, val imag: Double) extends Complex {
 
 object PolarComplex {
   def apply(m : Double, a : Double) = new PolarComplex(m,a)
+  def apply(m : Real, a : Real) = new PolarComplex(m.d,a.d)
 }
 
 /** Create a complex number by specifying magnitude and angle (in radians)*/
