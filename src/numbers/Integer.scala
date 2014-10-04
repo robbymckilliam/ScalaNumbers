@@ -57,6 +57,9 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
   
   override def toString : String = bigint.toString
   
+  ///Demote to Double
+  final def toDouble = bigint.doubleValue
+  
 }
 
 object IntegerMatrix {

@@ -64,6 +64,9 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   
   final override def toString : String  = n.toString + "/" + d.toString
   
+    ///Demote to Double
+  final def toDouble = n.toDouble/d.toDouble
+  
 }
 
 object RationalMatrix {
@@ -77,6 +80,7 @@ object RationalMatrix {
   def construct(f : (Int,Int) => Rational, M : Int, N : Int) = new RationalMatrix(f,M,N)
   def constructRow(f : (Int) => Rational, N : Int) = construct( (m,n) => f(n), 1, N)
   def constructColumn(f : (Int) => Rational, M : Int) = construct( (m,n) => f(m), M, 1)
+  implicit def toRationalMatrix(B : IntegerMatrix) = RationalMatrix( (m,n) => B(m,n), B.M,B.N)
 }
 
 /** Matrix with rational elements */

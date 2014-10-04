@@ -57,4 +57,12 @@ class IntegerTest {
     assertTrue( 2 - 3*Integer.one == -Integer.one)
   }
   
+  @Test
+  def testIntegerToDouble = {
+    val tol = 1e-8
+    assertTrue( (Integer(10).toDouble - 10.0).abs < tol )
+    assertTrue( (Integer(-10).toDouble + 10.0).abs < tol )
+    assertTrue( (Integer(2).toDouble - 2.0).abs < tol )
+  }
+  
 }

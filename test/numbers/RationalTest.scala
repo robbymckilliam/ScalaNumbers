@@ -53,5 +53,13 @@ class RationalTest {
     assertTrue( 2 - 3*Rational.one == -Rational.one)
     assertTrue( 2 - 3*Rational(3,4) == Rational(8-9,4))
   }
+  
+  @Test
+  def testRationalToDouble = {
+    val tol = 1e-8
+    assertTrue( (Rational(10,2).toDouble - 5.0).abs < tol )
+    assertTrue( (Rational(10,1).toDouble - 10.0).abs < tol )
+    assertTrue( (Rational(-2,3).toDouble + 2.0/3.0).abs < tol )
+  }
 
 }
