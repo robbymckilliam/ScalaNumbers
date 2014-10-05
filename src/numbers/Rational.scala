@@ -64,8 +64,8 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   
   final override def toString : String  = n.toString + "/" + d.toString
   
-    ///Demote to Double
-  final def toDouble = n.toDouble/d.toDouble
+  ///Demote to Double
+  final lazy val toDouble = n.toDouble/d.toDouble
   
 }
 
