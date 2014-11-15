@@ -21,6 +21,12 @@ object Real {
   def apply(x : Double) = new Real(x)
   implicit def toReal(d : Double) = Real(d)
   implicit def toReal(i : Int) = Real(i.toDouble)
+  
+  ///Computes the rational number with simple continued fraction given by a
+  def from_continued_fraction(a : Seq[numbers.Integer]) = new numbers.Algorithms.FiniteContinuedFraction[Real,numbers.Integer](a, (p,q)=>Real(p.toDouble/q.toDouble)).value
+  ///Compute the rational number approximating the given simple infinite continued fraction with accuracy tol (guarateed).
+  def from_continued_fraction(a : Int => numbers.Integer, tol : Real, ITRMAX : Int = 10000) = new numbers.Algorithms.InfiniteContinuedFraction[Real,numbers.Integer](a, (p,q)=>Real(p.toDouble/q.toDouble), tol, ITRMAX).value
+  
 }
 
 /**
@@ -78,7 +84,7 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   /** The Frobenius norm, square root of sum of elements squared */
   lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
   
-  /** 
+  /**
    * Returns (U, S, V) where U is MxM and V is NxN, both orthonormal and S the diagonal matrix such that
    *  this = U S V'
    * where V' is the transpose of V.  Uses the JBlas library, which is very fast but requires some

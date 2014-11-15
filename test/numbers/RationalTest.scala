@@ -56,10 +56,18 @@ class RationalTest {
   
   @Test
   def testRationalToDouble = {
-    val tol = 1e-8
+    val tol = 1e-10
     assertTrue( (Rational(10,2).toDouble - 5.0).abs < tol )
     assertTrue( (Rational(10,1).toDouble - 10.0).abs < tol )
     assertTrue( (Rational(-2,3).toDouble + 2.0/3.0).abs < tol )
+//    {//now do a serious test of toDouble
+      val p = new bignums.BigInteger("100000000000000000000000000000000000000000000001")
+      val q = new bignums.BigInteger("100000000000000000000000000000000000000000000")
+      val r = Rational(Integer(p), Integer(q))
+      val rd = 1000.0
+      println(r.toDouble, rd)
+      assertTrue( (r.toDouble - rd).abs < tol )
+//    }
   }
   
   @Test
