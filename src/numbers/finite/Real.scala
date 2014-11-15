@@ -34,6 +34,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def -(that: Real) = new Real(d - that.d)
   final override def *(that: Real) = new Real(d * that.d)
   final override def /(that: Real) = new Real(d / that.d)
+  final override def reciprocal : Real = one/this
   
   final override def one : Real = Real.one
   final override def zero : Real = Real.zero

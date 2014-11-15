@@ -8,7 +8,7 @@ package numbers.finite.optimisation
 import scala.math.signum
 import scala.math.abs
 import scala.math.sqrt
-import numbers.ConvergentIteration
+import numbers.Algorithms.ConvergentIteration
 import scala.math.signum
 
 object SingleVariableOptimisation {

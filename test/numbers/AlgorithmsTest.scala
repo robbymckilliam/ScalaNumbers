@@ -6,6 +6,8 @@ package numbers
 
 import org.junit.Test
 import org.junit.Assert._
+import numbers.Algorithms.ConvergentIteration
+import numbers.Algorithms.MaximumIterationsReachedException
 
 class AlgorithmsTest {
   
@@ -14,9 +16,13 @@ class AlgorithmsTest {
     try{
       val c = convitr.limit
      }catch{
-       case e : convitr.MaximumIterationsReachedException => println(e.getMessage + " Limit was " + e.limit)
+       case e : MaximumIterationsReachedException[Double] => println(e.getMessage + " Limit was " + e.limit)
        case _ : Throwable => fail("exception not correctly caught")
      }
+  }
+  
+  @Test def continuedFractionTest = {
+    
   }
   
 }

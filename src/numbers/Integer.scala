@@ -48,7 +48,7 @@ class Integer(val bigint : BigInteger) extends EuclideanDomain[Integer, Integer]
   }
 //  override def mod (that : Integer) : Integer = new IntegerFrombignumsBigInteger(bigint.mod(that.bigint))
   
-  final override def zero : Integer = Integer.zero
+   final override def zero : Integer = Integer.zero
   final override def one : Integer = Integer.one
   
   final override def ==(that : Integer) : Boolean = bigint.equals(that.bigint)

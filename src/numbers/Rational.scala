@@ -7,6 +7,7 @@ package numbers
 import numbers.EuclideanDomain.gcd
 import numbers.matrix.MatrixWithElementsFromAField
 import scala.language.implicitConversions
+import scala.annotation.tailrec
 
 object Rational {
   val one = Rational(1,1)
@@ -15,9 +16,17 @@ object Rational {
   def apply(n : Integer, d : Integer) = new Rational(n,d)
   def apply(n : Int, d : Int) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Long, d : Long) : Rational = Rational(Integer(n),Integer(d))
+  def apply(n : Integer) = new Rational(n,1)
+  def apply(n : Int) = new Rational(n,1)
+  def apply(n : Long) = new Rational(n,1)
   implicit def toRational(i : Integer) = Rational(i,1)
   implicit def toRational(i : Long) = Rational(i,1)
   implicit def toRational(i : Int) = Rational(i,1)
+  
+  ///Computes the rational number with simple continued fraction given by a
+  def from_continued_fraction(a : Seq[Integer]) = new Algorithms.FiniteContinuedFraction[Rational,Integer](a, (p,q) => Rational(p,q)).value
+  ///Compute the rational number approximating the given simple infinite continued fraction with accuracy tol (guarateed).
+  def from_continued_fraction(a : Int => Integer, tol : Rational, ITRMAX : Int = 10000) = new Algorithms.InfiniteContinuedFraction[Rational,Integer](a, (p,q) => Rational(p,q), tol, ITRMAX).value
 }
 
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */
@@ -54,12 +63,30 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   ///Return true if this rational number is a whole integer (i.e. the denominator is zero)
   final def isInteger = d == Integer.one
   
+  final override def reciprocal : Rational = Rational(d,n)
+    
   /** Uses scala's internal Ordered, only need to override compare */
   final def compare(that : Rational) : Int = {
     val num = (this-that).n
     if(num < Integer.zero) return -1
     else if(num > Integer.zero) return 1
     else return 0
+  }
+  
+  ///Largest integer less than or equal to this rational
+  final def floor : Integer = if(isInteger) n else if(this > 0) n/d else n/d - Integer.one //Integer divide throws away
+  ///Smallest integer greater than or equal to this rational
+  final def ceil : Integer = -((-this).floor)
+  ///Nearest integer to this rational with half integers rounded up
+  final def round : Integer = (this + Rational(1,2)).floor
+  
+  ///Returns the continued fraction expansion of this rational
+  lazy val continued_fraction : Seq[Integer] = continued_fraction(List[Integer]()).reverse.toSeq
+  @tailrec final protected def continued_fraction(a : List[Integer]) : List[Integer] = {
+    if(isInteger) return this.n :: a 
+    val an = this.floor //next element in the continued fraction
+    val r = Rational.one/(this - an) //reciprocal of the positive fractional part of this number
+    return r.continued_fraction(an :: a) //recursively compute continued fraction elements
   }
   
   final override def toString : String  = n.toString + "/" + d.toString

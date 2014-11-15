@@ -144,6 +144,8 @@ trait Field[F <: Field[F,N],N <: Ordered[N]] extends EuclideanDomain[F,N] {
   override def /(that : F) : F
   /** mod for a field is always zero */
   override def mod(that : F) : F = this.zero
+  /** Multiplicative inverse */
+  def reciprocal: F
   /** Sequence of factors */
   override def factors : Seq[F] = List(this.one,this.asInstanceOf[F])
 }

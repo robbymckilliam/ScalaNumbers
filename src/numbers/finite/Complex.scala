@@ -51,7 +51,8 @@ abstract class Complex extends Field[Complex, Real]{
   final def pow(e : Double) = new PolarComplex(scala.math.pow(magnitude,e),angle*e)
   
   def conjugate :Complex = new RectComplex(real, -imag)
-    
+  final override def reciprocal : Complex = one/this  
+  
   final override def one : Complex = Complex.one
   final override def zero : Complex = Complex.zero
     

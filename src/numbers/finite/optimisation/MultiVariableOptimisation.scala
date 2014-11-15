@@ -6,7 +6,7 @@ package numbers.finite.optimisation
 
 import numbers.finite.RealMatrix
 import numbers.finite.Real
-import numbers.ConvergentIteration
+import numbers.Algorithms.ConvergentIteration
 
 object MultiVariableOptimisation {
   
