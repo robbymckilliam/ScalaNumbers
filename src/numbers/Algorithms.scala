@@ -39,7 +39,10 @@ class ConvergentIteration[T](val start: T, val step : T => T, val stop : (T,T) =
 }
 
   /** 
-    * Evaluates finite contiued fraction corresponding with sequence a
+    * Evaluates finite simple continued fraction corresponding with sequence a.  
+    * The form of the continued fraction is:
+    * 
+    * a(0) + 1/(a(1) + 1/(a(2) + 1/(a(3) .... )))
     * 
     * @param a          Sequence of integers for this continued fraction
     * @param itof       Function for mapping two "integers" to it's equivalent "rational"
@@ -52,9 +55,28 @@ class ConvergentIteration[T](val start: T, val step : T => T, val stop : (T,T) =
     @tailrec protected final def run(v : F, n : Int) : F = if(n < 0) return v else run(itof(a(n),one) + v.reciprocal,n-1)
   }
   
+  /** 
+    * Evaluates generalised finite continued fraction corresponding with sequence a and b.  These
+    * sequences nolonger need to contain integers.  The form of the continued fraction is:
+    * 
+    * b(0) + a(1)/(b(1) + a(2)/(b(2) + a(3)/(b(3) .... a(N)/b(N)))) ... )))
+    * 
+    * @param a          first sequence for this continued fraction starting at 1
+    * @param b          second sequence for this continued fraction starting at 0
+    * @param N          number of iterations to compute, i.e., the length.
+    */
+  class GeneralisedContinuedFraction[F <: Field[F,_]](val a : Int => F, val b : Int => F, val N: Int) {
+    //the value of the continued fraction obtained
+    lazy val value = run(b(N),N)
+    @tailrec protected final def run(v : F, n : Int) : F = if(n == 0) return v else run(b(n-1) + a(n)*v.reciprocal,n-1)
+  }
+  
    /** 
     * Evaluates the infinite simple continued fraction represented by sequence a.
-    * Computed by recursion until tolerance is met or until maximum number of iterations is reached
+    * Computed by recursion until tolerance is met or until maximum number of iterations is reached.
+    * The form of the continued fraction is:
+    * 
+    * a(0) + 1/(a(1) + 1/(a(2) + 1/(a(3) .... )))
     * 
     * @param a          Sequence of integers for this continued fraction
     * @param tol        Iteration will stop once output is within tol of intput.  This is guaranteed with infinite precision classes such as Rational
