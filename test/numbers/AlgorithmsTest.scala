@@ -9,6 +9,7 @@ import org.junit.Assert._
 import numbers.Algorithms.ConvergentIteration
 import numbers.Algorithms.MaximumIterationsReachedException
 import numbers.Algorithms.GeneralisedContinuedFraction
+import numbers.Algorithms.InfiniteGeneralisedContinuedFraction
 
 class AlgorithmsTest {
   
@@ -36,6 +37,22 @@ class AlgorithmsTest {
       val rc = new GeneralisedContinuedFraction[Rational](a,b,20).value
       val r = scala.math.log(2)
       assertTrue( (r - rc.toDouble).abs < 1e-10 )
+    }
+    { //continued fraction for ln2
+      val tol = Rational(1,10000)
+      def b(n: Int) = Rational(n,1)
+      def a(n : Int) = if(n==1) Rational.one else Rational((n/2)*(n/2),1) //floor being computed by integer division
+      val rc = new InfiniteGeneralisedContinuedFraction[Rational](a,b,tol).value
+      val r = scala.math.log(2)
+      assertTrue( tol.toDouble > (r - rc.toDouble).abs )
+    }
+    { //continued fraction for ln2
+      val tol = Rational(1,10000000)
+      def b(n: Int) = Rational(n,1)
+      def a(n : Int) = if(n==1) Rational.one else Rational((n/2)*(n/2),1) //floor being computed by integer division
+      val rc = new InfiniteGeneralisedContinuedFraction[Rational](a,b,tol).value
+      val r = scala.math.log(2)
+      assertTrue( tol.toDouble > (r - rc.toDouble).abs )
     }
     
   }

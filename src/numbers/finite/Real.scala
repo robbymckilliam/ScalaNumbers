@@ -23,9 +23,9 @@ object Real {
   implicit def toReal(i : Int) = Real(i.toDouble)
   
   ///Computes the rational number with simple continued fraction given by a
-  def from_continued_fraction(a : Seq[numbers.Integer]) = new numbers.Algorithms.FiniteContinuedFraction[Real,numbers.Integer](a, (p,q)=>Real(p.toDouble/q.toDouble)).value
+  def from_continued_fraction(a : Seq[numbers.Integer]) = new numbers.Algorithms.ContinuedFraction[Real](a.map(i=>Real(i.toDouble))).value
   ///Compute the rational number approximating the given simple infinite continued fraction with accuracy tol (guarateed).
-  def from_continued_fraction(a : Int => numbers.Integer, tol : Real, ITRMAX : Int = 10000) = new numbers.Algorithms.InfiniteContinuedFraction[Real,numbers.Integer](a, (p,q)=>Real(p.toDouble/q.toDouble), tol, ITRMAX).value
+  def from_continued_fraction(a : Int => numbers.Integer, tol : Real, ITRMAX : Int = 10000) = new numbers.Algorithms.InfiniteContinuedFraction[Real](i=>Real(a(i).toDouble), tol, ITRMAX).value
   
 }
 
