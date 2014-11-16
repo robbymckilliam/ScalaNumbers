@@ -53,6 +53,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def compare(that : Real) : Int = this.d.compare(that.d)
   
   final override def toString : String  = d.toString
+  
 }
 
 
