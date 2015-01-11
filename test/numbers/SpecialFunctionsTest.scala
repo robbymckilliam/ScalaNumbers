@@ -49,7 +49,16 @@ class SpecialFunctionsTest {
     assertTrue( (exp_continued_fraction(Rational(1,2)) - Rational(54516085L,33065677L)).norm < RATIONAL_PRECISION )
     assertTrue( (exp_continued_fraction(Rational(10,1)) - Rational(9901850142761L,449543301L)).norm < RATIONAL_PRECISION )
     assertFalse( (exp_continued_fraction(Rational(0)) - Rational(9901850142761L,449543301L)).norm < RATIONAL_PRECISION )
+    println(exp_continued_fraction(Rational(30,1)))
+    println((exp_continued_fraction(Rational(30,1))- Rational("1277590680860887700008/449543301")).toDouble)
     //assertTrue( (exp_continued_fraction(Rational(30,1)) - Rational("1277590680860887700008/449543301")).norm < RATIONAL_PRECISION )
+  }
+  
+  @Test
+  def lnTest() {
+    assertTrue( ln(Rational.one) == Rational.zero )
+    assertTrue( (ln(Rational(1,2)) - -Rational("49180508/70952475")).norm < RATIONAL_PRECISION )
+    assertTrue( (ln(Rational(2)) - Rational("6847196937/9878417065")).norm < RATIONAL_PRECISION )
   }
 
 }
