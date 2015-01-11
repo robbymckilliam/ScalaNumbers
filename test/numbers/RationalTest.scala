@@ -18,6 +18,15 @@ class RationalTest {
   }
   
   @Test
+  def constructFromStringTest() {
+    assertTrue(Rational("1","2")==Rational(1,2))
+    assertTrue(Rational("1/2")==Rational(1,2))
+    val r = Rational(12314,1431)
+    assertTrue(Rational(r.toString)==r)
+  }
+  
+  
+  @Test
   def compareTest() {
     assertTrue(Rational(1,2)==Rational(1,2))
     assertTrue(Rational(1,2)==Rational(2,4))
@@ -140,6 +149,12 @@ class RationalTest {
       val rc = Rational.from_continued_fraction(a, tol)
       assertTrue( (rc.toDouble - scala.math.sqrt(2)).abs < tol.toDouble )
     }
+  }
+  
+  @Test
+  def testPow = {
+    assertTrue( RingWithUnity.pow(Rational(10,5),2) == Rational(4,1) )
+    assertTrue( RingWithUnity.pow(Rational(3,4),7) == Rational(2187,16384) )
   }
   
 }

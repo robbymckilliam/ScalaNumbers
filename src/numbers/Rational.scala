@@ -13,12 +13,26 @@ object Rational {
   val one = Rational(1,1)
   val zero =  Rational(0,1)
   
+  def apply(n : String, d : String) = new Rational(Integer(n),Integer(d))
   def apply(n : Integer, d : Integer) = new Rational(n,d)
   def apply(n : Int, d : Int) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Long, d : Long) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Integer) = new Rational(n,1)
   def apply(n : Int) = new Rational(n,1)
   def apply(n : Long) = new Rational(n,1)
+  
+  /** 
+   *Contruct a Rational from String with numerator and denominator separated by "/".  
+   *This is the same format as output from Rational.toString.
+   */
+  def apply(x : String) : Rational = { 
+    if(x.contains("/")) {
+      val nd = x.split("/")
+      Rational(nd(0),nd(1))
+    }
+    else Rational(Integer(x)) 
+  }
+      
   implicit def toRational(i : Integer) = Rational(i,1)
   implicit def toRational(i : Long) = Rational(i,1)
   implicit def toRational(i : Int) = Rational(i,1)
