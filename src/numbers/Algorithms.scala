@@ -93,6 +93,10 @@ class ConvergentIteration[T](val start: T, val step : T => T, val stop : (T,T) =
     * 
     * b(0) + a(1)/(b(1) + a(2)/(b(2) + a(3)/(b(3) .... )))
     * 
+    * Iterations are performed until two consecutive convergents are closer than tol.  I believe if all elements in a
+    * and b are positive then this is guaranteed to to work, but actually, I need to read a little more about
+    * continued fractions to be sure of this.
+    * 
     * @param a          first sequence for this continued fraction starting at 1
     * @param b          second sequence for this continued fraction starting at 0
     * @param N          number of iterations to compute, i.e., the length.
