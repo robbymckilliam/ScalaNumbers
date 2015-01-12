@@ -11,6 +11,8 @@ import scala.math.min
 import scala.math.max
 import scala.math.sqrt
 import scala.language.implicitConversions
+import scala.annotation.tailrec
+
 /**
  * Provides static definitions of the multiplicative and additive identities.
  */
@@ -48,7 +50,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def norm : Real = new Real(d.abs)
   
   final override def ==(that : Real) = this.d == that.d
-  
+    
   /** Uses scala's internal Ordered, only need to override compare */
   final override def compare(that : Real) : Int = this.d.compare(that.d)
   

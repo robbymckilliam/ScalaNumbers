@@ -14,10 +14,11 @@ object Integer {
   val zero : Integer = Integer(0)
   
   /** Contructors from various other values, Int, Long, BigInt, BigInteger */
+  def apply(x : String) : Integer = new Integer(new BigInteger(x))
   def apply(x : BigInteger) : Integer = new Integer(x)
-  def apply(x : Int) : Integer = Integer(new BigInteger(x.toString))
-  def apply(x : Long) : Integer = Integer(new BigInteger(x.toString))
-  def apply(x : BigInt) : Integer = Integer(new BigInteger(x.toString))
+  def apply(x : Int) : Integer = Integer(x.toString)
+  def apply(x : Long) : Integer = Integer(x.toString)
+  def apply(x : BigInt) : Integer = Integer(x.toString)
   implicit def toInteger(i : Int) = Integer(i)
   implicit def toInteger(i : Long) = Integer(i)
   implicit def toInteger(i : BigInt) = Integer(i)
