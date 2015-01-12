@@ -40,9 +40,9 @@ object Rational {
   ///Computes the rational number with simple continued fraction given by a
   def from_continued_fraction(a : Seq[Integer]) = new Algorithms.ContinuedFraction[Rational](a.map(i => Rational(i))).value
   ///Compute the rational number approximating the given simple infinite continued fraction with accuracy tol (guarateed).
-  def from_continued_fraction(a : Int => Integer, tol : Rational, ITRMAX : Int = 10000) = new Algorithms.InfiniteContinuedFraction[Rational](i=>Rational(a(i)), tol, ITRMAX).value
+  def from_continued_fraction(a : Int => Integer, tol : Rational = Rational(1,1000000000000000L), ITRMAX : Int = 10000) = new Algorithms.InfiniteContinuedFraction[Rational](i=>Rational(a(i)), tol, ITRMAX).value
   ///Compute rational numbers given an infinite generalised contined frac.  Default tolerance is 1e-15 which is suitable for conversion to Double.
-  def from_continued_fraction(a : Int => Rational, b : Int => Rational, tol : Rational = Rational(1,1000000000000000L), ITRMAX : Int = 10000) = new Algorithms.InfiniteGeneralisedContinuedFraction[Rational](a,b,tol,ITRMAX).value
+  def from_generalised_continued_fraction(a : Int => Rational, b : Int => Rational, tol : Rational = Rational(1,1000000000000000L), ITRMAX : Int = 10000) = new Algorithms.InfiniteGeneralisedContinuedFraction[Rational](a,b,tol,ITRMAX).value
 }
 
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */

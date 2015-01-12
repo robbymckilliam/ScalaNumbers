@@ -153,8 +153,8 @@ class RationalTest {
   
   @Test
   def testPow = {
-    assertTrue( RingWithUnity.pow(Rational(10,5),2) == Rational(4,1) )
-    assertTrue( RingWithUnity.pow(Rational(3,4),7) == Rational(2187,16384) )
+    assertTrue( RingWithUnity.pow[Rational](Rational(10,5),2) == Rational(4,1) )
+    assertTrue( RingWithUnity.pow[Rational](Rational(3,4),7) == Rational(2187,16384) )
   }
   
 }
