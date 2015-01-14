@@ -77,4 +77,35 @@ class RealTest {
     }
   }
   
+  @Test
+  def from_continued_fraction_test = {
+    {
+      val r = Real(5)
+      val a = r.continued_fraction()
+      assertTrue(a.size == 1)
+      assertTrue(a(0) == numbers.Integer(5))
+      val rc = Real.from_continued_fraction(a)
+      assertTrue(r == rc)
+    }
+    { //test comes from Wikipedia
+      val r = Real(415.0/93)
+      val a = r.continued_fraction()
+      assertTrue(a.size == 4)
+      assertTrue(a(0) == numbers.Integer(4))
+      assertTrue(a(1) == numbers.Integer(2))
+      assertTrue(a(2) == numbers.Integer(6))
+      assertTrue(a(3) == numbers.Integer(7))
+      val rc = Real.from_continued_fraction(a)
+      assertTrue((r-rc).d.abs < 1e-10)
+    }
+  }
+  
+  @Test
+  def isIntegerTest = {
+    assertTrue(Real(4.0).isInteger(0.001))
+    assertTrue(Real(4.000000001).isInteger(0.001))
+    assertTrue(Real(3.99999999).isInteger(0.001))
+    assertFalse(Real(3.59999999).isInteger(0.001))
+  }
+  
 }

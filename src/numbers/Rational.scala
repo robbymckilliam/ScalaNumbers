@@ -17,9 +17,13 @@ object Rational {
   def apply(n : Integer, d : Integer) = new Rational(n,d)
   def apply(n : Int, d : Int) : Rational = Rational(Integer(n),Integer(d))
   def apply(n : Long, d : Long) : Rational = Rational(Integer(n),Integer(d))
-  def apply(n : Integer) = new Rational(n,1)
-  def apply(n : Int) = new Rational(n,1)
-  def apply(n : Long) = new Rational(n,1)
+  def apply(n : Integer) : Rational = Rational(n,Integer(1))
+  def apply(n : Int) : Rational = Rational(n,1)
+  def apply(n : Long) : Rational = Rational(n,1)
+  
+  ///Converts numbers.Real and Double to Rational.  Only guarantees an approximation to about 1e-10
+  def apply(d : numbers.finite.Real) : Rational = from_continued_fraction(d.continued_fraction())
+  def apply(d : Double) : Rational = Rational(numbers.finite.Real(d))
   
   /** 
    *Contruct a Rational from String with numerator and denominator separated by "/".  
@@ -33,7 +37,7 @@ object Rational {
     else Rational(Integer(x)) 
   }
       
-  implicit def toRational(i : Integer) = Rational(i,1)
+  implicit def toRational(i : Integer) = Rational(i,Integer(1))
   implicit def toRational(i : Long) = Rational(i,1)
   implicit def toRational(i : Int) = Rational(i,1)
   

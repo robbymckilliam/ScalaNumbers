@@ -50,11 +50,31 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def norm : Real = new Real(d.abs)
   
   final override def ==(that : Real) = this.d == that.d
-    
+      
   /** Uses scala's internal Ordered, only need to override compare */
   final override def compare(that : Real) : Int = this.d.compare(that.d)
   
   final override def toString : String  = d.toString
+  
+  /** 
+   *Returns the continued fraction expansion of this Real.  This is the naive floor and reciprocate
+   *algorithm.  As such it suffers from numerical imprecision.  Could be improved by another method
+   *of some kind
+   *@param tol  optional argument sets how close to an integer is close enough, default 1e-10.
+   *@param ITRMAX  optional argument sets the maximum number of terms to compute in the contined fracion, default 1e-13.
+   */
+  final def continued_fraction(tol : Double = 1e-10, ITRMAX : Int = 100) : Seq[numbers.Integer] = continued_fraction(List[numbers.Integer](),tol, ITRMAX).reverse.toSeq
+  @tailrec final protected def continued_fraction(a : List[numbers.Integer], tol : Double, iters_left : Int) : List[numbers.Integer] = {
+    if(iters_left <=0) throw new RuntimeException("Maximum number of iterations reached by Real.contined_fraction. You might have tried to set the tolerance too small.")
+    val an = d.floor.toInt //next element in the continued fraction
+    val rem = d - an
+    if(rem < tol) return numbers.Integer(an) :: a 
+    val r = 1.0/rem //reciprocal of the positive fractional part of this number
+    return Real(r).continued_fraction(numbers.Integer(an) :: a, tol, iters_left-1) //recursively compute continued fraction elements
+  }
+  
+  /** Return true if this Real is less than tol from an integer */
+  final def isInteger(tol : Double) = (d - d.round).abs < tol;
   
 }
 

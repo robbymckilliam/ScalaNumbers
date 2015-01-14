@@ -157,4 +157,37 @@ class RationalTest {
     assertTrue( RingWithUnity.pow[Rational](Rational(3,4),7) == Rational(2187,16384) )
   }
   
+  @Test
+  def testConvertToAndFromDouble = {
+    {
+      val r = Rational(415,93)
+      val d = r.toReal
+      val rc = Rational(d)
+      
+//      println(Rational.from_continued_fraction(List[Integer](4,2,6,6,1)))
+//      println(Rational.from_continued_fraction(List[Integer](4,2,6,6,1)).toReal)
+//      println(r.continued_fraction)
+//      println(d.continued_fraction())
+//      println(numbers.finite.Real(415.0/93).continued_fraction())
+//      println(r, rc)
+//      println(415.0/93, d, rc.toReal)
+//      println(d - rc.toReal)
+      
+      assertTrue(r == rc)
+    }
+    {
+      val r = Rational(-43515,933)
+      val d = r.toReal
+      val rc = Rational(d)
+      
+      println(r.continued_fraction)
+      println(d.continued_fraction())
+      println(r, rc)
+      println(-43515.0/933, d, rc.toReal)
+      println(d - rc.toReal)
+      
+      assertTrue(r == rc)
+    }
+  }
+  
 }
