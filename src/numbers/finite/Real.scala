@@ -61,7 +61,7 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
    *algorithm.  As such it suffers from numerical imprecision.  Could be improved by another method
    *of some kind
    *@param tol  optional argument sets how close to an integer is close enough, default 1e-10.
-   *@param ITRMAX  optional argument sets the maximum number of terms to compute in the contined fracion, default 1e-13.
+   *@param ITRMAX  optional argument sets the maximum number of terms to compute in the contined fracion, default 100.
    */
   final def continued_fraction(tol : Double = 1e-10, ITRMAX : Int = 100) : Seq[numbers.Integer] = continued_fraction(List[numbers.Integer](),tol, ITRMAX).reverse.toSeq
   @tailrec final protected def continued_fraction(a : List[numbers.Integer], tol : Double, iters_left : Int) : List[numbers.Integer] = {
