@@ -111,39 +111,41 @@ object EuclideanDomain {
   final def lcm(a : Long, b : Long) : Long = (a*b).abs / gcd(a,b)
   final def lcm(s : Seq[Long]) : Long = s.reduceLeft { (g,v) => lcm(g,v) }
   
-  /** The Extended Euclidean algorithm applied to two scala Ints*/
-  final def extended_gcd(a : Int, b : Int) : (Int, Int) = {
-    if( b == 0) return (1,0)
+  /** The Extended Euclidean algorithm applied to two scala Ints. */
+  final def extended_gcd(a : Int, b : Int) : (Int, Int) = extended_gcd_rec(a,b,1,0,0,1)
+  @tailrec final private def extended_gcd_rec(r0 : Int, r1 : Int, s0 : Int, s1 : Int, t0 : Int, t1 : Int) : (Int, Int) = {
+    if(r1 == 0) return (s0, t0)
     else {
-      val q = a/b
-      val r = a - b*q
-      val (s,t) = extended_gcd(b,r)
-      return (t, s - q*t)
+      val q = r0/r1
+      return extended_gcd_rec(r1, r0-r1*q, s1, s0-s1*q, t1, t0-t1*q)
     }
   }
   
-  /** The Extended Euclidean algorithm applied to two scala longs*/
-  final def extended_gcd(a : Long, b : Long) : (Long, Long) = {
-    if( b == 0) return (1,0)
+  /** The Extended Euclidean algorithm applied to two scala Longs. */
+  final def extended_gcd(a : Long, b : Long) : (Long, Long) = extended_gcd_rec(a,b,1,0,0,1)
+  @tailrec final private def extended_gcd_rec(r0 : Long, r1 : Long, s0 : Long, s1 : Long, t0 : Long, t1 : Long) : (Long, Long) = {
+    if(r1 == 0) return (s0, t0)
     else {
-      val q = a/b
-      val r = a - b*q
-      val (s,t) = extended_gcd(b,r)
-      return (t, s - q*t)
+      val q = r0/r1
+      return extended_gcd_rec(r1, r0-r1*q, s1, s0-s1*q, t1, t0-t1*q)
     }
   }
   
-  /** The Extended Euclidean algorithm.
-   * Uses recursive algorithm, this should potentially be interative or tail recursive 
-   */
-  final def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = {
-    if( b == b.zero ) return (b.one,b.zero)
+  /** The Extended Euclidean algorithm. Tail recursive. */
+  final def extended_gcd[R <: EuclideanDomain[R,_]](a : R, b : R) : (R, R) = extended_gcd_rec[R](a,b,a.one,a.zero,a.zero,a.one)
+  @tailrec final private def extended_gcd_rec[R <: EuclideanDomain[R,_]](r0 : R, r1 : R, s0 : R, s1 : R, t0 : R, t1 : R) : (R, R) = {
+    if(r1 == r0.zero) return (s0, t0)
     else {
-      val q = a/b
-      val r = a - b*q
-      val (s,t) = extended_gcd(b,r)
-      return (t, s - q*t)
+      val q = r0/r1
+      return extended_gcd_rec(r1, r0-r1*q, s1, s0-s1*q, t1, t0-t1*q)
     }
+  }
+  
+  /** The extended Euclidean algorithm applied to more than 2 numbers */
+  final def extended_gcd[R <: EuclideanDomain[R,_]](a : Seq[R]) : List[R] = {
+    val (s, t) = extended_gcd[R](a.head, gcd(a.tail))
+    if(a.size == 2) return List(s,t)
+    return s :: (extended_gcd[R](a.tail).map(x => x*t))
   }
   
 }
