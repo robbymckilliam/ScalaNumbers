@@ -46,11 +46,11 @@ trait RingWithUnity[R <: RingWithUnity[R]] extends Ring[R] {
 
 object RingWithUnity {
   /// this*this*this*...*this k times.  Exponentiation by squaring
-  def pow[R <: RingWithUnity[R]](base : R, k : Int) : R = {
+  def pow[R <: RingWithUnity[R]](base : R, k : numbers.Integer) : R = {
     if(k<0) throw new RuntimeException("Exponent k must be nonnegative.")
-    @tailrec def f(result: R, v : R, i : Int) : R = {
-      if(i==0) return result;
-      else if(i%2==1) return f(result*v,v*v,i/2)
+    @tailrec def f(result: R, v : R, i : numbers.Integer) : R = {
+      if(i==Integer.zero) return result;
+      else if(i.mod(2)==Integer.one) return f(result*v,v*v,i/2)
       else return f(result, v*v, i/2)
     }
     return f(base.one,base,k)

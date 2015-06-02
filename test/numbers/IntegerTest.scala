@@ -67,8 +67,8 @@ class IntegerTest {
   
   @Test
   def testIntegerPow = {
-    assertTrue( RingWithUnity.pow(Integer(10),2) == Integer(100) )
-    assertTrue( RingWithUnity.pow(Integer(3),7) == Integer(2187) )
+    assertTrue( RingWithUnity.pow[Integer](Integer(10),2) == Integer(100) )
+    assertTrue( RingWithUnity.pow[Integer](Integer(3),7) == Integer(2187) )
   }
   
 }
