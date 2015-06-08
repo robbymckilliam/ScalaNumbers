@@ -123,6 +123,14 @@ class EuclideanDomainTest {
       assertTrue( sumab == g )
     }
     {
+      //testing with 2.  This might have issues
+      val a = List(Integer(3), Integer(6))
+      val b = extended_gcd(a)
+      val g = gcd(a)
+      val sumab = a.indices.foldLeft(Integer.zero)( (s, i) => s + a(i)*b(i) )
+      assertTrue( sumab == g )
+    }
+    {
       val L = 6
       val iters = 100
       val M = 10000
