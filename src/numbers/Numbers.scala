@@ -143,6 +143,7 @@ object EuclideanDomain {
   
   /** The extended Euclidean algorithm applied to more than 2 numbers */
   final def extended_gcd[R <: EuclideanDomain[R,_]](a : Seq[R]) : List[R] = {
+    if( a.size == 1) return List(a(0))
     val (s, t) = extended_gcd[R](a.head, gcd(a.tail))
     if(a.size == 2) return List(s,t)
     return s :: (extended_gcd[R](a.tail).map(x => x*t))
