@@ -27,8 +27,7 @@ object Real {
   ///Computes the rational number with simple continued fraction given by a
   def from_continued_fraction(a : Seq[numbers.Integer]) = new numbers.Algorithms.ContinuedFraction[Real](a.map(i=>Real(i.toDouble))).value
   ///Compute the rational number approximating the given simple infinite continued fraction with accuracy tol (guarateed).
-  def from_continued_fraction(a : Int => numbers.Integer, tol : Real, ITRMAX : Int = 10000) = new numbers.Algorithms.InfiniteContinuedFraction[Real](i=>Real(a(i).toDouble), tol, ITRMAX).value
-  
+  def from_continued_fraction(a : Int => numbers.Integer, tol : Real, ITRMAX : Int = 10000) = new numbers.Algorithms.InfiniteContinuedFraction[Real](i=>Real(a(i).toDouble), tol, ITRMAX).value 
 }
 
 /**
@@ -59,13 +58,14 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   /** 
    *Returns the continued fraction expansion of this Real.  This is the naive floor and reciprocate
    *algorithm.  As such it suffers from numerical imprecision.  Could be improved by another method
-   *of some kind
+   *of some kind. Iterates until either the remainder computed is less than tol or ITRMAX iterations
+   *are reached.
    *@param tol  optional argument sets how close to an integer is close enough, default 1e-10.
    *@param ITRMAX  optional argument sets the maximum number of terms to compute in the contined fracion, default 100.
    */
   final def continued_fraction(tol : Double = 1e-10, ITRMAX : Int = 100) : Seq[numbers.Integer] = continued_fraction(List[numbers.Integer](),tol, ITRMAX).reverse.toSeq
   @tailrec final protected def continued_fraction(a : List[numbers.Integer], tol : Double, iters_left : Int) : List[numbers.Integer] = {
-    if(iters_left <=0) throw new RuntimeException("Maximum number of iterations reached by Real.contined_fraction. You might have tried to set the tolerance too small.")
+    if(iters_left <=0) return a //throw new RuntimeException("Maximum number of iterations reached by Real.contined_fraction. You might have tried to set the tolerance too small.")
     val an = d.floor.toInt //next element in the continued fraction
     val rem = d - an
     if(rem < tol) return numbers.Integer(an) :: a 
