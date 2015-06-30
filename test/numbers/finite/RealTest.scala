@@ -98,6 +98,15 @@ class RealTest {
       val rc = Real.from_continued_fraction(a)
       assertTrue((r-rc).d.abs < 1e-10)
     }
+    { //test comes from Wikipedia
+      val r = Real(1569.53786407767)
+      val a = r.continued_fraction()
+      val rc = Real.from_continued_fraction(a)
+      println(a.size)
+      println(r)
+      println(rc)
+      assertTrue((r-rc).d.abs < 1e-10)
+    }
   }
   
   @Test
