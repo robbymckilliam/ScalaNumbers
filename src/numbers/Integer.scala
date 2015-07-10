@@ -85,11 +85,8 @@ class IntegerMatrix( val f : (Int,Int) => Integer, override val M : Int, overrid
   
   /** 
    *Returns the determinant of this matrix.
-   *NOTE: Currently this just converts the matrix to RealMatrix to do this, but probably the Hermite normal
-   *form should be used instead.
    */
   lazy val determinant = {
-    //if(N!=M) throw new ArrayIndexOutOfBoundsException("Only square matrices have determinants!")
     val rationaldet = RationalMatrix( (m,n) => Rational(this(m,n),Integer.one), M,N).det
     rationaldet.n
   }

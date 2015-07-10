@@ -72,13 +72,13 @@ object SpecialFunctions {
 //  }
   
   /** 
-   * Natural logarithm.  Compute by continued fraction
+   * Natural logarithm. Computed by continued fraction
    *  
    * (z-1)/(1 + (z-1)/(2 + (z-1)/(3 + 4(z-1)/(4 + 4(z-1)/ ... )))) 
    *  
    * Converges quickly if z is not too close to 0.
    *  
-   * @param precision terms will be computed until a the result is modified by less than precision decimal places.  Result should be approximately this many decimal places accurate.  Default 1e-30.
+   * @param precision terms will be computed until a the result is modified by less than precision decimal places.  Result should be approximately this many decimal places accurate. Default 1e-30.
    */ 
   def ln(z : Rational, precision : Rational = RATIONAL_PRECISION) : Rational = {
     def b(n: Int) = Rational(n,1)
