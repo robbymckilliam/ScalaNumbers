@@ -36,6 +36,14 @@ object GramSchmidt {
       if( m == 0 || y.length != m ) throw new ArrayIndexOutOfBoundsException("Do products of vectors must be the same length")
       return (0 until m).foldLeft(x(0).zero) ( (s, i) => s + x(i)*y(i) ) 
   }
+  
+  /// Run Gram-Schmit on nth row of b and store in bstar. Write projection coefficient to u
+  def increment[F <: Field[F,_]](n : Int, b : Seq[Seq[F]], bstar : Seq[ArraySeq[F]], u : Seq[ArraySeq[F]]) : Unit = {
+    for( i <- b(0).indices ) bstar(n)(i) = b(n)(i)
+    for( m <- 0 until n ) {
+      u(n)(m) = GramSchmidt.project(bstar(n),bstar(m),bstar(n))
+    }
+  }                           
 
 }
 
@@ -47,16 +55,13 @@ class GramSchmidt[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matri
   private val b = A.transpose.toArray //get memory containing transpose of A. Will operate "rowise" on b
   private val u = A.identity(N).toArray //memory of the U matrix)
   
-  // b(0) is already the first column of A so start at the second
-  for( n <- 1 until N ) {
-    for( m <- 0 until n ) {
-      u(m)(n) = GramSchmidt.project(b(n),b(m),b(n))
-    }
-  }
+  // b(0) is already the first column of A so this loop could start at 0
+  // but starting at zero as a test case (since LLL code will do this, for example)
+  for( n <- 0 until N ) GramSchmidt.increment(n,b,b,u)
   
   /// The m x n matrix of orthogonal vectors B
   val B = A.construct( (m,n) => b(n)(m), M, N)
   /// The n x n upper triangular matrix u
-  val U = A.construct( (m,n) => u(m)(n), N, N)
+  val U = A.construct( (m,n) => u(n)(m), N, N)
   
 }

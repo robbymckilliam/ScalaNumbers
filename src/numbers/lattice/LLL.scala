@@ -10,7 +10,9 @@ import numbers.RationalMatrix
 import numbers.RealandRational
 import numbers.finite.Real
 import numbers.finite.RealMatrix
+import numbers.matrix.GramSchmidt
 import numbers.matrix.MatrixWithElementsFromAField
+import scala.annotation.tailrec
 
 object LLL {
   def apply[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F) : (M, M) = {
@@ -36,6 +38,7 @@ object LLL {
     }
     return true
  }
+ 
 }
 
 /** 
@@ -59,67 +62,19 @@ class LLL[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis 
   protected val bstar = basis.transpose.toArray //stores the Gram-Schmidt vectors
   protected val H = basis.identity(n).toArray //stores the unimodular transformation
   protected val u = basis.identity(n).toArray //memory for Gram-Schmidt coefficients
-  protected val B = (0 until n).map( i => dot(b(i),b(i)) ).toBuffer //squared length of basis vectors
 
-  private var k = 1
-  private var kmax = 0
-  while( k < n ) { 
-    if( k > kmax ) incrementalGramSchmidt()
-    red(k,k-1)
-    //Test LLL condition
-    val D = (c - u(k)(k-1)*u(k)(k-1))*B(k-1)
-    if( D.normlarger(B(k)) ){ //does not satisfy LLL condition
-      swap(k)
-      k = Math.max(1,k-1)
-    }
-    else {
-      for( l <- k-2 to 0 by -1) red(k,l)
-      k = k+1
-    }
+  //start LLL
+  reduce(0)
+  
+  @tailrec protected final def reduce(k : Int) : Unit = {
+    if(k == n) return; // finished
+    GramSchmidt.increment(k,b,bstar,u) //run Gram-Schmit on kth row
+    println(basis.construct((m,n) => u(m)(n), n, n))
+    Hermite.increment(k,b,H,u) //Hermite reduce the kth row
+    println(basis.construct((m,n) => u(m)(n), n, n))
+    println
+    return reduce(k+1)
   }
-  
-  private def incrementalGramSchmidt() {
-      kmax = k
-      for( i <- 0 until m ) bstar(k)(i) = b(k)(i)
-      for( j <- 0 to k-1 ) {
-        u(k)(j) = dot(b(k),bstar(j))/B(j)
-        for( i <- 0 until m ) bstar(k)(i) = bstar(k)(i) - u(k)(j)*bstar(j)(i)
-      }
-      B(k) = dot(bstar(k),bstar(k))
-      if( B(k) == zero ) throw new RuntimeException("Basis is not full rank")
-    }
-  
-  private def red(k : Int, l : Int) {
-    if( u(k)(l).normlarger(half) ) {
-      val q = u(k)(l).round
-      for(i <- 0 until m) b(k)(i) = b(k)(i) - q*b(l)(i)
-      for(i <- 0 until n) H(k)(i) = H(k)(i) - q*H(l)(i)
-      u(k)(l) = u(k)(l) - q
-      for(i <- 0 to l-1) u(k)(i) = u(k)(i) - q*u(l)(i)
-    }
-  }
-  
-  private def swap(k : Int) {
-    {val t = b(k); b(k) = b(k-1); b(k-1) = t} //swap b(k) and b(k-1)
-    {val t = H(k); H(k) = H(k-1); H(k-1) = t} //swap H(k) and H(k-1)
-    for( j <- 0 to k-2) { val t = u(k)(j); u(k)(j) = u(k-1)(j); u(k-1)(j) = t} //swap u(k)(j) and u(k-1)(j) for j = 0 ... k-2
-    val ut = u(k)(k-1)
-    val Bt = B(k) + ut*ut*B(k-1)
-    u(k)(k-1) = ut * B(k-1)/Bt 
-    val bt = bstar(k-1).clone
-    for(i <- 0 until m) bstar(k-1)(i) = b(k)(i) + ut*bt(i)
-    for(i <- 0 until m) bstar(k)(i) = -u(k)(k-1)*bstar(k)(i) + (B(k)/Bt)*bt(i)
-    B(k) = B(k-1)*B(k)/Bt
-    B(k-1) = Bt
-    for( i <- k+1 to kmax ) {
-      val t = u(i)(k)
-      u(i)(k) = u(i)(k-1) - ut*t
-      u(i)(k-1) = t + u(k)(k-1)*u(i)(k)
-    }
-  }
-  
-  //inner product between vectors
-  protected def dot(x : Seq[F], y : Seq[F]) = (0 until m).foldLeft(zero) ( (s, i) => s + x(i)*y(i) ) 
  
   /// Return the LLL recuded basis
   def reducedBasis = basis.construct((m,n) => b(n)(m), m, n)

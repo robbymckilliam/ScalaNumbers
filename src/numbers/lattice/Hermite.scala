@@ -6,6 +6,7 @@ package numbers.lattice
 
 import numbers.RealandRational
 import numbers.matrix.MatrixWithElementsFromAField
+import scala.collection.mutable.ArraySeq
 
 object Hermite {
  /** 
@@ -25,6 +26,19 @@ object Hermite {
     for( m <- 0 until N) for( n <- m+1 until N) if( u(m,n).normlarger(u(m,n).half) ) return false
     return true
  }
+ 
+ /// Hermite reduce the ith row of basis b.  Mutates basis b, and unimodular transform H, and projection coefficients U.
+ def increment[F <: RealandRational[F]](i : Int, b : Seq[ArraySeq[F]], H : Seq[ArraySeq[F]], U : Seq[ArraySeq[F]]) : Unit = {
+    val m = b(0).length 
+    val n = H.length 
+    for( j <- i+1 until n) {
+      val q = U(j)(i).round
+      for( t <- 0 to i ) U(j)(t) = U(j)(t) - q*U(i)(t)
+      for( t <- 0 until m ) b(j)(t) = b(j)(t) - q*b(i)(t)
+      for( t <- 0 until n ) H(j)(t) = H(j)(t) - q*H(i)(t)
+    }
+ }
+ 
 }
 
 /** 
@@ -36,23 +50,16 @@ class Hermite[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](ba
   val m = basis.M //length of vectors in the lattice
   
   protected val (bstar,u) = basis.orthogonalise //get the Gram-Schmith orthogonalised basis
-  protected val b = basis.toArray //memory for new Hermite reduced basis
+  protected val b = basis.transpose.toArray //memory for new Hermite reduced basis
   protected val H = basis.identity(n).toArray //memory for unimodular transformation
-  protected val U = u.toArray
+  protected val U = u.transpose.toArray
   
-  for( i <- n-2 to 0 by -1 ) {
-    for( j <- i+1 until n) {
-      val q = U(i)(j).round
-      for( t <- 0 to i ) U(t)(j) = U(t)(j) - q*U(t)(i)
-      for( t <- 0 until m ) b(t)(j) = b(t)(j) - q*b(t)(i)
-      for( t <- 0 until n ) H(t)(j) = H(t)(j) - q*H(t)(i)
-    }
-  }
+  for( i <- n-2 to 0 by -1 ) Hermite.increment(i,b,H,U)
   
   /// Return the Hermite recuded basis
-  def reducedBasis = basis.construct((m,n) => b(m)(n), m, n)
+  def reducedBasis = basis.construct((m,n) => b(n)(m), m, n)
   
   /// Return the unimodular transformation matrix H such that BM is the reduces basis.
-  def unimodularTransformation = basis.construct((m,n) => H(m)(n), n, n)
+  def unimodularTransformation = basis.construct((m,n) => H(n)(m), n, n)
 
 }
