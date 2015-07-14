@@ -171,8 +171,12 @@ trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromA
   
   /**
    * Gram-Schmidt orthogonalisation applied to the columns of this m by n matrix. 
-   * Returns an m by n matrix B with orthogonal (not necessarily orthonormal columns) and 
-   * and n by n upper triangular matrix U such that this = BU.
+   * Returns tuple (B, U) where B is an m by n matrix with orthogonal (not necessarily orthonormal columns) and 
+   * and U is an n by n upper triangular such that this = BU.
    */
+  def orthogonalise : (B, B) = {
+    val gs = new GramSchmidt[F,B](this)
+    return (gs.B, gs.U)
+  }
   
 }

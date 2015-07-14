@@ -104,6 +104,53 @@ class GramSchmidtTest {
       val diff = A - B*U
       for(i <- diff.indices) assertTrue( diff(i).norm < tol )
     }
+    { //test with orthogonalise method
+      val N = 7
+      def f(m : Int, n : Int) = Rational(1,n+m+1)
+      val A = RationalMatrix(f,N,N)
+      val (b, u) = A.orthogonalise
+      val D = b.transpose*b
+      for(m <- 0 until N) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
+      assertTrue(A == b*u)
+    }
+  }
+  
+  @Test
+  def GramSchmidtMoreRowsThanColumnsTest() {
+    def f(m : Int, n : Int) = Rational(scala.util.Random.nextInt(5), scala.util.Random.nextInt(5)+1)
+    val M = 4
+    val N = 3
+    val A = RationalMatrix(f,M,N).backwitharray
+    val (b, u) = A.orthogonalise
+    val D = b.transpose*b
+    for(m <- 0 until N) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
+    assertTrue(A == b*u)
+  }
+  
+  @Test
+  def GramSchmidtMoreColumnsThanRowsTest() {
+    def f(m : Int, n : Int) = Rational(scala.util.Random.nextInt(5), scala.util.Random.nextInt(5)+1)
+    val M = 3
+    val N = 4
+    val A = RationalMatrix(f,M,N).backwitharray
+    val (b, u) = A.orthogonalise
+    val D = b.transpose*b
+    for(m <- 0 until N) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
+    assertTrue(A == b*u)
+  }
+  
+  
+  @Test
+  def rationalRandomGramSchmidtTest() {
+    def f(m : Int, n : Int) = Rational(scala.util.Random.nextInt(100), scala.util.Random.nextInt(100)+1)
+    val sizes = List( (5,5), (5,4) )
+    for( (m_, n_) <- sizes ){
+      val A = RationalMatrix(f,m_,n_).backwitharray
+      val (b, u) = A.orthogonalise
+      val D = b.transpose*b
+      for(m <- 0 until n_) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
+      assertTrue(A == b*u)
+    }
   }
   
 }
