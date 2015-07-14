@@ -13,7 +13,7 @@ import numbers.Element
 import scala.collection.mutable.ArraySeq
 
 /** Base trait for matrices */
-trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
+trait Matrix[T <: Element[T], B <: Matrix[T,B]] extends PartialFunction[(Int,Int),T] with Element[B] {
   /// the number of rows
   val M : Int
   def numRows = M
@@ -77,6 +77,11 @@ trait Matrix[T,B] extends PartialFunction[(Int,Int),T] {
   override def toString : String  = (0 until M).foldLeft(""){ 
     (sr, m) => sr + (1 until N).foldLeft(this(m,0).toString)( (sc, n) => sc + " " + this(m,n).toString) + "\n" 
   }
+  override def ==(that : B) : Boolean = {
+    if( M != that.M || N != that.N) return false
+    for( i <- indices ) if( this(i) != that(i) ) return false
+    return true
+  }
 }
 
 trait MatrixWithElementsFromAGroup[G <: Group[G],B <: MatrixWithElementsFromAGroup[G,B]] extends Matrix[G,B] {
@@ -134,6 +139,7 @@ trait MatrixWithElementsFromAEuclideanDomain[E <: EuclideanDomain[E,_],B <: Matr
 trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromAField[F,B]] extends MatrixWithElementsFromAEuclideanDomain[F,B] {
   /// scalar division
   def /(that: F) : B = construct( (m,n) => this(m,n) / that, M, N )
+  
   /** 
    * Return the LU decomposition of this matrix as tuple (l,u,p).
    * Returns permutation matrix p, lower triangular matrix l and upper triangular matrix u
@@ -143,6 +149,7 @@ trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromA
     val PLU = new numbers.matrix.LU[F,B](this)
     return (PLU.L, PLU.U, PLU.P)
   }
+  
   /** 
    * Return the inverse of this matrix.  Will throw an error if the matrix is singular, or not square. 
    * Use LU.solve applied the the identity matrix
@@ -161,5 +168,11 @@ trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromA
     Udet*PLU.pivot_sign
   }
   lazy val det = determinant
+  
+  /**
+   * Gram-Schmidt orthogonalisation applied to the columns of this m by n matrix. 
+   * Returns an m by n matrix B with orthogonal (not necessarily orthonormal columns) and 
+   * and n by n upper triangular matrix U such that this = BU.
+   */
   
 }

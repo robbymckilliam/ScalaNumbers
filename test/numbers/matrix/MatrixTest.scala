@@ -42,6 +42,19 @@ class MatrixTest {
     for(m <- 0 until M; n <- 0 until N) assertTrue(f(m,n)==A(m,n))
   }
   
+  def equalsTest() {
+    val N = 5
+    val M = 4
+    def f(m : Int, n : Int) = Integer(n*m)
+    val A = IntegerMatrix(f,M,N)
+    val B = IntegerMatrix(f,M,N)
+    assertTrue( A== B )
+    val C = IntegerMatrix(f,M+1,N)
+    assertFalse( A == C )
+    assertTrue( A != C )
+    assertFalse( B == C )
+  }
+  
   @Test
   def submatrixTest() {
     val N = 5
