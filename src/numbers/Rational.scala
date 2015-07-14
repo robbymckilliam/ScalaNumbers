@@ -12,6 +12,7 @@ import scala.annotation.tailrec
 object Rational {
   val one = Rational(1,1)
   val zero =  Rational(0,1)
+  val half = Rational(1,2)
   
   def apply(n : String, d : String) = new Rational(Integer(n),Integer(d))
   def apply(n : Integer, d : Integer) = new Rational(n,d)
@@ -50,7 +51,7 @@ object Rational {
 }
 
 /** Infinite precision rational number.  Will grow until your computer runs out of memory. */
-class Rational(protected val num : Integer, protected val den: Integer) extends Field[Rational,Rational] with Ordered[Rational] {
+class Rational(protected val num : Integer, protected val den: Integer) extends RealandRational[Rational] {
   
   //find relatively prime simple fraction n/d = num/den
   val (n, d) = {    
@@ -64,6 +65,7 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   final def denominator = d
   final def zero = Rational.zero
   final def one = Rational.one
+  final def half = Rational.half
   
   final def +(that : Rational) : Rational = Rational(that.d*n + that.n*d,that.d*d)
   final def *(that : Rational) : Rational = Rational(that.n*n,that.d*d)
@@ -94,17 +96,13 @@ class Rational(protected val num : Integer, protected val den: Integer) extends 
   }
   
   ///Largest integer less than or equal to this rational
-  final def floor : Integer = if(isInteger) n else if(this > 0) n/d else n/d - Integer.one //Integer divide throws away
-  ///Smallest integer greater than or equal to this rational
-  final def ceil : Integer = -((-this).floor)
-  ///Nearest integer to this rational with half integers rounded up
-  final def round : Integer = (this + Rational(1,2)).floor
+  final override def floor : Rational = if(isInteger) this else if(this > 0) Rational(n/d) else Rational(n/d - Integer.one) //Integer divide throws away fractional part
   
   ///Returns the continued fraction expansion of this rational
   lazy val continued_fraction : Seq[Integer] = continued_fraction(List[Integer]()).reverse.toSeq
   @tailrec final protected def continued_fraction(a : List[Integer]) : List[Integer] = {
     if(isInteger) return this.n :: a 
-    val an = this.floor //next element in the continued fraction
+    val an = this.floor.n //next element in the continued fraction
     val r = Rational.one/(this - an) //reciprocal of the positive fractional part of this number
     return r.continued_fraction(an :: a) //recursively compute continued fraction elements
   }

@@ -5,15 +5,37 @@
 
 package numbers.lattice
 
-import numbers.Field
 import numbers.Rational
 import numbers.RationalMatrix
+import numbers.RealandRational
 import numbers.finite.Real
 import numbers.finite.RealMatrix
 import numbers.matrix.MatrixWithElementsFromAField
 
 object LLL {
+  def apply[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F) : (M, M) = {
+    val lll = new LLL(basis, c)
+    return (lll.reducedBasis, lll.unimodularTransformation)
+  }
+  /// Default LLL uses c = 0.75 
+  def apply(M : RationalMatrix) : (RationalMatrix, RationalMatrix) = LLL(M, Rational(3,4))
+  /// Default LLL uses c = 0.75
+  def apply(M : RealMatrix) : (RealMatrix, RealMatrix) = LLL(M, Real(0.75))
   
+ /** Returns true if the columns of this matrix generate a lattice that is Hermite reduced, otherwise false. */
+ def isReduced[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F) : Boolean = {
+    val (bstar,u) = basis.orthogonalise //get the Gram-Schmith orthogonalised basis
+    val N = u.N
+    val M = bstar.M
+    for( m <- 0 until N) for( n <- m+1 until N) if( u(m,n).normlarger(u(m,n).half) ) return false //check Hermite reduced
+    for(n <- 1 until N) { //Check Lovas condition
+      val bn = (0 until M).map(i=>bstar(n,i)).reduceLeft( (s, v) => s + v*v ) 
+      val bn1 = (0 until M).map(i=>bstar(n-1,i)).reduceLeft( (s, v) => s + v*v ) 
+      val D = (c - u(n-1,n)*u(n-1,n))*bn1
+      if( D.normlarger(bn) ) return false
+    }
+    return true
+ }
 }
 
 /** 
@@ -22,20 +44,16 @@ object LLL {
  * 
  * Cohen, H. "A course in computational number theory", Springer-Verlag, 1993
  * 
- * Three abstract functions: 
- * def to_matrix(b): converts at Seq[Seq[Field]] to a Matrix[Field]
- * def round(x): that returns the closest integer
- * val half: the number 1/2 between 0 and 1
- * 
  * The argument c must be in the open interval (1/4, 1). 3/4 is the original LLL and 1/2 is
  * Seigel's LLL. Cohen mentions that c makes little differences in practice and that one should
  * perhaps choose c = 0.99.
  */
-abstract class LLL[F <: Field[F,_],M <: MatrixWithElementsFromAField[F,M]](basis : M, c : F) {
+class LLL[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F) {
   
   val n = basis.numCols //number of basis vectors (dimension of the lattice)
   val m = basis.numRows
-  val fzero = basis(0,0) //zero value for this field.
+  val zero = basis(0,0).zero //zero value for this field.
+  val half = basis(0,0).half
   
   protected val b = basis.transpose.toArray //copy elements to mutable structure. Basis vectors are the "rows" in this structure
   protected val bstar = basis.transpose.toArray //stores the Gram-Schmidt vectors
@@ -49,10 +67,10 @@ abstract class LLL[F <: Field[F,_],M <: MatrixWithElementsFromAField[F,M]](basis
     if( k > kmax ) incrementalGramSchmidt()
     red(k,k-1)
     //Test LLL condition
-    val D = ((c - u(k)(k-1)*u(k)(k-1))*B(k-1))
+    val D = (c - u(k)(k-1)*u(k)(k-1))*B(k-1)
     if( D.normlarger(B(k)) ){ //does not satisfy LLL condition
       swap(k)
-      k = Math.max(2,k-1)
+      k = Math.max(1,k-1)
     }
     else {
       for( l <- k-2 to 0 by -1) red(k,l)
@@ -68,12 +86,12 @@ abstract class LLL[F <: Field[F,_],M <: MatrixWithElementsFromAField[F,M]](basis
         for( i <- 0 until m ) bstar(k)(i) = bstar(k)(i) - u(k)(j)*bstar(j)(i)
       }
       B(k) = dot(bstar(k),bstar(k))
-      if( B(k) == fzero ) throw new RuntimeException("Basis is not full rank")
+      if( B(k) == zero ) throw new RuntimeException("Basis is not full rank")
     }
   
   private def red(k : Int, l : Int) {
     if( u(k)(l).normlarger(half) ) {
-      val q = round(u(k)(l))
+      val q = u(k)(l).round
       for(i <- 0 until m) b(k)(i) = b(k)(i) - q*b(l)(i)
       for(i <- 0 until n) H(k)(i) = H(k)(i) - q*H(l)(i)
       u(k)(l) = u(k)(l) - q
@@ -101,36 +119,12 @@ abstract class LLL[F <: Field[F,_],M <: MatrixWithElementsFromAField[F,M]](basis
   }
   
   //inner product between vectors
-  protected def dot(x : Seq[F], y : Seq[F]) = (0 until m).foldLeft(fzero) ( (s, i) => s + x(i)*y(i) ) 
+  protected def dot(x : Seq[F], y : Seq[F]) = (0 until m).foldLeft(zero) ( (s, i) => s + x(i)*y(i) ) 
  
   /// Return the LLL recuded basis
-  def reducedBasis = toMatrix(b).transpose
+  def reducedBasis = basis.construct((m,n) => b(n)(m), m, n)
   
   /// Return the unimodular transformation matrix H such that BM is the reduces basis.
-  def unimodularTransformation = toMatrix(H).transpose
-  
-  def toMatrix(b : Seq[Seq[F]]) : M
-  def round(x : F) : F
-  def half : F
-  
-}
+  def unimodularTransformation = basis.construct((m,n) => H(n)(m), n, n)
 
-/** 
- * Compute the LLL reduced basis given a matrix with Rational entries.  Exact result guaranteed.
- * Defaults to the original LLL with c = 3/4. 
- */
-class RationalLLL(basis : RationalMatrix, c : Rational = Rational(3,4)) extends LLL[Rational, RationalMatrix](basis, c) {
-    override def toMatrix(b : Seq[Seq[Rational]]) = RationalMatrix(b)
-    override def round(x : Rational) : Rational = x.round
-    override def half = Rational(1,2)
-}
-
-/** 
- *  Compute the LLL reduced basis given a matrix with number.finite.Real entries (i.e. double 
- *  precison floating point). Defaults to the original LLL with c = 3/4. 
- */
-class RealLLL(basis : RealMatrix, c : Real = 0.75) extends LLL[Real, RealMatrix](basis, c) {
-    override def toMatrix(b : Seq[Seq[Real]]) = RealMatrix(b)
-    override def round(x : Real) : Real= Real(x.d.round)
-    override def half = Real(0.5)
 }

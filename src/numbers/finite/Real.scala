@@ -4,11 +4,9 @@
 
 package numbers.finite
 
-import numbers.Element
 import numbers.Field
+import numbers.RealandRational
 import numbers.matrix.MatrixWithElementsFromAField
-import scala.math.min
-import scala.math.max
 import scala.math.sqrt
 import scala.language.implicitConversions
 import scala.annotation.tailrec
@@ -17,8 +15,9 @@ import scala.annotation.tailrec
  * Provides static definitions of the multiplicative and additive identities.
  */
 object Real {
-  val one = new Real(1.0) 
-  val zero = new Real(0.0)
+  val one = Real(1.0) 
+  val zero = Real(0.0)
+  val half = Real(0.5)
   
   def apply(x : Double) = new Real(x)
   implicit def toReal(d : Double) = Real(d)
@@ -33,7 +32,7 @@ object Real {
 /**
  *  This is a potential candidate for scala 2.10's value classes.
  */
-class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
+class Real(val d : Double) extends RealandRational[Real] {
   //@inline final def toDouble = d
   
   final def unary_- = new Real(-d)
@@ -54,6 +53,10 @@ class Real(val d : Double) extends Field[Real, Real] with Ordered[Real] {
   final override def compare(that : Real) : Int = this.d.compare(that.d)
   
   final override def toString : String  = d.toString
+  
+  final override def half = Real.half
+  
+  final override def floor = Real(d.floor)
   
   /** 
    *Returns the continued fraction expansion of this Real.  This is the naive floor and reciprocate
@@ -103,9 +106,9 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   override def construct(f : (Int,Int) => Real, M : Int, N : Int) = RealMatrix.construct(f,M,N)
   
   /** Sum of the squared magnitudes of all of the elements */
-  lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)
+  lazy val squaredFrobeniusNorm : Real = indices.foldLeft(0.0)( (v, i) => v + this(i).d*this(i).d)
   /** The Frobenius norm, square root of sum of elements squared */
-  lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
+  lazy val frobeniusNorm : Real = sqrt(squaredFrobeniusNorm.d)
   
   /**
    * Returns (U, S, V) where U is MxM and V is NxN, both orthonormal and S the diagonal matrix such that
@@ -135,20 +138,13 @@ extends MatrixWithElementsFromAField[Real, RealMatrix] {
   def pinv = psuedoinverse
   
   /** 
-   *QR decomposition based on Householder reflections.  Probably not the most efficient
-   *implementation and it's not tail recursive, so it will stack overflow for large matrices, but it looks nice!
+   *QR decomposition based on (stabilised) Gram-Schmidt process
    */
   def qr : (RealMatrix, RealMatrix) = {
-    val x = column(0)
-    val u = x - identity(M,1)*x.frobeniusNorm
-    val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
-    def householder(m : RealMatrix) : RealMatrix = m - v*(v.transpose*m)*2.0 //householder reflection about v (this with allocate memory!)
-    if(M==1) return (identity(1), this)
-    if(N==1) return (householder(identity(M)), householder(this))
-    val r1 = householder(this) 
-    val (q2, r2) = r1.submatrix(1 until M, 1 until N).qr //now apply qr to submatrix
-    val R = construct( (m,n) => if(m==0 || n==0) r1(m,n) else r2(m-1,n-1), M, N) //this is R
-    val Q = householder( construct( (m,n) => if(m==0 || n==0) identity(M)(m,n) else q2(m-1,n-1), M, N) )
+    val (b, u) = orthogonalise
+    val d = (0 until N).map( n => b.column(n).frobeniusNorm )
+    val Q = RealMatrix( (m,n) => b(m,n)/d(n), M, N)
+    val R = RealMatrix( (m,n) => u(m,n)*d(m), N, N)
     return (Q,R)
   }
   override def hermiteNormalForm = qr

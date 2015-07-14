@@ -165,3 +165,22 @@ trait Field[F <: Field[F,N],N <: Ordered[N]] extends EuclideanDomain[F,N] {
   override def factors : Seq[F] = List(this.one,this.asInstanceOf[F])
 }
 
+/**
+ * Special trait for Reals and Rationals. Includes rounding to nearest integer and half, i.e., the
+ * number between zero and one. The field is it's own norm and is ordered.
+ */
+trait RealandRational[F <: RealandRational[F]] extends Field[F,F] with Ordered[F] {
+  
+  /// The number 1/2, i.e. halfway between 0 and 1
+  def half: F
+  
+  /// Greatest integer less than or equal to this number
+  def floor : F
+  
+  ///Smallest integer greater than or equal to this rational
+  final def ceil : F = -((-this).floor)
+  
+  ///Nearest integer to this rational with half integers rounded up
+  final def round : F = (this + half).floor
+  
+}
