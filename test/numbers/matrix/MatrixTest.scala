@@ -42,6 +42,19 @@ class MatrixTest {
     for(m <- 0 until M; n <- 0 until N) assertTrue(f(m,n)==A(m,n))
   }
   
+  def equalsTest() {
+    val N = 5
+    val M = 4
+    def f(m : Int, n : Int) = Integer(n*m)
+    val A = IntegerMatrix(f,M,N)
+    val B = IntegerMatrix(f,M,N)
+    assertTrue( A== B )
+    val C = IntegerMatrix(f,M+1,N)
+    assertFalse( A == C )
+    assertTrue( A != C )
+    assertFalse( B == C )
+  }
+  
   @Test
   def submatrixTest() {
     val N = 5
@@ -303,7 +316,7 @@ class MatrixTest {
     val N = 2
     val M = 3
     val A = ComplexMatrix( (m,n) => PolarComplex(1, 0.4), M,N)
-    assertEquals( scala.math.sqrt(1.0*M*N), A.frobeniusNorm, tol )
+    assertEquals( scala.math.sqrt(1.0*M*N), A.frobeniusNorm.d, tol )
   }
   
   @Test
@@ -325,8 +338,8 @@ class MatrixTest {
     val m = RealMatrix( (m,n) => Real.one, M,N )
     val (q,r) = m.qr
     val rexp = RealMatrix( (m,n) => if(m==0) Real(3.0) else Real(0.0), M,N)
-    assertTrue((r - rexp).frobeniusNorm < tol)
-    assertTrue((q*r - m).frobeniusNorm < tol)
+    assertTrue((r - rexp).frobeniusNorm.d < tol)
+    assertTrue((q*r - m).frobeniusNorm.d < tol)
   }
   
   def realQRTest () {

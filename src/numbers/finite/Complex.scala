@@ -124,9 +124,9 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   final def h = hermitianTranspose
   
   /** Sum of the squared magnitudes of all of the elements */
-  lazy val squaredFrobeniusNorm : Double = indices.foldLeft(0.0)( (v, i) => v + this(i).mag2)
+  lazy val squaredFrobeniusNorm : Real = indices.foldLeft(0.0)( (v, i) => v + this(i).mag2)
   /** The Frobenius norm, square root of sum of elements squared */
-  lazy val frobeniusNorm : Double = sqrt(squaredFrobeniusNorm)
+  lazy val frobeniusNorm : Real = sqrt(squaredFrobeniusNorm.d)
   
   def singularValueDecomposition : (ComplexMatrix, ComplexMatrix, ComplexMatrix) = {
     throw new UnsupportedOperationException("Not supported")
@@ -139,22 +139,14 @@ class ComplexMatrix(f : (Int,Int) => Complex, override val M : Int, override val
   def svd = singularValueDecomposition
   override def smithNormalForm = svd
   
-   /** 
-   * QR decomposition based on Householder reflections.  Probably not the most efficient
-   * implementation and it's not tail recursive, so it will stack overflow for large matrices, but it looks nice!
+  /** 
+   *QR decomposition based on (stabilised) Gram-Schmidt process
    */
   def qr : (ComplexMatrix, ComplexMatrix) = {
-    val x = column(0)
-    val u = x - identity(M,1) * PolarComplex(x.frobeniusNorm,x(0,0).angle)
-    val v = if(u.frobeniusNorm==0) zeros(M,1) else u/u.frobeniusNorm   //handles when first column is (1,0,0,...0)
-    val w = if(u.frobeniusNorm==0) Complex.zero else Complex.one +  (x.hermitianTranspose * v)(0,0) / (v.hermitianTranspose * x)(0,0)
-    def householder(m : ComplexMatrix) : ComplexMatrix = m - v*(v.hermitianTranspose*m)*w //householder reflection about v
-    if(M==1) return (identity(1), this)
-    if(N==1) return (householder(identity(M)), householder(this))
-    val r1 = householder(this) 
-    val (q2, r2) = r1.submatrix(1 until M, 1 until N).qr //now apply qr to submatrix
-    val R = construct( (m,n) => if(m==0 || n==0) r1(m,n) else r2(m-1,n-1), M, N) //this is R
-    val Q = householder( construct( (m,n) => if(m==0 || n==0) identity(M)(m,n) else q2(m-1,n-1), M, N) )
+    val (b, u) = orthogonalise
+    val d = (0 until N).map( n => b.column(n).frobeniusNorm )
+    val Q = ComplexMatrix( (m,n) => b(m,n)/d(n), M, N)
+    val R = ComplexMatrix( (m,n) => u(m,n)*d(m), N, N)
     return (Q,R)
   }
   override def hermiteNormalForm = qr

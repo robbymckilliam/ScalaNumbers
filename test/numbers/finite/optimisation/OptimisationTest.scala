@@ -90,11 +90,11 @@ class OptimisationTest {
   @Test
   def multivariableGradientDescentTest = {
     val L = 5 //dimension
-    val f : RealMatrix => Double = x => x.squaredFrobeniusNorm
+    val f : RealMatrix => Double = x => x.squaredFrobeniusNorm.d
     val df : RealMatrix => RealMatrix = x => x * 2.0 //elementwise multiplication by 2
     val xstart = RealMatrix.constructRow( n => Real(2.0*n), L) //L variable optimisation
     val xmin = new MultiVariableOptimisation.GradientDescent(xstart, df).xmin
-    assertTrue( xmin.frobeniusNorm.abs < 1e-5 )
+    assertTrue( xmin.frobeniusNorm.d.abs < 1e-5 )
   }
   
   @Test
@@ -117,12 +117,12 @@ class OptimisationTest {
   @Test
   def multivariateNewtonRaphsonTest = {
     val L = 5 //dimension
-    val f : RealMatrix => Double = x => x.squaredFrobeniusNorm
+    val f : RealMatrix => Double = x => x.squaredFrobeniusNorm.d
     val df : RealMatrix => RealMatrix = x => x * 2.0 //elementwise multiplication by 2
     val H : RealMatrix => RealMatrix = x => RealMatrix.identity(L)*2 
     val xstart = RealMatrix.constructRow( n => Real(2.0*n), L) //L variable optimisation
     val xmin = new MultiVariableOptimisation.NewtonRaphson(xstart, df, H).xmin
-    assertTrue( xmin.frobeniusNorm.abs < 1e-5 )
+    assertTrue( xmin.frobeniusNorm.d.abs < 1e-5 )
   }
     
   /// Test the NewtonRaphson method with the Rosenbrock function (1-x)^2 + 100(y-x)^2 

@@ -81,28 +81,28 @@ class RationalTest {
   
   @Test
   def testFloor = {
-    assertTrue( Rational(10,2).floor == Integer(5) )
-    assertTrue( Rational(3,2).floor == Integer.one )
-    assertTrue( Rational(-3,2).floor == -Integer(2) )
+    assertTrue( Rational(10,2).floor == Rational(5,1) )
+    assertTrue( Rational(3,2).floor == Rational.one )
+    assertTrue( Rational(-3,2).floor == -Rational(2,1) )
   }
   
   @Test
   def testCeil = {
-    assertTrue( Rational(10,2).ceil == Integer(5) )
-    assertTrue( Rational(3,2).ceil == Integer(2) )
-    assertTrue( Rational(5,2).ceil == Integer(3) )
-    assertTrue( Rational(-3,2).ceil == -Integer(1) )
+    assertTrue( Rational(10,2).ceil == Rational(5,1) )
+    assertTrue( Rational(3,2).ceil == Rational(2,1) )
+    assertTrue( Rational(5,2).ceil == Rational(3,1) )
+    assertTrue( Rational(-3,2).ceil == -Rational(1,1) )
   }
   
   @Test
   def testRound = {
-    assertTrue( Rational(10,2).round == Integer(5) )
-    assertTrue( Rational(3,2).round == Integer(2) )
-    assertTrue( Rational(5,3).round == Integer(2) )
-    assertTrue( Rational(4,3).round == Integer.one )
-    assertTrue( Rational(-3,4).round == -Integer.one )
-    assertTrue( Rational(-5,4).round == -Integer.one )
-    assertTrue( Rational(-1,2).round == Integer.zero )
+    assertTrue( Rational(10,2).round == Rational(5,1) )
+    assertTrue( Rational(3,2).round == Rational(2,1) )
+    assertTrue( Rational(5,3).round == Rational(2,1) )
+    assertTrue( Rational(4,3).round == Rational.one )
+    assertTrue( Rational(-3,4).round == -Rational.one )
+    assertTrue( Rational(-5,4).round == -Rational.one )
+    assertTrue( Rational(-1,2).round == Rational.zero )
   }
   
   @Test
