@@ -36,8 +36,6 @@ object LLL {
      val bn = (0 until M).foldLeft(zero)( (s, i) => s + bstar(i,n)*bstar(i,n) )
      val bn1 = (0 until M).foldLeft(zero)( (s, i) => s + bstar(i,n-1)*bstar(i,n-1) )
      val D = (c - u(n-1,n)*u(n-1,n))*bn1
-     println(bn1)
-     println(bn)
      if( D.normlarger(bn) ) return false
    }
    return true
@@ -89,6 +87,7 @@ class LLL[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis 
   protected final def lovasCondition(k : Int) : Boolean = {
     if(k == 0) return true; // 1 dimensional lattice always LLL reduced
     val Bk = GramSchmidt.dot(bstar(k),bstar(k))
+    //if(Bk == Bk.zero) throw new RuntimeException("Not a valid lattice basis.")
     val Bkm1 = GramSchmidt.dot(bstar(k-1),bstar(k-1))
     val D = (c - u(k)(k-1)*u(k)(k-1))*Bkm1
     return !D.normlarger(Bk) 
