@@ -26,17 +26,21 @@ object LLL {
   
  /** Returns true if the columns of this matrix generate a lattice that is Hermite reduced, otherwise false. */
  def isReduced[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F) : Boolean = {
-    val (bstar,u) = basis.orthogonalise //get the Gram-Schmith orthogonalised basis
-    val N = u.N
-    val M = bstar.M
-    for( m <- 0 until N) for( n <- m+1 until N) if( u(m,n).normlarger(u(m,n).half) ) return false //check Hermite reduced
-    for(n <- 1 until N) { //Check Lovas condition
-      val bn = (0 until M).map(i=>bstar(n,i)).reduceLeft( (s, v) => s + v*v ) 
-      val bn1 = (0 until M).map(i=>bstar(n-1,i)).reduceLeft( (s, v) => s + v*v ) 
-      val D = (c - u(n-1,n)*u(n-1,n))*bn1
-      if( D.normlarger(bn) ) return false
-    }
-    return true
+   val (bstar,u) = basis.orthogonalise //get the Gram-Schmith orthogonalised basis
+   val N = u.N
+   val M = bstar.M
+   val zero = basis(0,0).zero
+   val half = basis(0,0).half
+   for( m <- 0 until N) for( n <- m+1 until N) if( u(m,n).normlarger(half) ) return false //check Hermite reduced
+   for(n <- 1 until N) { //Check Lovas condition
+     val bn = (0 until M).foldLeft(zero)( (s, i) => s + bstar(i,n)*bstar(i,n) )
+     val bn1 = (0 until M).foldLeft(zero)( (s, i) => s + bstar(i,n-1)*bstar(i,n-1) )
+     val D = (c - u(n-1,n)*u(n-1,n))*bn1
+     println(bn1)
+     println(bn)
+     if( D.normlarger(bn) ) return false
+   }
+   return true
  }
  
 }
@@ -69,11 +73,25 @@ class LLL[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis 
   @tailrec protected final def reduce(k : Int) : Unit = {
     if(k == n) return; // finished
     GramSchmidt.increment(k,b,bstar,u) //run Gram-Schmit on kth row
-    println(basis.construct((m,n) => u(m)(n), n, n))
     Hermite.increment(k,b,H,u) //Hermite reduce the kth row
-    println(basis.construct((m,n) => u(m)(n), n, n))
-    println
-    return reduce(k+1)
+    
+    //check Lovas condition
+    if( lovasCondition(k) ) return reduce(k+1)
+    else { //Lovas condition not satisfied
+      {val t = b(k); b(k) = b(k-1); b(k-1) = t} //swap basis vectors
+      {val t = H(k); H(k) = H(k-1); H(k-1) = t} //swap unimodular transformation vectors
+      return reduce(k-1)
+    }
+      
+  }
+  
+  /// Returns true if the Lovas condition for row k is satisfied
+  protected final def lovasCondition(k : Int) : Boolean = {
+    if(k == 0) return true; // 1 dimensional lattice always LLL reduced
+    val Bk = GramSchmidt.dot(bstar(k),bstar(k))
+    val Bkm1 = GramSchmidt.dot(bstar(k-1),bstar(k-1))
+    val D = (c - u(k)(k-1)*u(k)(k-1))*Bkm1
+    return !D.normlarger(Bk) 
   }
  
   /// Return the LLL recuded basis

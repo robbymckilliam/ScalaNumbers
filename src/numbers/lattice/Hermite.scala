@@ -31,11 +31,11 @@ object Hermite {
  def increment[F <: RealandRational[F]](i : Int, b : Seq[ArraySeq[F]], H : Seq[ArraySeq[F]], U : Seq[ArraySeq[F]]) : Unit = {
     val m = b(0).length 
     val n = H.length 
-    for( j <- i+1 until n) {
-      val q = U(j)(i).round
-      for( t <- 0 to i ) U(j)(t) = U(j)(t) - q*U(i)(t)
-      for( t <- 0 until m ) b(j)(t) = b(j)(t) - q*b(i)(t)
-      for( t <- 0 until n ) H(j)(t) = H(j)(t) - q*H(i)(t)
+    for( j <- i-1 to 0 by -1) {
+      val q = U(i)(j).round
+      for( t <- 0 to j ) U(i)(t) = U(i)(t) - q*U(j)(t)
+      for( t <- 0 until m ) b(i)(t) = b(i)(t) - q*b(j)(t)
+      for( t <- 0 until n ) H(i)(t) = H(i)(t) - q*H(j)(t)
     }
  }
  
@@ -54,7 +54,7 @@ class Hermite[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](ba
   protected val H = basis.identity(n).toArray //memory for unimodular transformation
   protected val U = u.transpose.toArray
   
-  for( i <- n-2 to 0 by -1 ) Hermite.increment(i,b,H,U)
+  for( i <- 0 until n ) Hermite.increment(i,b,H,U)
   
   /// Return the Hermite recuded basis
   def reducedBasis = basis.construct((m,n) => b(n)(m), m, n)

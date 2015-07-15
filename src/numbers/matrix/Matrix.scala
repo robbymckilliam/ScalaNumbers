@@ -43,7 +43,7 @@ trait Matrix[T <: Element[T], B <: Matrix[T,B]] extends PartialFunction[(Int,Int
     else throw new ArrayIndexOutOfBoundsException("You attempted to index an " + M + " x " + N + " as if it were a column or row vector")
   }
   /// Returns a collection of tuple that index all of elements in this matrix (row wise)
-  def indices = for( m<-(0 until M).view; n<-(0 until N).view ) yield (m,n)
+  def indices = for( m<-(0 until M); n<-(0 until N) ) yield (m,n)
   /// Returns the transpose of this matrix
   def transpose : B = construct( (m,n) => this(n,m), N, M )
   /// Returns the transpose of this matrix
