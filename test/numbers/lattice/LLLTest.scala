@@ -102,10 +102,38 @@ class LLLTest {
     )
     val A = RationalMatrix( (m,n) => Rational(b(m)(n)), n, n )
     val (r,m) = LLL(A)
-    println(r)
-    println(m)
-    println(A*m)
     assertTrue( LLL.isReduced(r, Rational(3,4)) )
   }
 
+  @Test
+  def correctlyHandlesNotFullRankCaseWithReal = {
+    val n = 3
+    val b = Array(
+      Array(1,1,2),
+      Array(1,2,3),
+      Array(1,3,4)
+    )
+    val A = RealMatrix( (m,n) => Real(b(m)(n)), n, n )
+    val (r,m) = LLL(A)
+    assertTrue( LLL.isReduced(r, Real(0.75)) )
+  }
+  
+  @Test
+  def testForAnStarProjection = {
+    val tol = 1e-7
+    val N = 30
+    val ones = RealMatrix((m,n) => Real.one,N,1)
+    val B = RealMatrix.identity(N) - ones*ones.t/N
+    val (r,m) = LLL(B, Real(0.75), Real(1e-7))
+    //println(r)
+    //println(m)
+    //println(B*m)
+    assertTrue( LLL.isReduced(r, Real(0.75), Real(1e-7)) )
+    assertFalse( (m.det.norm - Real.one).normlarger(tol) )
+    for( i <- m.indices ) assertTrue( m(i).isInteger(tol) )
+    val D = B*m - r
+    //println(D)
+    for(m <- 0 until N) for(n <- 0 until N) assertFalse(D(m,n).normlarger(tol)) //assert columns of B are orthogonal
+  }
+  
 }

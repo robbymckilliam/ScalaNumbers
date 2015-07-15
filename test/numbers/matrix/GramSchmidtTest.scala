@@ -19,7 +19,7 @@ class GramSchmidtTest {
       val x = Array[Real](1.0,2.0,3.0)
       val p = Array[Real](1.0,1.0,1.0)
       val y = new ArraySeq[Real](3)
-      val u = GramSchmidt.project(x,p,y)
+      val u = GramSchmidt.project(x,p,y, Real.zero)
       val ey = Array[Real](-1.0,0.0,1.0)
       val eu = 2.0
       assertTrue( (eu - u).norm < tol )
@@ -30,7 +30,7 @@ class GramSchmidtTest {
       val x = Array[Rational](1,2,3)
       val p = Array[Rational](1,1,1)
       val y = new ArraySeq[Rational](3)
-      val u = GramSchmidt.project(x,p,y)
+      val u = GramSchmidt.project(x,p,y, Rational.zero)
       val ey = Array[Rational](-1,0,1)
       val eu = Rational(2)
       assertTrue( eu == u )
@@ -42,7 +42,7 @@ class GramSchmidtTest {
       val x = Array[Complex]( RectComplex(1,1), RectComplex(2,0), RectComplex(3,0))
       val p = Array[Complex](Complex.one,Complex.one,Complex.one)
       val y = new ArraySeq[Complex](3)
-      val u = GramSchmidt.project(x,p,y)
+      val u = GramSchmidt.project(x,p,y, Complex.zero)
 //      val ey = Array[Complex](-1,0,1)
       val eu = RectComplex(2,1.0/3)
 //     println(u)
@@ -58,13 +58,21 @@ class GramSchmidtTest {
     val x = Array[Rational](1,2,3)
     val p = Array[Rational](0,0,0)
     val y = new ArraySeq[Rational](3)
-    val u = GramSchmidt.project(x,p,y)
+    assertTrue( GramSchmidt.dot(p,p) == Rational.zero )
+    val u = GramSchmidt.project(x,p,y, Rational.zero)
+    assertTrue( GramSchmidt.dot(p,y) == Rational.zero )
     val ey = x
     val eu = Rational.zero
     assertTrue( eu == u )
     for( i <- y.indices ) assertTrue( y(i) == ey(i) )
-    assertTrue( GramSchmidt.dot(p,y) == Rational.zero )
   }
+  
+  @Test
+  def zeroTestByNormLarger() {
+    assertFalse( (Rational.zero).normlarger(Rational.zero) )
+    assertFalse( (Real.zero).normlarger(Real.zero) )
+  }
+  
 
   
   @Test
@@ -73,35 +81,29 @@ class GramSchmidtTest {
       val N = 3
       def f(m : Int, n : Int) = Rational(n+m+1)
       val A = RationalMatrix(f,N,N)
-      val gs = new GramSchmidt(A)
-      val B = gs.B
-      val U = gs.U
-      val D = B.transpose*B
+      val (b,u) = GramSchmidt(A)
+      val D = b.transpose*b
       for(m <- 0 until N) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
-      assertTrue(A == B*U)
+      assertTrue(A == b*u)
     }
     { //test with a largish Hilbert matrix
       val N = 7
       def f(m : Int, n : Int) = Rational(1,n+m+1)
       val A = RationalMatrix(f,N,N)
-      val gs = new GramSchmidt(A)
-      val B = gs.B
-      val U = gs.U
-      val D = B.transpose*B
+      val (b,u) = GramSchmidt(A)
+      val D = b.transpose*b
       for(m <- 0 until N) for(n <- 0 until m) assertTrue(D(m,n) == D(0,0).zero) //assert columns of B are orthogonal
-      assertTrue(A == B*U)
+      assertTrue(A == b*u)
     }
     { //test with Complex
       val tol = Real(1e-7)
       val N = 3
       def f(m : Int, n : Int) = RectComplex(n-m+2,n+m+1)
       val A = ComplexMatrix(f,N,N)
-      val gs = new GramSchmidt(A)
-      val B = gs.B
-      val U = gs.U
-      val D = B.transpose*B
+      val (b,u) = GramSchmidt(A)
+      val D = b.transpose*b
       for(m <- 0 until N) for(n <- 0 until m) assertTrue( (D(m,n) - D(0,0).zero).norm < tol) //assert columns of B are orthogonal
-      val diff = A - B*U
+      val diff = A - b*u
       for(i <- diff.indices) assertTrue( diff(i).norm < tol )
     }
     { //test with orthogonalise method

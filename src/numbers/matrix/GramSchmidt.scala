@@ -16,16 +16,30 @@ import scala.collection.mutable.ArraySeq
 
 object GramSchmidt {
   
+  def apply[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matrix]](A : MatrixWithElementsFromAField[F,Matrix], zerotol: F) : (Matrix, Matrix) = {
+    val gs = new GramSchmidt(A,zerotol)
+    return (gs.B, gs.U)
+  }
+  
+  /** 
+   *Default zero tolerance is this field zero element. This will work fine for infinite precision
+   *classes like Rational, but will be numerically unstable for large matrices and finite precision
+   *classes like Real and Complex
+   */
+  def apply[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matrix]](A : MatrixWithElementsFromAField[F,Matrix]) : (Matrix, Matrix) = {
+    return GramSchmidt(A, A(0,0).zero)
+  }
+  
   /** 
    * Projects x orthogonally to p and returns result in y.  Assumes memory for y is allocated.
    * Throws exception if it's not.  Returns the projection coefficient dot(x,v)/dot(v,v).
    * If p is the vector of zeros then y = x
    */
-  def project[F <: Field[F,_]](x : Seq[F], p : Seq[F], y : ArraySeq[F]) : F = {
+  def project[F <: Field[F,_]](x : Seq[F], p : Seq[F], y : ArraySeq[F], zerotol : F) : F = {
     val m = x.length
     if( y.length != m ) throw new ArrayIndexOutOfBoundsException("x, v, and y must have the same length") 
     val normp = dot(p,p)
-    val u = if( normp != normp.zero) dot(x,p)/normp else normp.zero
+    val u = if( normp.normlarger(zerotol) ) dot(x,p)/normp else normp.zero 
     for(i <- 0 until m) y(i) = x(i) - u*p(i)
     return u //the projection coefficent
   }
@@ -38,16 +52,21 @@ object GramSchmidt {
   }
   
   /// Run Gram-Schmit on nth row of b and store in bstar. Write projection coefficient to u
-  def increment[F <: Field[F,_]](n : Int, b : Seq[Seq[F]], bstar : Seq[ArraySeq[F]], u : Seq[ArraySeq[F]]) : Unit = {
+  def increment[F <: Field[F,_]](n : Int, b : Seq[Seq[F]], bstar : Seq[ArraySeq[F]], u : Seq[ArraySeq[F]], zerotol : F) : Unit = {
     for( i <- b(0).indices ) bstar(n)(i) = b(n)(i)
     for( m <- 0 until n ) {
-      u(n)(m) = GramSchmidt.project(bstar(n),bstar(m),bstar(n))
+      u(n)(m) = GramSchmidt.project(bstar(n),bstar(m),bstar(n), zerotol)
     }
   }                           
 
 }
 
-class GramSchmidt[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matrix]](val A : MatrixWithElementsFromAField[F,Matrix]) {
+/** 
+ *Compute the Gram Schmidt orthogonalisation of matrix A.  Vectors with norm less than or equal to zerotol 
+ *are considered to be zero.  This can set to zero for infinite precision data types such as Rational, but needs
+ *to be carefully selected for finite precision data types such as Real and Complex.
+ */
+class GramSchmidt[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matrix]](val A : MatrixWithElementsFromAField[F,Matrix], val zerotol: F) {
   
   val N = A.N //number of columns
   val M = A.M //number of rows
@@ -57,7 +76,7 @@ class GramSchmidt[F <: Field[F,_],Matrix <: MatrixWithElementsFromAField[F,Matri
   
   // b(0) is already the first column of A so this loop could start at 0
   // but starting at zero as a test case (since LLL code will do this, for example)
-  for( n <- 0 until N ) GramSchmidt.increment(n,b,b,u)
+  for( n <- 0 until N ) GramSchmidt.increment(n,b,b,u, zerotol)
   
   /// The m x n matrix of orthogonal vectors B
   val B = A.construct( (m,n) => b(n)(m), M, N)

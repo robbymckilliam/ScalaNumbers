@@ -173,10 +173,14 @@ trait MatrixWithElementsFromAField[F <: Field[F,_], B <: MatrixWithElementsFromA
    * Gram-Schmidt orthogonalisation applied to the columns of this m by n matrix. 
    * Returns tuple (B, U) where B is an m by n matrix with orthogonal (not necessarily orthonormal columns) and 
    * and U is an n by n upper triangular such that this = BU.
+   * 
+   * This uses the default tolerance of zero for determining vectors of all zero. This will be fine
+   * for infinite precision classes such as Rational, but is likely to be numerically unstable for
+   * large matrices withfinite precision classes such as Complex and Real.  If you are having 
+   * trouble with stability then orthogonalise(zerotol : F) lets you set the tolerance.
+   * 
    */
-  def orthogonalise : (B, B) = {
-    val gs = new GramSchmidt[F,B](this)
-    return (gs.B, gs.U)
-  }
-  
+  def orthogonalise : (B, B) = GramSchmidt[F,B](this)
+  def orthogonalise(zerotol : F) : (B,B) =  GramSchmidt[F,B](this, zerotol)
+
 }
