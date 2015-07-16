@@ -15,6 +15,7 @@ import numbers.matrix.MatrixWithElementsFromAField
 import scala.annotation.tailrec
 
 object LLL {
+  
   def apply[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](basis : MatrixWithElementsFromAField[F,M], c : F, zerotol : F) : (M, M) = {
     val lll = new LLL(basis, c, zerotol)
     return (lll.reducedBasis, lll.unimodularTransformation)
@@ -104,7 +105,15 @@ class LLL[F <: RealandRational[F],M <: MatrixWithElementsFromAField[F,M]](val ba
     return !D.normlarger(Bk) 
   }
  
-  /// Return the LLL recuded basis
+  /** The rank of this lattice. */
+  val rank = {
+    @tailrec def colzero(k : Int) : Int = if( GramSchmidt.dot(b(k),b(k)).normlarger(zerotol) ) n - k else colzero(k+1)
+    colzero(0)
+  }
+  
+  /** 
+   *  Return the LLL recuded basis. The first n - rank columns will be zero. 
+   */
   def reducedBasis = basis.construct((m,n) => b(n)(m), m, n)
   
   /// Return the unimodular transformation matrix H such that BM is the reduces basis.

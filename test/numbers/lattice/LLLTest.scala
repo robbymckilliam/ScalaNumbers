@@ -2,6 +2,7 @@ package numbers.lattice
 
 import numbers.Rational
 import numbers.RationalMatrix
+import numbers.RingWithUnity
 import numbers.finite.Real
 import numbers.finite.RealMatrix
 import numbers.matrix.LU
@@ -124,16 +125,52 @@ class LLLTest {
     val N = 30
     val ones = RealMatrix((m,n) => Real.one,N,1)
     val B = RealMatrix.identity(N) - ones*ones.t/N
-    val (r,m) = LLL(B, Real(0.75), Real(1e-7))
+    val (r,m) = LLL(B, Real(0.75), Real(1e-9))
     //println(r)
     //println(m)
     //println(B*m)
-    assertTrue( LLL.isReduced(r, Real(0.75), Real(1e-7)) )
+    assertTrue( LLL.isReduced(r, Real(0.75), Real(1e-9)) )
     assertFalse( (m.det.norm - Real.one).normlarger(tol) )
     for( i <- m.indices ) assertTrue( m(i).isInteger(tol) )
     val D = B*m - r
     //println(D)
-    for(m <- 0 until N) for(n <- 0 until N) assertFalse(D(m,n).normlarger(tol)) //assert columns of B are orthogonal
+    for(m <- 0 until N) for(n <- 0 until N) assertFalse(D(m,n).normlarger(tol)) //assert D is zero
+  }
+
+  @Test
+  def testFrequencyEstimationLattice = {
+    val tol = 1e-7
+    val N = 30
+    val V = RealMatrix((m,n) => RingWithUnity.pow(Real(n),numbers.Integer(m)),N,2)
+    val B = RealMatrix.identity(N) - V*((V.t*V).inverse)*V.t
+    val (r,m) = LLL(B, Real(0.75), Real(1e-9))
+    println(r)
+    println(m)
+    println(B*m)
+    assertTrue( LLL.isReduced(r, Real(0.75), Real(1e-9)) )
+    assertFalse( (m.det.norm - Real.one).normlarger(tol) )
+    for( i <- m.indices ) assertTrue( m(i).isInteger(tol) )
+    val D = B*m - r
+    println(D)
+    for(m <- 0 until N) for(n <- 0 until N) assertFalse(D(m,n).normlarger(tol)) //assert D is zero
+  }
+
+  @Test
+  def testForAnStarProjectionRational = {
+    val tol = 1e-7
+    val N = 20
+    val ones = RationalMatrix((m,n) => Rational.one,N,1)
+    val B = RationalMatrix.identity(N) - ones*ones.t/N
+    val (r,m) = LLL(B)
+    //println(r)
+    //println(m)
+    //println(B*m)
+    assertTrue( LLL.isReduced(r, Rational(3,4) ) )
+    assertTrue( m.det.norm == Rational.one )
+    for( i <- m.indices ) assertTrue( m(i).isInteger )
+    val D = B*m - r
+    //println(D)
+    for(m <- 0 until N) for(n <- 0 until N) assertTrue(D(m,n) == Rational.zero) //assert D is zero
   }
   
 }

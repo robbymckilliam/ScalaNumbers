@@ -50,7 +50,7 @@
 	<pathelement location="${scala.home}/lib/scala-compiler.jar"   />
 	<pathelement location="${scala-library.jar}"   />
       </classpath>
-      <!-- <formatter type="plain" usefile="false"/>  print output to screen -->
+      <formatter type="plain" usefile="true"/>  <!-- print output to screen -->
       <batchtest fork="yes" todir="${base.dir}">
 	<fileset dir="${build.dir}">
 	  <include name="**/*Test.class"/>
